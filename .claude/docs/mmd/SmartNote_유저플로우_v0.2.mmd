@@ -1,0 +1,224 @@
+flowchart TD
+
+  subgraph SA["Flow A: 최초 진입 & 카카오 로그인"]
+    A1(["앱 접속"])
+    A2{"로그인 상태?"}
+    A3["로그인 화면"]
+    A4["카카오 로그인 버튼 클릭"]
+    A5["카카오 인증 진행"]
+    A6{"신규 사용자?"}
+    A7["기본 그룹 기타 자동 생성"]
+    A8(["홈 화면"])
+
+    A1 --> A2
+    A2 -->|인증됨| A8
+    A2 -->|미인증| A3 --> A4 --> A5 --> A6
+    A6 -->|신규| A7 --> A8
+    A6 -->|기존| A8
+  end
+
+  subgraph SB["Flow B: 홈 자연어 입력"]
+    B1(["홈 화면"])
+    B2["자연어 입력"]
+    B3["Llama 분류"]
+    B4{"분류 결과"}
+    B5["일정 + 알람 제안"]
+    B6["나중에 알려줘"]
+    B7["언젠가 리스트"]
+    B8["메모"]
+    B9["할일"]
+    B10{"사용자 확인"}
+    B11["저장"]
+    B12["분류 변경"]
+    B13(["홈 최근 기록 갱신"])
+
+    B1 --> B2 --> B3 --> B4
+    B4 -->|일정| B5
+    B4 -->|나중에| B6
+    B4 -->|언젠가| B7
+    B4 -->|메모| B8
+    B4 -->|할일| B9
+    B5 --> B10
+    B6 --> B10
+    B7 --> B10
+    B8 --> B10
+    B9 --> B10
+    B10 -->|확인| B11 --> B13
+    B10 -->|변경| B12 --> B11
+  end
+
+  subgraph SC["Flow C: 알람 그룹 생성"]
+    C1(["알람 탭"])
+    C2["그룹 추가 버튼 클릭"]
+    C3["그룹 이름 + 색상 입력"]
+    C4["저장"]
+    C5{"저장 성공?"}
+    C6["그룹 목록에 추가"]
+    C7["오류 토스트 표시"]
+    C8(["알람 탭 - 그룹 목록"])
+
+    C1 --> C2 --> C3 --> C4 --> C5
+    C5 -->|성공| C6 --> C8
+    C5 -->|실패| C7 --> C3
+  end
+
+  subgraph SD["Flow D: 알람 생성"]
+    D1(["알람 탭"])
+    D2["알람 추가 버튼 클릭"]
+    D3["시간 설정"]
+    D4["라벨 입력"]
+    D5["그룹 선택"]
+    D6{"그룹 미선택?"}
+    D7["기타 그룹 자동 배정"]
+    D8["반복 요일 선택"]
+    D9["소리/진동 설정 - 마지막 사용값 기본"]
+    D10["저장"]
+    D11{"시간이 과거?"}
+    D12["경고 다이얼로그"]
+    D13{"계속 저장?"}
+    D14["알람 목록 반영"]
+    D15(["알람 탭 - 목록"])
+
+    D1 --> D2 --> D3 --> D4 --> D5 --> D6
+    D6 -->|예| D7 --> D8
+    D6 -->|아니오| D8
+    D8 --> D9 --> D10 --> D11
+    D11 -->|아니오| D14 --> D15
+    D11 -->|예| D12 --> D13
+    D13 -->|저장| D14 --> D15
+    D13 -->|취소| D10
+  end
+
+  subgraph SE["Flow E: 알람 그룹 ON/OFF"]
+    E1(["알람 탭 - 그룹 목록"])
+    E2["그룹 토글 클릭"]
+    E3["Firestore 즉시 업데이트"]
+    E4{"isEnabled 변경"}
+    E5["그룹 + 알람 dimmed 처리"]
+    E6["그룹 + 알람 정상 표시"]
+    E7{"알람 발생 시"}
+    E8["알람 스킵"]
+    E9["알람 정상 동작"]
+    E10(["알람 탭"])
+
+    E1 --> E2 --> E3 --> E4
+    E4 -->|OFF| E5 --> E7
+    E4 -->|ON| E6 --> E7
+    E7 -->|그룹 OFF| E8 --> E10
+    E7 -->|그룹 ON| E9 --> E10
+  end
+
+  subgraph SF["Flow F: 빠른 알람"]
+    F1(["알람 탭"])
+    F2["빠른 알람 입력창 클릭"]
+    F3["자연어 입력 - 30분 후 / 내일 9시"]
+    F4{"시간 파싱 성공?"}
+    F5["파싱 결과 미리보기"]
+    F6["그룹 선택 후 저장"]
+    F7["알람 목록 반영"]
+    F8["인식 실패 안내"]
+    F9(["알람 탭 - 목록"])
+
+    F1 --> F2 --> F3 --> F4
+    F4 -->|성공| F5 --> F6 --> F7 --> F9
+    F4 -->|실패| F8 --> F3
+  end
+
+  subgraph SG["Flow G: 메모 작성 - Llama - 알람 제안"]
+    G1(["메모 탭"])
+    G2["새 메모 버튼 클릭"]
+    G3["제목 + 본문 입력"]
+    G4{"위치 권한?"}
+    G5["GPS 수집 + 역주소 변환"]
+    G6["위치 null 처리"]
+    G7["Firestore 저장"]
+    G8["Llama AI 정리 + 날짜 감지 시작"]
+    G9["실시간 리스너 갱신 - AI 토글 활성"]
+    G10{"날짜 감지?"}
+    G11["알람 제안 배지 표시"]
+    G12{"추가?"}
+    G13["그룹 선택 - 알람 생성"]
+    G14(["메모 목록"])
+
+    G1 --> G2 --> G3 --> G4
+    G4 -->|허용| G5 --> G7
+    G4 -->|거부| G6 --> G7
+    G7 --> G8 --> G9 --> G10
+    G10 -->|감지됨| G11 --> G12
+    G10 -->|없음| G14
+    G12 -->|추가| G13 --> G14
+    G12 -->|취소| G14
+  end
+
+  subgraph SH["Flow H: 휴지통"]
+    H1(["항목 삭제 버튼 클릭"])
+    H2["isDeleted = true / deletedAt 기록"]
+    H3["휴지통으로 이동"]
+    H4(["휴지통 목록"])
+    H5{"사용자 액션"}
+    H6["원래 위치로 복원"]
+    H7["즉시 영구 삭제"]
+    H8(["자정 자동 삭제 스케줄러"])
+    H9["30일 초과 항목 영구 삭제"]
+    H10(["완료"])
+
+    H1 --> H2 --> H3 --> H4 --> H5
+    H5 -->|복원| H6 --> H10
+    H5 -->|영구 삭제| H7 --> H10
+    H8 --> H9 --> H10
+  end
+
+  subgraph SI["Flow I: 캘린더 출근일 설정"]
+    I1(["캘린더 탭"])
+    I2["날짜 클릭"]
+    I3["출근/비출근 토글 클릭"]
+    I4["Firestore workDays 저장"]
+    I5["캘린더 셀 색상 즉시 갱신"]
+    I6{"비출근일로 변경?"}
+    I7["직장 그룹 자동 OFF 예약 - 자정"]
+    I8["변경 없음"]
+    I9(["캘린더 탭"])
+
+    I1 --> I2 --> I3 --> I4 --> I5 --> I6
+    I6 -->|예| I7 --> I9
+    I6 -->|아니오| I8 --> I9
+  end
+
+  style A1 fill:#E6F1FB,stroke:#185FA5,color:#0C447C
+  style A8 fill:#EAF3DE,stroke:#3B6D11,color:#27500A
+
+  style B1 fill:#E6F1FB,stroke:#185FA5,color:#0C447C
+  style B13 fill:#EAF3DE,stroke:#3B6D11,color:#27500A
+  style B3 fill:#EEEDFE,stroke:#534AB7,color:#3C3489
+  style B4 fill:#FAEEDA,stroke:#854F0B,color:#633806
+  style B10 fill:#FAEEDA,stroke:#854F0B,color:#633806
+
+  style C1 fill:#E6F1FB,stroke:#185FA5,color:#0C447C
+  style C8 fill:#EAF3DE,stroke:#3B6D11,color:#27500A
+  style C7 fill:#FCEBEB,stroke:#A32D2D,color:#791F1F
+
+  style D1 fill:#E6F1FB,stroke:#185FA5,color:#0C447C
+  style D15 fill:#EAF3DE,stroke:#3B6D11,color:#27500A
+  style D12 fill:#FAEEDA,stroke:#854F0B,color:#633806
+
+  style E1 fill:#E6F1FB,stroke:#185FA5,color:#0C447C
+  style E10 fill:#EAF3DE,stroke:#3B6D11,color:#27500A
+  style E5 fill:#F1EFE8,stroke:#5F5E5A,color:#444441
+  style E8 fill:#FCEBEB,stroke:#A32D2D,color:#791F1F
+
+  style F1 fill:#E6F1FB,stroke:#185FA5,color:#0C447C
+  style F9 fill:#EAF3DE,stroke:#3B6D11,color:#27500A
+  style F8 fill:#FAEEDA,stroke:#854F0B,color:#633806
+
+  style G1 fill:#E6F1FB,stroke:#185FA5,color:#0C447C
+  style G14 fill:#EAF3DE,stroke:#3B6D11,color:#27500A
+  style G8 fill:#EEEDFE,stroke:#534AB7,color:#3C3489
+
+  style H1 fill:#E6F1FB,stroke:#185FA5,color:#0C447C
+  style H10 fill:#EAF3DE,stroke:#3B6D11,color:#27500A
+  style H7 fill:#FCEBEB,stroke:#A32D2D,color:#791F1F
+  style H9 fill:#FCEBEB,stroke:#A32D2D,color:#791F1F
+
+  style I1 fill:#E6F1FB,stroke:#185FA5,color:#0C447C
+  style I9 fill:#EAF3DE,stroke:#3B6D11,color:#27500A
+  style I7 fill:#FAEEDA,stroke:#854F0B,color:#633806

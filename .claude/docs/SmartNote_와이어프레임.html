@@ -1,0 +1,580 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);background:var(--color-background-tertiary);color:var(--color-text-primary)}
+.wrap{padding:8px 0}
+.screen-label{font-size:11px;font-weight:500;color:var(--color-text-secondary);margin-bottom:5px;display:flex;align-items:center;gap:6px}
+.num{background:#185FA5;color:#fff;border-radius:20px;padding:1px 8px;font-size:10px}
+.browser{border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-lg);overflow:hidden;margin-bottom:20px}
+.bar{background:var(--color-background-secondary);padding:6px 10px;display:flex;align-items:center;gap:7px;border-bottom:0.5px solid var(--color-border-tertiary)}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--color-border-secondary);flex-shrink:0}
+.url{flex:1;background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:20px;padding:2px 10px;font-size:10px;color:var(--color-text-secondary);text-align:center}
+.layout{display:flex;height:400px}
+.sb{width:160px;border-right:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);flex-shrink:0;display:flex;flex-direction:column}
+.logo{padding:10px 13px;font-size:12px;font-weight:500;border-bottom:0.5px solid var(--color-border-tertiary)}
+.logo em{color:#185FA5;font-style:normal}
+.ns{font-size:9px;color:var(--color-text-secondary);padding:8px 13px 2px;letter-spacing:.06em}
+.ni{display:flex;align-items:center;gap:7px;padding:6px 13px;font-size:11px;color:var(--color-text-secondary);border-right:2px solid transparent;cursor:pointer}
+.ni.on{color:#185FA5;background:var(--color-background-primary);border-right-color:#185FA5;font-weight:500}
+.ni i{font-size:15px}
+.ni .cnt{margin-left:auto;font-size:9px;padding:1px 5px;border-radius:10px;background:#E6F1FB;color:#0C447C}
+.main{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden}
+.topbar{padding:9px 15px;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;gap:8px;flex-shrink:0}
+.ttl{font-size:13px;font-weight:500;flex:1}
+.btn{font-size:10px;padding:3px 9px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);color:var(--color-text-secondary);background:transparent;white-space:nowrap}
+.btnp{border-color:#185FA5;color:#185FA5}
+.btnpp{background:#185FA5;color:#fff;border-color:#185FA5}
+.content2{flex:1;display:flex;overflow:hidden}
+.lp{flex:1;padding:11px 14px;overflow:hidden;display:flex;flex-direction:column;gap:7px;border-right:0.5px solid var(--color-border-tertiary)}
+.rp{width:190px;padding:11px 13px;overflow:hidden;display:flex;flex-direction:column;gap:7px;flex-shrink:0}
+.badge{font-size:9px;padding:1px 5px;border-radius:8px;white-space:nowrap}
+.bb{background:#E6F1FB;color:#0C447C}
+.ba{background:#FAEEDA;color:#633806}
+.bg{background:#F1EFE8;color:#444441}
+.bv{background:#EEEDFE;color:#3C3489}
+.bt{background:#EAF3DE;color:#27500A}
+.br{background:#FCEBEB;color:#791F1F}
+.tgl{width:24px;height:14px;border-radius:7px;background:#185FA5;position:relative;flex-shrink:0}
+.tgl::after{content:'';position:absolute;width:10px;height:10px;background:#fff;border-radius:50%;top:2px;right:2px}
+.tgl.off{background:var(--color-border-secondary)}
+.tgl.off::after{right:auto;left:2px}
+.divl{height:0.5px;background:var(--color-border-tertiary)}
+.pt{font-size:9px;font-weight:500;color:var(--color-text-secondary);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em}
+.stat{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:6px 8px;text-align:center;flex:1}
+.stat .n{font-size:16px;font-weight:500}
+.stat .l{font-size:9px;color:var(--color-text-secondary)}
+.srow{display:flex;gap:5px}
+.gh{display:flex;align-items:center;gap:6px;padding:5px 8px;background:var(--color-background-secondary);border-radius:var(--border-radius-md)}
+.gi{width:20px;height:20px;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.gn{font-size:11px;font-weight:500;flex:1}
+.ar{display:flex;align-items:center;gap:6px;padding:4px 8px 4px 28px;font-size:11px}
+.ar.dim{opacity:.3}
+.at{font-size:13px;font-weight:500;min-width:36px}
+.mcard{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:8px 10px}
+.mt{font-size:11px;font-weight:500;display:flex;justify-content:space-between;margin-bottom:3px}
+.mb{font-size:10px;color:var(--color-text-secondary);line-height:1.4}
+.ai-box{background:#E6F1FB;border-radius:var(--border-radius-md);padding:5px 7px;margin-top:4px}
+.ai-lbl{font-size:9px;color:#185FA5;font-weight:500;margin-bottom:2px}
+.ai-txt{font-size:10px;color:#0C447C;line-height:1.4}
+.trow{display:flex;gap:3px;margin-top:4px}
+.tbtn{font-size:9px;padding:2px 7px;border-radius:10px;border:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);color:var(--color-text-secondary)}
+.tbtn.on{background:#185FA5;color:#fff;border-color:#185FA5}
+.alsugg{background:#FAEEDA;border-radius:var(--border-radius-md);padding:4px 7px;margin-top:4px;display:flex;align-items:center;gap:5px}
+.alsugg p{font-size:10px;color:#633806;flex:1}
+.alsugg .cb{font-size:9px;padding:1px 6px;background:#185FA5;color:#fff;border-radius:8px}
+.mloc{font-size:9px;color:var(--color-text-secondary);margin-top:3px;display:flex;align-items:center;gap:2px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cd{font-size:9px;color:var(--color-text-secondary);text-align:center;padding:2px 0}
+.cc{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:9px;border-radius:3px;color:var(--color-text-secondary);position:relative}
+.cc.today{background:#185FA5;color:#fff;font-weight:500}
+.cc.work{background:#E6F1FB;color:#0C447C}
+.cc.has::after{content:'';position:absolute;bottom:1px;width:3px;height:3px;border-radius:50%;background:#185FA5}
+.cc.off{opacity:.3}
+.dev{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:5px 8px;display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.devbar{width:3px;border-radius:0;align-self:stretch;flex-shrink:0}
+.later-item{display:flex;align-items:center;gap:7px;padding:6px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.li-icon{width:24px;height:24px;border-radius:var(--border-radius-md);background:#EEEDFE;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.li-t{font-size:11px;flex:1}
+.li-time{font-size:9px;color:var(--color-text-secondary)}
+.someday-card{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:6px 9px;margin-bottom:4px;display:flex;align-items:center;gap:7px}
+.sc-img{width:32px;height:32px;border-radius:var(--border-radius-md);background:var(--color-background-secondary);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.trash-item{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:7px 10px;margin-bottom:4px;display:flex;align-items:center;gap:7px}
+.ti-left{flex:1}
+.ti-t{font-size:11px;font-weight:500}
+.ti-s{font-size:9px;color:var(--color-text-secondary);margin-top:1px}
+.tab-row{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px}
+.tab{font-size:10px;padding:3px 9px;border-radius:20px;border:0.5px solid var(--color-border-secondary);color:var(--color-text-secondary)}
+.tab.on{background:#185FA5;color:#fff;border-color:#185FA5}
+.home-input{border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-lg);padding:9px 11px;font-size:11px;color:var(--color-text-secondary);background:var(--color-background-secondary);display:flex;align-items:center;gap:7px}
+.chip-row{display:flex;gap:4px;flex-wrap:wrap}
+.chip{font-size:9px;padding:2px 8px;border-radius:20px;border:0.5px solid var(--color-border-secondary);color:var(--color-text-secondary)}
+.chip.on{border-color:#185FA5;color:#185FA5;background:#E6F1FB}
+.recent-item{display:flex;align-items:center;gap:7px;padding:5px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.ri-icon{width:26px;height:26px;border-radius:var(--border-radius-md);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.modal-bg{background:rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center;flex:1;min-height:340px}
+.modal{background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-lg);width:300px}
+.mh{padding:11px 15px;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;align-items:center;justify-content:space-between}
+.mh-t{font-size:12px;font-weight:500}
+.mc{padding:14px 15px}
+.mf{padding:9px 15px;border-top:0.5px solid var(--color-border-tertiary);display:flex;justify-content:flex-end;gap:6px}
+.field{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:11px}
+.field-l{color:var(--color-text-secondary)}
+.days{display:flex;gap:3px;margin-top:7px}
+.day{font-size:9px;padding:3px 5px;border-radius:10px;border:0.5px solid var(--color-border-tertiary);color:var(--color-text-secondary)}
+.day.on{background:#185FA5;color:#fff;border-color:#185FA5}
+</style>
+
+<h2 class="sr-only">SmartNote 웹/설치형 화면설계서 v2 — 홈, 알람, 메모, 나중에 알려줘, 언젠가 리스트, 캘린더, 휴지통</h2>
+
+<div class="wrap">
+
+<!-- ① 홈 -->
+<div class="screen-label"><span class="num">①</span> 홈 — 자연어 입력 & 최근 기록</div>
+<div class="browser">
+  <div class="bar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="url">smartnote.app</div></div>
+  <div class="layout">
+    <div class="sb">
+      <div class="logo"><em>Smart</em>Note</div>
+      <div class="ns">메뉴</div>
+      <div class="ni on"><i class="ti ti-home" aria-hidden="true"></i>홈</div>
+      <div class="ni"><i class="ti ti-bell" aria-hidden="true"></i>알람<span class="cnt">12</span></div>
+      <div class="ni"><i class="ti ti-note" aria-hidden="true"></i>메모</div>
+      <div class="ni"><i class="ti ti-clock" aria-hidden="true"></i>나중에<span class="cnt">3</span></div>
+      <div class="ni"><i class="ti ti-star" aria-hidden="true"></i>언젠가</div>
+      <div class="ni"><i class="ti ti-calendar" aria-hidden="true"></i>캘린더</div>
+      <div class="ni"><i class="ti ti-trash" aria-hidden="true"></i>휴지통<span class="cnt">5</span></div>
+      <div class="ns" style="margin-top:auto">계정</div>
+      <div class="ni"><i class="ti ti-settings" aria-hidden="true"></i>설정</div>
+    </div>
+    <div class="main">
+      <div class="topbar"><span class="ttl">안녕하세요 👋</span><button class="btn btnpp">+ 기록하기</button></div>
+      <div class="content2">
+        <div class="lp">
+          <div class="home-input">
+            <i class="ti ti-edit" style="font-size:16px;color:#185FA5" aria-hidden="true"></i>
+            <span style="flex:1">생각나는 모든 것을 입력해 보세요…</span>
+            <i class="ti ti-microphone" style="font-size:14px;color:var(--color-text-secondary)" aria-hidden="true"></i>
+          </div>
+          <div class="chip-row">
+            <span class="chip on">일정</span><span class="chip">알람</span><span class="chip">할일</span><span class="chip">메모</span><span class="chip">나중에</span><span class="chip">언젠가</span>
+          </div>
+          <div class="divl"></div>
+          <div style="font-size:10px;font-weight:500;color:var(--color-text-secondary);margin-bottom:2px">최근 기록</div>
+          <div class="recent-item">
+            <div class="ri-icon" style="background:#E6F1FB"><i class="ti ti-calendar" style="font-size:13px;color:#185FA5" aria-hidden="true"></i></div>
+            <div style="flex:1"><div style="font-size:11px;font-weight:500">내일 9시 병원 예약</div><div style="font-size:9px;color:var(--color-text-secondary)">오전 10:30 · 일정 + 알람 생성됨</div></div>
+            <span class="badge bb">일정</span>
+          </div>
+          <div class="recent-item">
+            <div class="ri-icon" style="background:#FAEEDA"><i class="ti ti-briefcase" style="font-size:13px;color:#854F0B" aria-hidden="true"></i></div>
+            <div style="flex:1"><div style="font-size:11px;font-weight:500">회사 프로젝트 회의 준비</div><div style="font-size:9px;color:var(--color-text-secondary)">오전 9:15 · 할일로 분류됨</div></div>
+            <span class="badge ba">할일</span>
+          </div>
+          <div class="recent-item" style="border:none">
+            <div class="ri-icon" style="background:#EEEDFE"><i class="ti ti-clock" style="font-size:13px;color:#534AB7" aria-hidden="true"></i></div>
+            <div style="flex:1"><div style="font-size:11px;font-weight:500">엄마 생신 선물 사기</div><div style="font-size:9px;color:var(--color-text-secondary)">어제 오후 8:45 · 나중에 알려줘</div></div>
+            <span class="badge bv">나중에</span>
+          </div>
+        </div>
+        <div class="rp">
+          <div class="pt">오늘 요약</div>
+          <div class="srow"><div class="stat"><div class="n">3</div><div class="l">일정</div></div><div class="stat"><div class="n">5</div><div class="l">알람</div></div></div>
+          <div class="srow"><div class="stat"><div class="n">3</div><div class="l">나중에</div></div><div class="stat"><div class="n">2</div><div class="l">할일</div></div></div>
+          <div class="divl"></div>
+          <div class="pt">다음 알람</div>
+          <div style="font-size:11px;font-weight:500">오전 09:00 팀 스탠드업</div>
+          <div style="font-size:9px;color:var(--color-text-secondary)">직장 그룹 · 12분 후</div>
+          <div class="divl"></div>
+          <div class="pt">AI 제안</div>
+          <div style="background:#E6F1FB;border-radius:var(--border-radius-md);padding:6px 8px">
+            <div style="font-size:10px;font-weight:500;color:#185FA5;margin-bottom:2px">병원 예약 알람 추가</div>
+            <div style="font-size:9px;color:#0C447C">내일 08:30 — 출발 30분 전</div>
+            <div style="display:flex;gap:4px;margin-top:4px"><span style="font-size:9px;padding:2px 6px;background:#185FA5;color:#fff;border-radius:8px">추가</span><span style="font-size:9px;padding:2px 6px;border:0.5px solid var(--color-border-secondary);color:var(--color-text-secondary);border-radius:8px">무시</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ② 알람 그룹 목록 -->
+<div class="screen-label"><span class="num">②</span> 알람 — 그룹 목록</div>
+<div class="browser">
+  <div class="bar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="url">smartnote.app/alarm</div></div>
+  <div class="layout">
+    <div class="sb">
+      <div class="logo"><em>Smart</em>Note</div>
+      <div class="ns">메뉴</div>
+      <div class="ni"><i class="ti ti-home" aria-hidden="true"></i>홈</div>
+      <div class="ni on"><i class="ti ti-bell" aria-hidden="true"></i>알람<span class="cnt">12</span></div>
+      <div class="ni"><i class="ti ti-note" aria-hidden="true"></i>메모</div>
+      <div class="ni"><i class="ti ti-clock" aria-hidden="true"></i>나중에</div>
+      <div class="ni"><i class="ti ti-star" aria-hidden="true"></i>언젠가</div>
+      <div class="ni"><i class="ti ti-calendar" aria-hidden="true"></i>캘린더</div>
+      <div class="ni"><i class="ti ti-trash" aria-hidden="true"></i>휴지통</div>
+    </div>
+    <div class="main">
+      <div class="topbar"><span class="ttl">알람</span><button class="btn btnp">+ 그룹 추가</button><button class="btn btnpp">+ 알람 추가</button></div>
+      <div class="content2">
+        <div class="lp">
+          <div style="background:#E6F1FB;border-radius:var(--border-radius-md);padding:6px 10px;display:flex;align-items:center;gap:7px;font-size:11px;color:#0C447C">
+            <i class="ti ti-bolt" style="font-size:14px;color:#185FA5" aria-hidden="true"></i>
+            <span>"30분 후", "내일 오전 9시 기상" — 빠른 알람 입력</span>
+          </div>
+          <div class="gh"><div class="gi" style="background:#E6F1FB"><i class="ti ti-briefcase" style="font-size:11px;color:#185FA5" aria-hidden="true"></i></div><span class="gn">직장</span><span class="badge bb">5개</span><div class="tgl"></div></div>
+          <div class="ar"><span class="at">07:30</span><span style="flex:1">기상</span><span class="badge bb">월~금</span><div class="tgl" style="width:18px;height:11px"></div></div>
+          <div class="ar"><span class="at">09:00</span><span style="flex:1">팀 스탠드업</span><span class="badge bb">월~금</span><div class="tgl" style="width:18px;height:11px"></div></div>
+          <div class="gh" style="margin-top:3px"><div class="gi" style="background:#FAEEDA"><i class="ti ti-home" style="font-size:11px;color:#854F0B" aria-hidden="true"></i></div><span class="gn">일상</span><span class="badge ba">2개</span><div class="tgl"></div></div>
+          <div class="ar"><span class="at">22:30</span><span style="flex:1">취침 알림</span><span class="badge ba">매일</span><div class="tgl" style="width:18px;height:11px"></div></div>
+          <div class="gh" style="margin-top:3px;opacity:.4"><div class="gi" style="background:#F1EFE8"><i class="ti ti-dots" style="font-size:11px;color:#444441" aria-hidden="true"></i></div><span class="gn">기타</span><span class="badge bg">1개</span><div class="tgl off"></div></div>
+          <div class="ar dim"><span class="at" style="color:var(--color-text-secondary)">14:00</span><span style="flex:1;color:var(--color-text-secondary)">약 복용</span><span class="badge bg">OFF</span></div>
+        </div>
+        <div class="rp">
+          <div class="pt">오늘의 알람</div>
+          <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:7px 9px">
+            <div style="font-size:9px;color:var(--color-text-secondary);margin-bottom:3px">다음 알람</div>
+            <div style="font-size:16px;font-weight:500">09:00</div>
+            <div style="font-size:9px;color:var(--color-text-secondary)">직장 · 팀 스탠드업</div>
+          </div>
+          <div class="divl"></div>
+          <div class="pt">그룹 현황</div>
+          <div style="font-size:10px;display:flex;justify-content:space-between;padding:3px 0;border-bottom:0.5px solid var(--color-border-tertiary)"><span>직장</span><span style="color:#185FA5">ON · 5개</span></div>
+          <div style="font-size:10px;display:flex;justify-content:space-between;padding:3px 0;border-bottom:0.5px solid var(--color-border-tertiary)"><span>일상</span><span style="color:#185FA5">ON · 2개</span></div>
+          <div style="font-size:10px;display:flex;justify-content:space-between;padding:3px 0"><span>기타</span><span style="color:var(--color-text-secondary)">OFF · 1개</span></div>
+          <div class="divl"></div>
+          <div class="pt">휴일 자동 OFF</div>
+          <div style="font-size:9px;color:var(--color-text-secondary)">내일 (토) 자정에 직장 그룹 자동 비활성화 예정</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ③ 알람 생성 모달 -->
+<div class="screen-label"><span class="num">③</span> 알람 — 생성 모달</div>
+<div class="browser">
+  <div class="bar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="url">smartnote.app/alarm</div></div>
+  <div class="layout">
+    <div class="sb">
+      <div class="logo"><em>Smart</em>Note</div>
+      <div class="ns">메뉴</div>
+      <div class="ni"><i class="ti ti-home" aria-hidden="true"></i>홈</div>
+      <div class="ni on"><i class="ti ti-bell" aria-hidden="true"></i>알람</div>
+      <div class="ni"><i class="ti ti-note" aria-hidden="true"></i>메모</div>
+      <div class="ni"><i class="ti ti-clock" aria-hidden="true"></i>나중에</div>
+      <div class="ni"><i class="ti ti-star" aria-hidden="true"></i>언젠가</div>
+      <div class="ni"><i class="ti ti-calendar" aria-hidden="true"></i>캘린더</div>
+      <div class="ni"><i class="ti ti-trash" aria-hidden="true"></i>휴지통</div>
+    </div>
+    <div class="main" style="position:relative">
+      <div class="topbar"><span class="ttl">알람</span><button class="btn btnp">+ 그룹 추가</button><button class="btn btnpp">+ 알람 추가</button></div>
+      <div class="modal-bg">
+        <div class="modal">
+          <div class="mh"><span class="mh-t">새 알람</span><i class="ti ti-x" style="font-size:14px;color:var(--color-text-secondary)" aria-hidden="true"></i></div>
+          <div class="mc">
+            <div style="text-align:center;padding:10px 0 8px">
+              <div style="font-size:42px;font-weight:400;letter-spacing:-1px">08:30</div>
+              <div style="font-size:10px;color:var(--color-text-secondary);margin-top:2px">시간을 클릭하여 수정</div>
+            </div>
+            <div class="field"><span class="field-l">라벨</span><span style="font-size:10px;color:var(--color-text-secondary)">알람 이름 입력</span></div>
+            <div class="field"><span class="field-l">그룹</span><span class="badge bb">직장 <i class="ti ti-chevron-down" style="font-size:9px" aria-hidden="true"></i></span></div>
+            <div class="field" style="flex-direction:column;align-items:flex-start;gap:5px">
+              <span class="field-l">반복</span>
+              <div class="days"><span class="day">일</span><span class="day on">월</span><span class="day on">화</span><span class="day on">수</span><span class="day on">목</span><span class="day on">금</span><span class="day">토</span></div>
+            </div>
+            <div class="field"><span class="field-l">소리</span><span style="font-size:10px">기본음 (마지막 사용)</span></div>
+            <div class="field" style="border:none"><span class="field-l">진동</span><div class="tgl"></div></div>
+          </div>
+          <div class="mf"><button class="btn">취소</button><button class="btn btnpp">저장</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ④ 메모 목록 -->
+<div class="screen-label"><span class="num">④</span> 메모 — 목록</div>
+<div class="browser">
+  <div class="bar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="url">smartnote.app/memo</div></div>
+  <div class="layout">
+    <div class="sb">
+      <div class="logo"><em>Smart</em>Note</div>
+      <div class="ns">메뉴</div>
+      <div class="ni"><i class="ti ti-home" aria-hidden="true"></i>홈</div>
+      <div class="ni"><i class="ti ti-bell" aria-hidden="true"></i>알람</div>
+      <div class="ni on"><i class="ti ti-note" aria-hidden="true"></i>메모</div>
+      <div class="ni"><i class="ti ti-clock" aria-hidden="true"></i>나중에</div>
+      <div class="ni"><i class="ti ti-star" aria-hidden="true"></i>언젠가</div>
+      <div class="ni"><i class="ti ti-calendar" aria-hidden="true"></i>캘린더</div>
+      <div class="ni"><i class="ti ti-trash" aria-hidden="true"></i>휴지통</div>
+    </div>
+    <div class="main">
+      <div class="topbar"><span class="ttl">메모</span><input style="flex:1;max-width:180px;font-size:11px;padding:3px 9px;border:0.5px solid var(--color-border-secondary);border-radius:20px;background:var(--color-background-secondary);color:var(--color-text-primary)" placeholder="메모 검색…"><button class="btn btnpp">+ 새 메모</button></div>
+      <div class="content2">
+        <div class="lp">
+          <div class="mcard">
+            <div class="mt">치과 예약 확인<span style="font-size:9px;font-weight:400;color:var(--color-text-secondary)">방금 전</span></div>
+            <div class="mb">내일 9시 치과 예약 확인 영수증 챙기기</div>
+            <div class="alsugg"><i class="ti ti-bell" style="font-size:11px;color:#854F0B" aria-hidden="true"></i><p>내일 08:30 알람 추가할까요?</p><span class="cb">추가</span></div>
+            <div class="mloc"><i class="ti ti-map-pin" style="font-size:9px" aria-hidden="true"></i>강남역 근처 · 09:30</div>
+          </div>
+          <div class="mcard">
+            <div class="mt">급메모<span style="font-size:9px;font-weight:400;color:var(--color-text-secondary)">어제</span></div>
+            <div class="trow"><span class="tbtn">원문</span><span class="tbtn on">AI 정리</span><span style="margin-left:auto;font-size:9px;color:var(--color-text-secondary);display:flex;align-items:center;gap:2px"><i class="ti ti-refresh" style="font-size:10px" aria-hidden="true"></i>재분석</span></div>
+            <div class="ai-box"><div class="ai-lbl"><i class="ti ti-sparkles" style="font-size:9px" aria-hidden="true"></i> AI 정리</div><div class="ai-txt">내일 오전 10시 허리 진통제 구매<br>환경변수 확인 · 점심 삼겹살</div></div>
+            <div class="mloc"><i class="ti ti-map-pin" style="font-size:9px" aria-hidden="true"></i>집 근처 · 23:15</div>
+          </div>
+          <div class="mcard">
+            <div class="mt">장보기 목록<span style="font-size:9px;font-weight:400;color:var(--color-text-secondary)">3일 전</span></div>
+            <div class="mb">계란 우유 두부 상추 삼겹살 참기름</div>
+            <div class="trow"><span class="tbtn on">원문</span><span class="tbtn">AI 정리</span></div>
+            <div class="mloc"><i class="ti ti-map-pin" style="font-size:9px" aria-hidden="true"></i>마트 근처 · 18:42</div>
+          </div>
+        </div>
+        <div class="rp">
+          <div class="pt">메모 통계</div>
+          <div class="srow"><div class="stat"><div class="n">14</div><div class="l">전체</div></div><div class="stat"><div class="n">9</div><div class="l">AI 완료</div></div></div>
+          <div class="divl"></div>
+          <div class="pt">위치 태그</div>
+          <div style="font-size:10px;color:var(--color-text-secondary);line-height:1.9">
+            사무실 근처 3개<br>강남역 근처 2개<br>집 근처 9개
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ⑤ 나중에 알려줘 -->
+<div class="screen-label"><span class="num">⑤</span> 나중에 알려줘</div>
+<div class="browser">
+  <div class="bar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="url">smartnote.app/later</div></div>
+  <div class="layout">
+    <div class="sb">
+      <div class="logo"><em>Smart</em>Note</div>
+      <div class="ns">메뉴</div>
+      <div class="ni"><i class="ti ti-home" aria-hidden="true"></i>홈</div>
+      <div class="ni"><i class="ti ti-bell" aria-hidden="true"></i>알람</div>
+      <div class="ni"><i class="ti ti-note" aria-hidden="true"></i>메모</div>
+      <div class="ni on"><i class="ti ti-clock" aria-hidden="true"></i>나중에<span class="cnt">3</span></div>
+      <div class="ni"><i class="ti ti-star" aria-hidden="true"></i>언젠가</div>
+      <div class="ni"><i class="ti ti-calendar" aria-hidden="true"></i>캘린더</div>
+      <div class="ni"><i class="ti ti-trash" aria-hidden="true"></i>휴지통</div>
+    </div>
+    <div class="main">
+      <div class="topbar"><span class="ttl">나중에 알려줘</span><button class="btn btnp" style="font-size:10px">예정된 알림</button><button class="btn">완료</button></div>
+      <div class="content2">
+        <div class="lp">
+          <div style="font-size:10px;color:var(--color-text-secondary);margin-bottom:2px">예정된 알림 3개</div>
+          <div class="later-item">
+            <div class="li-icon"><i class="ti ti-stethoscope" style="font-size:12px;color:#534AB7" aria-hidden="true"></i></div>
+            <div style="flex:1"><div class="li-t" style="font-weight:500">치과 예약하기</div><div class="li-time">내일 오전 10:00</div></div>
+            <i class="ti ti-bell" style="font-size:14px;color:var(--color-text-secondary)" aria-hidden="true"></i>
+            <i class="ti ti-pencil" style="font-size:13px;color:var(--color-text-secondary)" aria-hidden="true"></i>
+          </div>
+          <div class="later-item">
+            <div class="li-icon"><i class="ti ti-device-ipad" style="font-size:12px;color:#534AB7" aria-hidden="true"></i></div>
+            <div style="flex:1"><div class="li-t" style="font-weight:500">아이패드 알아보기</div><div class="li-time">이번 주 일요일 오후 7:00</div></div>
+            <i class="ti ti-bell" style="font-size:14px;color:var(--color-text-secondary)" aria-hidden="true"></i>
+            <i class="ti ti-pencil" style="font-size:13px;color:var(--color-text-secondary)" aria-hidden="true"></i>
+          </div>
+          <div class="later-item" style="border:none">
+            <div class="li-icon"><i class="ti ti-plane" style="font-size:12px;color:#534AB7" aria-hidden="true"></i></div>
+            <div style="flex:1"><div class="li-t" style="font-weight:500">여행 계획 세우기</div><div class="li-time">다음 주 월요일 오전 9:00</div></div>
+            <i class="ti ti-bell" style="font-size:14px;color:var(--color-text-secondary)" aria-hidden="true"></i>
+            <i class="ti ti-pencil" style="font-size:13px;color:var(--color-text-secondary)" aria-hidden="true"></i>
+          </div>
+        </div>
+        <div class="rp">
+          <div class="pt">알림 시간 설정</div>
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <div style="font-size:10px;padding:5px 8px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);color:var(--color-text-secondary)">오늘 저녁</div>
+            <div style="font-size:10px;padding:5px 8px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);color:var(--color-text-secondary)">이번 주말</div>
+            <div style="font-size:10px;padding:5px 8px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);color:var(--color-text-secondary)">다음 주</div>
+            <div style="font-size:10px;padding:5px 8px;border:0.5px solid #185FA5;border-radius:var(--border-radius-md);color:#185FA5;background:#E6F1FB">직접 설정</div>
+          </div>
+          <div class="divl"></div>
+          <div class="pt">AI 제안</div>
+          <div style="background:#EEEDFE;border-radius:var(--border-radius-md);padding:7px 8px">
+            <div style="font-size:10px;font-weight:500;color:#3C3489;margin-bottom:2px">치과 예약</div>
+            <div style="font-size:9px;color:#534AB7">보통 오전에 여유가 있으신 것 같아요. 내일 오전 10시 어떠세요?</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ⑥ 언젠가 리스트 -->
+<div class="screen-label"><span class="num">⑥</span> 언젠가 리스트</div>
+<div class="browser">
+  <div class="bar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="url">smartnote.app/someday</div></div>
+  <div class="layout">
+    <div class="sb">
+      <div class="logo"><em>Smart</em>Note</div>
+      <div class="ns">메뉴</div>
+      <div class="ni"><i class="ti ti-home" aria-hidden="true"></i>홈</div>
+      <div class="ni"><i class="ti ti-bell" aria-hidden="true"></i>알람</div>
+      <div class="ni"><i class="ti ti-note" aria-hidden="true"></i>메모</div>
+      <div class="ni"><i class="ti ti-clock" aria-hidden="true"></i>나중에</div>
+      <div class="ni on"><i class="ti ti-star" aria-hidden="true"></i>언젠가</div>
+      <div class="ni"><i class="ti ti-calendar" aria-hidden="true"></i>캘린더</div>
+      <div class="ni"><i class="ti ti-trash" aria-hidden="true"></i>휴지통</div>
+    </div>
+    <div class="main">
+      <div class="topbar"><span class="ttl">언젠가 리스트</span><button class="btn btnpp">+ 추가</button></div>
+      <div class="content2">
+        <div class="lp">
+          <div class="tab-row">
+            <span class="tab on">전체</span><span class="tab">여행</span><span class="tab">배움</span><span class="tab">구매</span><span class="tab">기타</span>
+          </div>
+          <div class="someday-card">
+            <div class="sc-img"><i class="ti ti-map" style="font-size:15px;color:#185FA5" aria-hidden="true"></i></div>
+            <div style="flex:1"><div style="font-size:11px;font-weight:500">아이슬란드 여행 가기</div><div style="font-size:9px;color:var(--color-text-secondary)">여행</div></div>
+            <i class="ti ti-star-filled" style="font-size:13px;color:#EF9F27" aria-hidden="true"></i>
+          </div>
+          <div class="someday-card">
+            <div class="sc-img"><i class="ti ti-guitar-pick" style="font-size:15px;color:#854F0B" aria-hidden="true"></i></div>
+            <div style="flex:1"><div style="font-size:11px;font-weight:500">기타 배우기</div><div style="font-size:9px;color:var(--color-text-secondary)">배움</div></div>
+            <i class="ti ti-star" style="font-size:13px;color:var(--color-text-secondary)" aria-hidden="true"></i>
+          </div>
+          <div class="someday-card">
+            <div class="sc-img"><i class="ti ti-camera" style="font-size:15px;color:#534AB7" aria-hidden="true"></i></div>
+            <div style="flex:1"><div style="font-size:11px;font-weight:500">카메라 구매하기</div><div style="font-size:9px;color:var(--color-text-secondary)">구매</div></div>
+            <i class="ti ti-star" style="font-size:13px;color:var(--color-text-secondary)" aria-hidden="true"></i>
+          </div>
+        </div>
+        <div class="rp">
+          <div class="pt">카테고리 현황</div>
+          <div style="font-size:10px;display:flex;justify-content:space-between;padding:3px 0;border-bottom:0.5px solid var(--color-border-tertiary)"><span>여행</span><span style="color:var(--color-text-secondary)">4개</span></div>
+          <div style="font-size:10px;display:flex;justify-content:space-between;padding:3px 0;border-bottom:0.5px solid var(--color-border-tertiary)"><span>배움</span><span style="color:var(--color-text-secondary)">3개</span></div>
+          <div style="font-size:10px;display:flex;justify-content:space-between;padding:3px 0;border-bottom:0.5px solid var(--color-border-tertiary)"><span>구매</span><span style="color:var(--color-text-secondary)">5개</span></div>
+          <div style="font-size:10px;display:flex;justify-content:space-between;padding:3px 0"><span>기타</span><span style="color:var(--color-text-secondary)">2개</span></div>
+          <div class="divl"></div>
+          <div class="pt">AI 분류 제안</div>
+          <div style="background:#EEEDFE;border-radius:var(--border-radius-md);padding:7px 8px">
+            <div style="font-size:10px;font-weight:500;color:#3C3489;margin-bottom:2px">새 항목 감지</div>
+            <div style="font-size:9px;color:#534AB7">"읽고 싶은 책" → 배움으로 분류할까요?</div>
+            <div style="display:flex;gap:3px;margin-top:4px"><span style="font-size:9px;padding:2px 6px;background:#185FA5;color:#fff;border-radius:8px">확인</span><span style="font-size:9px;padding:2px 6px;border:0.5px solid var(--color-border-secondary);color:var(--color-text-secondary);border-radius:8px">변경</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ⑦ 캘린더 -->
+<div class="screen-label"><span class="num">⑦</span> 캘린더</div>
+<div class="browser">
+  <div class="bar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="url">smartnote.app/calendar</div></div>
+  <div class="layout">
+    <div class="sb">
+      <div class="logo"><em>Smart</em>Note</div>
+      <div class="ns">메뉴</div>
+      <div class="ni"><i class="ti ti-home" aria-hidden="true"></i>홈</div>
+      <div class="ni"><i class="ti ti-bell" aria-hidden="true"></i>알람</div>
+      <div class="ni"><i class="ti ti-note" aria-hidden="true"></i>메모</div>
+      <div class="ni"><i class="ti ti-clock" aria-hidden="true"></i>나중에</div>
+      <div class="ni"><i class="ti ti-star" aria-hidden="true"></i>언젠가</div>
+      <div class="ni on"><i class="ti ti-calendar" aria-hidden="true"></i>캘린더</div>
+      <div class="ni"><i class="ti ti-trash" aria-hidden="true"></i>휴지통</div>
+    </div>
+    <div class="main">
+      <div class="topbar"><span class="ttl">캘린더</span><div style="display:flex;align-items:center;gap:5px"><i class="ti ti-chevron-left" style="font-size:15px;color:var(--color-text-secondary);cursor:pointer" aria-hidden="true"></i><span style="font-size:12px;font-weight:500">2026년 5월</span><i class="ti ti-chevron-right" style="font-size:15px;color:var(--color-text-secondary);cursor:pointer" aria-hidden="true"></i></div></div>
+      <div class="content2">
+        <div class="lp" style="gap:5px">
+          <div class="cal-grid">
+            <div class="cd">일</div><div class="cd">월</div><div class="cd">화</div><div class="cd">수</div><div class="cd">목</div><div class="cd">금</div><div class="cd">토</div>
+            <div class="cc off"></div><div class="cc off"></div><div class="cc off"></div><div class="cc off"></div><div class="cc">1</div><div class="cc work has">2</div><div class="cc off">3</div>
+            <div class="cc off">4</div><div class="cc work">5</div><div class="cc work has">6</div><div class="cc work">7</div><div class="cc work">8</div><div class="cc work has">9</div><div class="cc off">10</div>
+            <div class="cc off">11</div><div class="cc work">12</div><div class="cc work">13</div><div class="cc work has">14</div><div class="cc work">15</div><div class="cc work">16</div><div class="cc off">17</div>
+            <div class="cc off">18</div><div class="cc work">19</div><div class="cc work">20</div><div class="cc work">21</div><div class="cc work">22</div><div class="cc work">23</div><div class="cc off">24</div>
+            <div class="cc off">25</div><div class="cc work">26</div><div class="cc today has">27</div><div class="cc work">28</div><div class="cc work">29</div><div class="cc work has">30</div><div class="cc off">31</div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <div style="display:flex;align-items:center;gap:3px;font-size:9px;color:var(--color-text-secondary)"><div style="width:9px;height:9px;border-radius:2px;background:#E6F1FB;border:0.5px solid #B5D4F4"></div>출근일</div>
+            <div style="display:flex;align-items:center;gap:3px;font-size:9px;color:var(--color-text-secondary)"><div style="width:9px;height:9px;border-radius:50%;background:#185FA5"></div>오늘</div>
+            <div style="display:flex;align-items:center;gap:3px;font-size:9px;color:var(--color-text-secondary)"><div style="width:6px;height:6px;border-radius:50%;background:#185FA5"></div>일정 있음</div>
+          </div>
+          <div class="divl"></div>
+          <div style="font-size:10px;font-weight:500;margin-bottom:2px">5월 27일 일정</div>
+          <div class="dev"><div class="devbar" style="background:#185FA5;min-height:28px"></div><div><div style="font-size:11px;font-weight:500">팀 미팅</div><div style="font-size:9px;color:var(--color-text-secondary)">오전 09:00 · 직장</div></div></div>
+          <div class="dev"><div class="devbar" style="background:#534AB7;min-height:28px"></div><div><div style="font-size:11px;font-weight:500">병원 예약</div><div style="font-size:9px;color:var(--color-text-secondary)">오전 11:00 · 개인</div></div></div>
+        </div>
+        <div class="rp">
+          <div class="pt">출근일 설정</div>
+          <div style="font-size:10px;color:var(--color-text-secondary);margin-bottom:5px">이번 주</div>
+          <div style="display:flex;gap:3px">
+            <div style="font-size:9px;padding:3px 5px;border-radius:3px;background:#E6F1FB;color:#0C447C">월</div>
+            <div style="font-size:9px;padding:3px 5px;border-radius:3px;background:#E6F1FB;color:#0C447C">화</div>
+            <div style="font-size:9px;padding:3px 5px;border-radius:3px;background:#E6F1FB;color:#0C447C">수</div>
+            <div style="font-size:9px;padding:3px 5px;border-radius:3px;background:#E6F1FB;color:#0C447C">목</div>
+            <div style="font-size:9px;padding:3px 5px;border-radius:3px;background:#E6F1FB;color:#0C447C">금</div>
+            <div style="font-size:9px;padding:3px 5px;border-radius:3px;background:var(--color-background-secondary);color:var(--color-text-secondary)">토</div>
+            <div style="font-size:9px;padding:3px 5px;border-radius:3px;background:var(--color-background-secondary);color:var(--color-text-secondary)">일</div>
+          </div>
+          <div class="divl"></div>
+          <div class="pt">이번 주 요약</div>
+          <div class="srow"><div class="stat"><div class="n">8</div><div class="l">일정</div></div><div class="stat"><div class="n">3</div><div class="l">완료</div></div></div>
+          <div class="divl"></div>
+          <div class="pt">AI 연동</div>
+          <div style="background:#E6F1FB;border-radius:var(--border-radius-md);padding:6px 8px">
+            <div style="font-size:10px;font-weight:500;color:#185FA5;margin-bottom:2px">메모에서 감지됨</div>
+            <div style="font-size:9px;color:#0C447C">기획안 초안 → 화요일 일정 추가됨</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ⑧ 휴지통 -->
+<div class="screen-label"><span class="num">⑧</span> 휴지통 — 30일 보관</div>
+<div class="browser">
+  <div class="bar"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="url">smartnote.app/trash</div></div>
+  <div class="layout">
+    <div class="sb">
+      <div class="logo"><em>Smart</em>Note</div>
+      <div class="ns">메뉴</div>
+      <div class="ni"><i class="ti ti-home" aria-hidden="true"></i>홈</div>
+      <div class="ni"><i class="ti ti-bell" aria-hidden="true"></i>알람</div>
+      <div class="ni"><i class="ti ti-note" aria-hidden="true"></i>메모</div>
+      <div class="ni"><i class="ti ti-clock" aria-hidden="true"></i>나중에</div>
+      <div class="ni"><i class="ti ti-star" aria-hidden="true"></i>언젠가</div>
+      <div class="ni"><i class="ti ti-calendar" aria-hidden="true"></i>캘린더</div>
+      <div class="ni on"><i class="ti ti-trash" aria-hidden="true"></i>휴지통<span class="cnt">5</span></div>
+    </div>
+    <div class="main">
+      <div class="topbar"><span class="ttl">휴지통</span><button class="btn" style="color:#A32D2D;border-color:#A32D2D">전체 영구 삭제</button></div>
+      <div class="content2">
+        <div class="lp">
+          <div style="background:#FAEEDA;border-radius:var(--border-radius-md);padding:6px 10px;font-size:10px;color:#633806">
+            <i class="ti ti-info-circle" style="font-size:12px;margin-right:4px" aria-hidden="true"></i>30일 후 자동으로 영구 삭제됩니다.
+          </div>
+          <div class="tab-row">
+            <span class="tab on">전체</span><span class="tab">메모</span><span class="tab">알람</span><span class="tab">나중에</span><span class="tab">언젠가</span>
+          </div>
+          <div class="trash-item">
+            <div style="width:28px;height:28px;border-radius:var(--border-radius-md);background:#E6F1FB;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-note" style="font-size:13px;color:#185FA5" aria-hidden="true"></i></div>
+            <div class="ti-left">
+              <div class="ti-t">치과 예약 메모</div>
+              <div class="ti-s"><span class="badge bg">메모</span> · 28일 후 삭제</div>
+            </div>
+            <button class="btn btnp" style="font-size:9px;padding:2px 7px">복원</button>
+            <button class="btn" style="font-size:9px;padding:2px 7px;color:#A32D2D;border-color:#A32D2D">삭제</button>
+          </div>
+          <div class="trash-item">
+            <div style="width:28px;height:28px;border-radius:var(--border-radius-md);background:#FAEEDA;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-bell" style="font-size:13px;color:#854F0B" aria-hidden="true"></i></div>
+            <div class="ti-left">
+              <div class="ti-t">오전 6시 운동 알람</div>
+              <div class="ti-s"><span class="badge ba">알람</span> · 15일 후 삭제</div>
+            </div>
+            <button class="btn btnp" style="font-size:9px;padding:2px 7px">복원</button>
+            <button class="btn" style="font-size:9px;padding:2px 7px;color:#A32D2D;border-color:#A32D2D">삭제</button>
+          </div>
+          <div class="trash-item">
+            <div style="width:28px;height:28px;border-radius:var(--border-radius-md);background:#EEEDFE;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-clock" style="font-size:13px;color:#534AB7" aria-hidden="true"></i></div>
+            <div class="ti-left">
+              <div class="ti-t">아이패드 알아보기</div>
+              <div class="ti-s"><span class="badge bv">나중에</span> · 3일 후 삭제</div>
+            </div>
+            <button class="btn btnp" style="font-size:9px;padding:2px 7px">복원</button>
+            <button class="btn" style="font-size:9px;padding:2px 7px;color:#A32D2D;border-color:#A32D2D">삭제</button>
+          </div>
+        </div>
+        <div class="rp">
+          <div class="pt">보관 현황</div>
+          <div class="srow"><div class="stat"><div class="n" style="color:#185FA5">5</div><div class="l">총 항목</div></div><div class="stat"><div class="n" style="color:#A32D2D">1</div><div class="l">3일 내 삭제</div></div></div>
+          <div class="divl"></div>
+          <div class="pt">종류별</div>
+          <div style="font-size:10px;display:flex;justify-content:space-between;padding:3px 0;border-bottom:0.5px solid var(--color-border-tertiary)"><span>메모</span><span style="color:var(--color-text-secondary)">2개</span></div>
+          <div style="font-size:10px;display:flex;justify-content:space-between;padding:3px 0;border-bottom:0.5px solid var(--color-border-tertiary)"><span>알람</span><span style="color:var(--color-text-secondary)">1개</span></div>
+          <div style="font-size:10px;display:flex;justify-content:space-between;padding:3px 0;border-bottom:0.5px solid var(--color-border-tertiary)"><span>나중에</span><span style="color:var(--color-text-secondary)">1개</span></div>
+          <div style="font-size:10px;display:flex;justify-content:space-between;padding:3px 0"><span>언젠가</span><span style="color:var(--color-text-secondary)">1개</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>

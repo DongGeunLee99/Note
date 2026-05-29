@@ -1,0 +1,279 @@
+flowchart TD
+
+  subgraph SA["Flow A: 앱 진입 & 인증"]
+    A0(["앱 접속 - 웹 / Electron / 모바일"])
+    A1{"Firebase Auth 세션?"}
+    A2["로그인 화면"]
+    A3["카카오 로그인 버튼"]
+    A4["카카오 SDK - 액세스 토큰 수신"]
+    A5["Cloud Functions 전달"]
+    A6["카카오 API 사용자 확인"]
+    A7["Firebase 커스텀 토큰 발급"]
+    A8["signInWithCustomToken 실행"]
+    A9{"신규 사용자?"}
+    A10["users 문서 생성 - 기타 그룹 자동 생성"]
+    A11["기기 등록 - devices 문서 생성"]
+    A12(["홈 화면"])
+
+    A0 --> A1
+    A1 -->|인증됨| A11
+    A1 -->|미인증| A2 --> A3 --> A4 --> A5 --> A6 --> A7 --> A8 --> A9
+    A9 -->|신규| A10 --> A11
+    A9 -->|기존| A11
+    A11 --> A12
+  end
+
+  subgraph SB["Flow B: 기기 활성 상태 감지"]
+    B0(["앱 실행 중"])
+    B1["Firestore devices 실시간 업데이트"]
+    B2{"플랫폼 구분"}
+    B3["visibilityState 감지"]
+    B4{"탭 활성?"}
+    B5["isActive = true"]
+    B6["isActive = false"]
+    B7["마우스 키보드 감지 - lastActiveAt 갱신"]
+    B8["5분 무활동 - isActive = false"]
+    B9["Electron 윈도우 포커스 감지"]
+    B10["모바일 AppState 감지"]
+    B11(["Firestore 반영 완료"])
+
+    B0 --> B1 --> B2
+    B2 -->|웹| B3 --> B4
+    B2 -->|Electron| B9
+    B2 -->|모바일| B10
+    B4 -->|visible| B5 --> B7 --> B8
+    B4 -->|hidden| B6
+    B5 --> B11
+    B6 --> B11
+    B8 --> B11
+    B9 --> B11
+    B10 --> B11
+  end
+
+  subgraph SC["Flow C: 알람 발생 & 기기 라우팅"]
+    C0(["Cloud Scheduler - 매분 실행"])
+    C1["울릴 알람 조회 - Firestore alarms"]
+    C2{"알람 존재?"}
+    C3{"그룹 isEnabled?"}
+    C4["알람 스킵"]
+    C5["활성 기기 조회 - devices"]
+    C6{"웹 탭 활성?"}
+    C7["Firestore 리스너 트리거 - 웹 소리 + 모달"]
+    C8{"Electron 실행?"}
+    C9["FCM 푸시 - Electron OS 알림"]
+    C10{"모바일 활성?"}
+    C11["FCM 푸시 - 모바일 알림"]
+    C12["모든 기기 FCM 푸시"]
+    C13(["알람 완료"])
+
+    C0 --> C1 --> C2
+    C2 -->|없음| C13
+    C2 -->|있음| C3
+    C3 -->|OFF| C4 --> C13
+    C3 -->|ON| C5 --> C6
+    C6 -->|활성| C7 --> C13
+    C6 -->|비활성| C8
+    C8 -->|실행 중| C9 --> C13
+    C8 -->|미실행| C10
+    C10 -->|활성| C11 --> C13
+    C10 -->|비활성| C12 --> C13
+  end
+
+  subgraph SD["Flow D: 홈 자연어 입력 & Llama 분류"]
+    D0(["홈 화면"])
+    D1["자연어 입력 - 예: 내일 9시 병원"]
+    D2["Llama API 분류 요청"]
+    D3{"분류 결과"}
+    D4["일정 + 알람 생성 제안"]
+    D5["할일 등록"]
+    D6["나중에 알려줘 등록"]
+    D7["언젠가 리스트 등록"]
+    D8["메모 저장"]
+    D9{"사용자 확인"}
+    D10["Firestore 저장 + 알람/캘린더 연동"]
+    D11["분류 변경 - 카테고리 수동 선택"]
+    D12(["홈 화면 - 최근 기록 갱신"])
+
+    D0 --> D1 --> D2 --> D3
+    D3 -->|일정| D4
+    D3 -->|할일| D5
+    D3 -->|나중에| D6
+    D3 -->|언젠가| D7
+    D3 -->|메모| D8
+    D4 --> D9
+    D5 --> D9
+    D6 --> D9
+    D7 --> D9
+    D8 --> D9
+    D9 -->|확인| D10 --> D12
+    D9 -->|분류 변경| D11 --> D10
+  end
+
+  subgraph SE["Flow E: 메모 작성 - Llama 정리 - 자동 알람 제안"]
+    E0(["메모 탭"])
+    E1["메모 작성 - 제목 + 본문"]
+    E2{"위치 권한?"}
+    E3["GPS 수집 + 역주소 변환"]
+    E4["위치 null 처리"]
+    E5["Firestore 저장 - aiProcessed = false"]
+    E6["Cloud Function 트리거 - onCreate"]
+    E7["Llama API - AI 정리 + 날짜 감지"]
+    E8{"API 성공?"}
+    E9["aiSummary + detectedAlarms 저장"]
+    E10["실시간 리스너 갱신 - 토글 활성화"]
+    E11{"날짜/시간 감지?"}
+    E12["알람 제안 배지 표시"]
+    E13{"사용자 추가 선택?"}
+    E14["그룹 선택 - 알람 생성"]
+    E15["AI 실패 표시 - 재시도 버튼"]
+    E16(["메모 목록"])
+
+    E0 --> E1 --> E2
+    E2 -->|허용| E3 --> E5
+    E2 -->|거부| E4 --> E5
+    E5 --> E6 --> E7 --> E8
+    E8 -->|성공| E9 --> E10 --> E11
+    E8 -->|실패| E15 --> E16
+    E11 -->|감지됨| E12 --> E13
+    E11 -->|없음| E16
+    E13 -->|추가| E14 --> E16
+    E13 -->|취소| E16
+  end
+
+  subgraph SF["Flow F: 알람 그룹 ON/OFF & 조건부 자동 OFF"]
+    F0(["알람 탭"])
+    F1["그룹 토글 버튼 클릭"]
+    F2["Firestore 즉시 업데이트 - isEnabled 변경"]
+    F3{"isEnabled 상태"}
+    F4["그룹 + 알람 카드 dimmed 처리"]
+    F5["그룹 + 알람 카드 정상 표시"]
+    F6(["자정 Cloud Scheduler - 매일 00:00"])
+    F7["workDays 조회 - 오늘 출근 여부"]
+    F8{"비출근일?"}
+    F9["직장 그룹 isEnabled = false 자동 설정"]
+    F10["변경 없음"]
+    F11(["알람 탭 반영 완료"])
+
+    F0 --> F1 --> F2 --> F3
+    F3 -->|OFF| F4 --> F11
+    F3 -->|ON| F5 --> F11
+    F6 --> F7 --> F8
+    F8 -->|예| F9 --> F11
+    F8 -->|아니오| F10 --> F11
+  end
+
+  subgraph SG["Flow G: 나중에 알려줘"]
+    G0(["홈 또는 메모 탭"])
+    G1["나중에 알려줘 항목 저장 - Firestore later"]
+    G2["알림 시간 선택 - 오늘저녁 / 주말 / 다음주 / 직접"]
+    G3["Cloud Scheduler - 알림 시간 도달"]
+    G4["기기 라우팅 - Flow C 동일 로직"]
+    G5["알림 표시 - 지금 할까요?"]
+    G6{"사용자 응답"}
+    G7["완료 처리 - isCompleted = true"]
+    G8["미루기 - 새 시간 선택"]
+    G9(["나중에 알려줘 목록"])
+
+    G0 --> G1 --> G2 --> G3 --> G4 --> G5 --> G6
+    G6 -->|완료| G7 --> G9
+    G6 -->|미루기| G8 --> G2
+  end
+
+  subgraph SH["Flow H: 언젠가 리스트"]
+    H0(["홈 또는 언젠가 리스트 탭"])
+    H1["항목 입력 또는 홈에서 자동 분류"]
+    H2["Llama API - 카테고리 자동 분류"]
+    H3{"분류 결과"}
+    H4["여행 / 배움 / 구매 / 기타"]
+    H5{"사용자 확인"}
+    H6["Firestore someday 저장"]
+    H7["카테고리 수동 변경"]
+    H8(["언젠가 리스트"])
+
+    H0 --> H1 --> H2 --> H3 --> H4 --> H5
+    H5 -->|확인| H6 --> H8
+    H5 -->|변경| H7 --> H6 --> H8
+  end
+
+  subgraph SI["Flow I: 휴지통"]
+    I0(["항목 삭제 - 메모/알람/나중에/언젠가"])
+    I1["isDeleted = true / deletedAt = 현재 시각"]
+    I2["휴지통 목록에 표시"]
+    I3{"사용자 액션"}
+    I4["복원 - isDeleted = false / deletedAt = null"]
+    I5["영구 삭제 - Firestore delete()"]
+    I6(["자정 Cloud Scheduler"])
+    I7["deletedAt 기준 30일 초과 항목 조회"]
+    I8["영구 삭제 - Firestore delete()"]
+    I9(["완료"])
+
+    I0 --> I1 --> I2 --> I3
+    I3 -->|복원| I4 --> I9
+    I3 -->|즉시 영구 삭제| I5 --> I9
+    I6 --> I7 --> I8 --> I9
+  end
+
+  style A0 fill:#E6F1FB,stroke:#185FA5,color:#0C447C
+  style A12 fill:#EAF3DE,stroke:#3B6D11,color:#27500A
+  style A1 fill:#FAEEDA,stroke:#854F0B,color:#633806
+  style A9 fill:#FAEEDA,stroke:#854F0B,color:#633806
+  style A6 fill:#EEEDFE,stroke:#534AB7,color:#3C3489
+  style A7 fill:#EEEDFE,stroke:#534AB7,color:#3C3489
+
+  style B0 fill:#E6F1FB,stroke:#185FA5,color:#0C447C
+  style B11 fill:#EAF3DE,stroke:#3B6D11,color:#27500A
+  style B2 fill:#FAEEDA,stroke:#854F0B,color:#633806
+  style B4 fill:#FAEEDA,stroke:#854F0B,color:#633806
+  style B8 fill:#FCEBEB,stroke:#A32D2D,color:#791F1F
+
+  style C0 fill:#FAEEDA,stroke:#854F0B,color:#633806
+  style C13 fill:#EAF3DE,stroke:#3B6D11,color:#27500A
+  style C2 fill:#FAEEDA,stroke:#854F0B,color:#633806
+  style C3 fill:#FAEEDA,stroke:#854F0B,color:#633806
+  style C4 fill:#FCEBEB,stroke:#A32D2D,color:#791F1F
+  style C6 fill:#FAEEDA,stroke:#854F0B,color:#633806
+  style C7 fill:#E6F1FB,stroke:#185FA5,color:#0C447C
+  style C8 fill:#FAEEDA,stroke:#854F0B,color:#633806
+  style C9 fill:#EEEDFE,stroke:#534AB7,color:#3C3489
+  style C10 fill:#FAEEDA,stroke:#854F0B,color:#633806
+  style C11 fill:#E1F5EE,stroke:#0F6E56,color:#085041
+
+  style D0 fill:#E6F1FB,stroke:#185FA5,color:#0C447C
+  style D12 fill:#EAF3DE,stroke:#3B6D11,color:#27500A
+  style D2 fill:#EEEDFE,stroke:#534AB7,color:#3C3489
+  style D3 fill:#FAEEDA,stroke:#854F0B,color:#633806
+  style D9 fill:#FAEEDA,stroke:#854F0B,color:#633806
+
+  style E0 fill:#E6F1FB,stroke:#185FA5,color:#0C447C
+  style E16 fill:#EAF3DE,stroke:#3B6D11,color:#27500A
+  style E2 fill:#FAEEDA,stroke:#854F0B,color:#633806
+  style E7 fill:#EEEDFE,stroke:#534AB7,color:#3C3489
+  style E8 fill:#FAEEDA,stroke:#854F0B,color:#633806
+  style E11 fill:#FAEEDA,stroke:#854F0B,color:#633806
+  style E13 fill:#FAEEDA,stroke:#854F0B,color:#633806
+  style E15 fill:#FCEBEB,stroke:#A32D2D,color:#791F1F
+
+  style F0 fill:#E6F1FB,stroke:#185FA5,color:#0C447C
+  style F6 fill:#FAEEDA,stroke:#854F0B,color:#633806
+  style F11 fill:#EAF3DE,stroke:#3B6D11,color:#27500A
+  style F3 fill:#FAEEDA,stroke:#854F0B,color:#633806
+  style F8 fill:#FAEEDA,stroke:#854F0B,color:#633806
+  style F4 fill:#F1EFE8,stroke:#5F5E5A,color:#444441
+  style F9 fill:#FCEBEB,stroke:#A32D2D,color:#791F1F
+
+  style G0 fill:#E6F1FB,stroke:#185FA5,color:#0C447C
+  style G9 fill:#EAF3DE,stroke:#3B6D11,color:#27500A
+  style G4 fill:#EEEDFE,stroke:#534AB7,color:#3C3489
+  style G6 fill:#FAEEDA,stroke:#854F0B,color:#633806
+
+  style H0 fill:#E6F1FB,stroke:#185FA5,color:#0C447C
+  style H8 fill:#EAF3DE,stroke:#3B6D11,color:#27500A
+  style H2 fill:#EEEDFE,stroke:#534AB7,color:#3C3489
+  style H3 fill:#FAEEDA,stroke:#854F0B,color:#633806
+  style H5 fill:#FAEEDA,stroke:#854F0B,color:#633806
+
+  style I0 fill:#E6F1FB,stroke:#185FA5,color:#0C447C
+  style I9 fill:#EAF3DE,stroke:#3B6D11,color:#27500A
+  style I3 fill:#FAEEDA,stroke:#854F0B,color:#633806
+  style I5 fill:#FCEBEB,stroke:#A32D2D,color:#791F1F
+  style I8 fill:#FCEBEB,stroke:#A32D2D,color:#791F1F
