@@ -1,31 +1,39 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { AuthProvider, useAuthContext } from './contexts/AuthContext'
+import { AuthProvider } from './contexts/AuthContext'
+import { ToastProvider } from './contexts/ToastContext'
+import AppLayout from './components/layout/AppLayout'
 import LoginPage from './pages/LoginPage'
+import HomePage from './pages/HomePage'
+import AlarmPage from './pages/AlarmPage'
+import MemoPage from './pages/MemoPage'
+import LaterPage from './pages/LaterPage'
+import SomedayPage from './pages/SomedayPage'
+import CalendarPage from './pages/CalendarPage'
+import TrashPage from './pages/TrashPage'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuthContext()
-  if (loading) return <div className="min-h-screen flex items-center justify-center text-gray-400">로딩 중...</div>
-  if (!user) return <Navigate to="/login" replace />
   return <>{children}</>
-}
-
-function AppRoutes() {
-  const { user, loading } = useAuthContext()
-  if (loading) return <div className="min-h-screen flex items-center justify-center text-gray-400">로딩 중...</div>
-
-  return (
-    <Routes>
-      <Route path="/login" element={user ? <Navigate to="/" replace /> : <LoginPage />} />
-      <Route path="/" element={<ProtectedRoute><div className="p-8 text-gray-800">홈 화면 (준비 중)</div></ProtectedRoute>} />
-    </Routes>
-  )
 }
 
 export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <AppRoutes />
+        <ToastProvider>
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
+              <Route index element={<HomePage />} />
+              <Route path="alarm" element={<AlarmPage />} />
+              <Route path="memo" element={<MemoPage />} />
+              <Route path="later" element={<LaterPage />} />
+              <Route path="someday" element={<SomedayPage />} />
+              <Route path="calendar" element={<CalendarPage />} />
+              <Route path="trash" element={<TrashPage />} />
+            </Route>
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </ToastProvider>
       </AuthProvider>
     </BrowserRouter>
   )

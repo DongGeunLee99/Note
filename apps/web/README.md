@@ -1,73 +1,64 @@
-# React + TypeScript + Vite
+# SmartNote — Web App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+알람·메모·캘린더를 하나로 통합한 개인용 웹 앱 (PWA)
 
-Currently, two official plugins are available:
+## 기술 스택
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **React 19** + TypeScript + Vite
+- **Tailwind CSS v4**
+- **React Router v6**
+- **@tabler/icons-react**
+- **chrono-node** — 자연어 시간 파싱
 
-## React Compiler
+## 개발 서버 실행
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+프로젝트 루트(`smartnote/`)에서 실행:
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+pnpm dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+`http://localhost:5173` 에서 확인
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+> **Node.js 22.13+** / **pnpm 11.4.0** 필요
+>
+> Node 20 이하에서는 pnpm 11이 동작하지 않습니다. [nvm](https://github.com/coreybutler/nvm-windows)으로 버전을 맞춰주세요.
+>
+> ```bash
+> nvm install 22
+> nvm use 22
+> npm install -g pnpm@11.4.0
+> ```
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 주요 화면
+
+| 경로 | 화면 |
+|---|---|
+| `/` | 홈 — 자연어 입력 & 최근 기록 |
+| `/alarm` | 알람 — 그룹 CRUD, 빠른 알람 입력 |
+| `/memo` | 메모 — AI 정리 토글, 위치 태그 |
+| `/calendar` | 캘린더 — 출근일 설정, 알람 일정 |
+| `/later` | 나중에 알려줘 |
+| `/someday` | 언젠가 리스트 |
+| `/trash` | 휴지통 — 복원 / 영구 삭제 |
+
+## 현재 개발 상태
+
+- Phase 1 UI 목업 완료 (로컬 상태 기반)
+- Firebase / Firestore 연동 예정 (Phase 1 백엔드)
+- Llama AI 연동 예정 (Phase 2)
+
+## 환경변수
+
+`.env.example` 참고:
+
+```
+VITE_FIREBASE_API_KEY=
+VITE_FIREBASE_AUTH_DOMAIN=
+VITE_FIREBASE_PROJECT_ID=
+VITE_FIREBASE_STORAGE_BUCKET=
+VITE_FIREBASE_MESSAGING_SENDER_ID=
+VITE_FIREBASE_APP_ID=
+VITE_FIREBASE_MEASUREMENT_ID=
+VITE_KAKAO_JS_KEY=
 ```
