@@ -136,11 +136,9 @@ export default function AlarmPage() {
             alarms={alarms}
             onToggleGroup={handleToggleGroup}
             onEditGroup={id => setGroupModal({ isOpen: true, target: groups.find(g => g.groupId === id) ?? null })}
-            onDeleteGroup={handleDeleteGroup}
             onAddAlarm={gId => setAlarmModal({ isOpen: true, target: null, defaultGroupId: gId })}
             onToggleAlarm={handleToggleAlarm}
             onEditAlarm={id => setAlarmModal({ isOpen: true, target: alarms.find(a => a.alarmId === id) ?? null })}
-            onDeleteAlarm={handleDeleteAlarm}
           />
         </div>
 
@@ -177,6 +175,10 @@ export default function AlarmPage() {
         isOpen={groupModal.isOpen}
         onClose={() => setGroupModal({ isOpen: false })}
         onSave={handleSaveGroup}
+        onDelete={groupModal.isOpen && groupModal.target ? () => {
+          handleDeleteGroup(groupModal.target!.groupId)
+          setGroupModal({ isOpen: false })
+        } : undefined}
         initial={groupModal.isOpen ? groupModal.target : null}
       />
 
@@ -184,6 +186,10 @@ export default function AlarmPage() {
         isOpen={alarmModal.isOpen}
         onClose={() => setAlarmModal({ isOpen: false })}
         onSave={handleSaveAlarm}
+        onDelete={alarmModal.isOpen && alarmModal.target ? () => {
+          handleDeleteAlarm(alarmModal.target!.alarmId)
+          setAlarmModal({ isOpen: false })
+        } : undefined}
         groups={groups}
         initial={alarmModal.isOpen ? alarmModal.target : null}
         defaultGroupId={alarmModal.isOpen ? alarmModal.defaultGroupId : undefined}

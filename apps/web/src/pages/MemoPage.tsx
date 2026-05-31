@@ -1,6 +1,18 @@
 import { useState, useCallback } from 'react'
 import { parse } from 'chrono-node'
-import { IconMapPin, IconPlus } from '@tabler/icons-react'
+import { IconMapPin, IconPlus, IconCalendar } from '@tabler/icons-react'
+
+function formatFullDate(date: Date): string {
+  const y = date.getFullYear()
+  const mo = date.getMonth() + 1
+  const d = date.getDate()
+  const h = date.getHours()
+  const mi = date.getMinutes()
+  const period = h < 12 ? '오전' : '오후'
+  const hour = h % 12 === 0 ? 12 : h % 12
+  const min = mi > 0 ? ` ${mi}분` : ''
+  return `${y}년 ${mo}월 ${d}일 ${period} ${hour}시${min}`
+}
 import MemoList from '../components/memo/MemoList'
 import MemoEditor from '../components/memo/MemoEditor'
 import ContextMenu, { useContextMenu } from '../components/common/ContextMenu'
@@ -174,24 +186,35 @@ export default function MemoPage() {
         </div>
 
         <div className="w-48 flex-shrink-0 p-3 flex flex-col gap-2 overflow-auto">
-          <p className="text-[9px] uppercase tracking-wide font-medium" style={{ color: 'var(--color-muted)' }}>미리보기</p>
+          <p className="text-[9px] uppercase tracking-wide font-medium" style={{ color: 'var(--color-muted)' }}>상세</p>
           {selectedMemo ? (
             <div className="flex flex-col gap-2">
-              <p className="text-[11px] font-medium">
-                {selectedMemo.title || selectedMemo.body.split('\n')[0].slice(0, 20)}
+              <p className="text-[11px] font-medium leading-snug">
+                {selectedMemo.title || selectedMemo.body.split('\n')[0].slice(0, 30)}
               </p>
-              <p className="text-[10px] leading-relaxed" style={{ color: 'var(--color-muted)' }}>
-                {(aiModes[selectedMemo.memoId] === 'ai' && selectedMemo.aiSummary
-                  ? selectedMemo.aiSummary
-                  : selectedMemo.body
-                ).slice(0, 120)}
-              </p>
+
+              <div className="flex items-center gap-1">
+                <IconCalendar size={10} style={{ color: 'var(--color-muted)', flexShrink: 0 }} />
+                <span className="text-[9px]" style={{ color: 'var(--color-muted)' }}>
+                  {formatFullDate(selectedMemo.createdAt)}
+                </span>
+              </div>
+
               {selectedMemo.location.label && (
                 <div className="flex items-center gap-1">
-                  <IconMapPin size={10} style={{ color: 'var(--color-muted)' }} />
+                  <IconMapPin size={10} style={{ color: 'var(--color-muted)', flexShrink: 0 }} />
                   <span className="text-[9px]" style={{ color: 'var(--color-muted)' }}>{selectedMemo.location.label}</span>
                 </div>
               )}
+
+              <div className="h-px" style={{ background: 'var(--color-border)' }} />
+
+              <p className="text-[10px] leading-relaxed whitespace-pre-wrap" style={{ color: 'var(--color-muted)' }}>
+                {aiModes[selectedMemo.memoId] === 'ai' && selectedMemo.aiSummary
+                  ? selectedMemo.aiSummary
+                  : selectedMemo.body}
+              </p>
+
               <button
                 onClick={() => { setEditingMemo(selectedMemo); setEditorOpen(true) }}
                 className="text-[10px] py-1 rounded-lg border mt-1"

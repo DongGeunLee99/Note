@@ -6,6 +6,7 @@ interface AlarmModalProps {
   isOpen: boolean
   onClose: () => void
   onSave: (data: Omit<LocalAlarm, 'alarmId' | 'sourceMemoId'>) => void
+  onDelete?: () => void
   groups: LocalAlarmGroup[]
   initial?: LocalAlarm | null
   defaultGroupId?: string
@@ -15,7 +16,7 @@ const DAY_LABELS = ['일', '월', '화', '수', '목', '금', '토']
 const HOURS = Array.from({ length: 24 }, (_, i) => i)
 const MINUTES = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
 
-export default function AlarmModal({ isOpen, onClose, onSave, groups, initial, defaultGroupId }: AlarmModalProps) {
+export default function AlarmModal({ isOpen, onClose, onSave, onDelete, groups, initial, defaultGroupId }: AlarmModalProps) {
   const [label, setLabel] = useState('')
   const [hour, setHour] = useState(7)
   const [minute, setMinute] = useState(0)
@@ -53,6 +54,15 @@ export default function AlarmModal({ isOpen, onClose, onSave, groups, initial, d
       title={initial ? '알람 편집' : '알람 추가'}
       footer={
         <>
+          {initial && onDelete && (
+            <button
+              onClick={onDelete}
+              className="text-[10px] px-3 py-1.5 rounded-lg border mr-auto"
+              style={{ borderColor: '#fca5a5', color: '#791F1F' }}
+            >
+              삭제
+            </button>
+          )}
           <button
             onClick={onClose}
             className="text-[10px] px-3 py-1.5 rounded-lg border"

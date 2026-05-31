@@ -7,10 +7,11 @@ interface AlarmGroupModalProps {
   isOpen: boolean
   onClose: () => void
   onSave: (data: { name: string; color: string; emoji: string }) => void
+  onDelete?: () => void
   initial?: LocalAlarmGroup | null
 }
 
-export default function AlarmGroupModal({ isOpen, onClose, onSave, initial }: AlarmGroupModalProps) {
+export default function AlarmGroupModal({ isOpen, onClose, onSave, onDelete, initial }: AlarmGroupModalProps) {
   const [name, setName] = useState('')
   const [color, setColor] = useState(GROUP_COLORS[0].fg)
   const [emoji, setEmoji] = useState(GROUP_EMOJIS[0])
@@ -36,6 +37,15 @@ export default function AlarmGroupModal({ isOpen, onClose, onSave, initial }: Al
       title={initial ? '그룹 편집' : '그룹 추가'}
       footer={
         <>
+          {initial && !initial.isDefault && onDelete && (
+            <button
+              onClick={onDelete}
+              className="text-[10px] px-3 py-1.5 rounded-lg border mr-auto"
+              style={{ borderColor: '#fca5a5', color: '#791F1F' }}
+            >
+              삭제
+            </button>
+          )}
           <button
             onClick={onClose}
             className="text-[10px] px-3 py-1.5 rounded-lg border"

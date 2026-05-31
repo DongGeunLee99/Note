@@ -1,4 +1,4 @@
-import { IconPencil, IconTrash, IconNote } from '@tabler/icons-react'
+import { IconNote } from '@tabler/icons-react'
 import ToggleSwitch from '../common/ToggleSwitch'
 import Badge from '../common/Badge'
 import type { LocalAlarm } from '../../types/localAlarm'
@@ -9,15 +9,15 @@ interface AlarmCardProps {
   groupEnabled: boolean
   onToggle: () => void
   onEdit: () => void
-  onDelete: () => void
 }
 
-export default function AlarmCard({ alarm, groupEnabled, onToggle, onEdit, onDelete }: AlarmCardProps) {
+export default function AlarmCard({ alarm, groupEnabled, onToggle, onEdit }: AlarmCardProps) {
   const isEffectivelyOff = !alarm.isEnabled || !groupEnabled
 
   return (
     <div
-      className={`flex items-center gap-2 pl-8 pr-2 py-1.5 transition-opacity ${isEffectivelyOff ? 'opacity-35' : ''}`}
+      onClick={onEdit}
+      className={`flex items-center gap-2 pl-8 pr-2 py-1.5 rounded-lg cursor-pointer transition-colors hover:bg-black/[0.03] ${isEffectivelyOff ? 'opacity-35' : ''}`}
     >
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5">
@@ -36,27 +36,14 @@ export default function AlarmCard({ alarm, groupEnabled, onToggle, onEdit, onDel
 
       <Badge variant="gray">{formatRepeat(alarm.repeatDays)}</Badge>
 
-      <button
-        onClick={onEdit}
-        className="p-1 rounded hover:bg-black/5 transition-colors flex-shrink-0"
-        disabled={!groupEnabled}
-      >
-        <IconPencil size={12} style={{ color: 'var(--color-muted)' }} />
-      </button>
-
-      <button
-        onClick={onDelete}
-        className="p-1 rounded hover:bg-red-50 transition-colors flex-shrink-0"
-      >
-        <IconTrash size={12} style={{ color: '#791F1F' }} />
-      </button>
-
-      <ToggleSwitch
-        enabled={alarm.isEnabled}
-        onToggle={onToggle}
-        disabled={!groupEnabled}
-        size="sm"
-      />
+      <div onClick={e => e.stopPropagation()}>
+        <ToggleSwitch
+          enabled={alarm.isEnabled}
+          onToggle={onToggle}
+          disabled={!groupEnabled}
+          size="sm"
+        />
+      </div>
     </div>
   )
 }

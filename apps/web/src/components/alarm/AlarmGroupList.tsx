@@ -7,11 +7,9 @@ interface AlarmGroupListProps {
   alarms: LocalAlarm[]
   onToggleGroup: (groupId: string) => void
   onEditGroup: (groupId: string) => void
-  onDeleteGroup: (groupId: string) => void
   onAddAlarm: (groupId: string) => void
   onToggleAlarm: (alarmId: string) => void
   onEditAlarm: (alarmId: string) => void
-  onDeleteAlarm: (alarmId: string) => void
 }
 
 export default function AlarmGroupList({
@@ -19,11 +17,9 @@ export default function AlarmGroupList({
   alarms,
   onToggleGroup,
   onEditGroup,
-  onDeleteGroup,
   onAddAlarm,
   onToggleAlarm,
   onEditAlarm,
-  onDeleteAlarm,
 }: AlarmGroupListProps) {
   if (groups.length === 0) {
     return (
@@ -52,7 +48,6 @@ export default function AlarmGroupList({
               alarmCount={groupAlarms.length}
               onToggle={() => onToggleGroup(group.groupId)}
               onEdit={() => onEditGroup(group.groupId)}
-              onDelete={() => onDeleteGroup(group.groupId)}
             />
 
             <div className="mt-0.5">
@@ -63,7 +58,6 @@ export default function AlarmGroupList({
                   groupEnabled={group.isEnabled}
                   onToggle={() => onToggleAlarm(alarm.alarmId)}
                   onEdit={() => onEditAlarm(alarm.alarmId)}
-                  onDelete={() => onDeleteAlarm(alarm.alarmId)}
                 />
               ))}
               <button

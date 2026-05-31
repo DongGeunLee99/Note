@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import {
   IconHome, IconBell, IconNote, IconClock, IconStar,
-  IconCalendar, IconTrash, IconSettings, IconLogout,
+  IconCalendar, IconTrash, IconSettings, IconLogout, IconLayoutDashboard,
 } from '@tabler/icons-react'
 
 type NavItem = { to: string; icon: React.ComponentType<{ size?: number; style?: React.CSSProperties }>; label: string; count?: number }
@@ -16,6 +16,7 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/alarm', icon: IconBell, label: '알람', count: 12 },
   { to: '/later', icon: IconClock, label: '나중에', count: 3 },
   { to: '/someday', icon: IconStar, label: '언젠가' },
+  { to: '/dashboard', icon: IconLayoutDashboard, label: '대시보드' },
   { to: '/trash', icon: IconTrash, label: '휴지통', count: 5 },
 ]
 

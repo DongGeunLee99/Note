@@ -10,6 +10,7 @@ import LaterPage from './pages/LaterPage'
 import SomedayPage from './pages/SomedayPage'
 import CalendarPage from './pages/CalendarPage'
 import TrashPage from './pages/TrashPage'
+import DashboardPage from './pages/DashboardPage'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>
@@ -24,6 +25,7 @@ export default function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
               <Route index element={<HomePage />} />
+              <Route path="dashboard" element={<DashboardPage />} />
               <Route path="alarm" element={<AlarmPage />} />
               <Route path="memo" element={<MemoPage />} />
               <Route path="later" element={<LaterPage />} />

@@ -1,0 +1,167 @@
+/* react-big-calendar 앱 테마 오버라이드 */
+
+.rbc-calendar {
+  font-family: var(--font-family-sans);
+  font-size: 11px;
+  color: #1a1a18;
+}
+
+/* 툴바 */
+.rbc-toolbar {
+  margin-bottom: 8px;
+  gap: 6px;
+  flex-wrap: nowrap;
+}
+.rbc-toolbar-label {
+  font-size: 13px;
+  font-weight: 500;
+  flex-grow: 1;
+  text-align: left;
+  padding: 0;
+}
+.rbc-toolbar button {
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--color-border-2);
+  color: var(--color-muted);
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.rbc-toolbar button:hover {
+  background: var(--color-surface-2);
+}
+.rbc-toolbar button.rbc-active {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
+  box-shadow: none;
+}
+.rbc-btn-group {
+  display: flex;
+  gap: 2px;
+}
+.rbc-btn-group button:not(:first-child):not(:last-child) {
+  border-radius: 6px;
+}
+.rbc-btn-group button:first-child {
+  border-radius: 6px;
+}
+.rbc-btn-group button:last-child {
+  border-radius: 6px;
+}
+
+/* 요일 헤더 */
+.rbc-header {
+  font-size: 9px;
+  font-weight: 500;
+  color: var(--color-muted);
+  padding: 4px 0;
+  border-bottom: 1px solid var(--color-border);
+  text-transform: none;
+  text-align: center;
+}
+.rbc-header + .rbc-header {
+  border-left: 1px solid var(--color-border);
+}
+
+/* 월 뷰 */
+.rbc-month-view {
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.rbc-month-row {
+  min-height: 60px;
+}
+.rbc-month-row + .rbc-month-row {
+  border-top: 1px solid var(--color-border);
+}
+
+/* 날짜 셀 */
+.rbc-day-bg {
+  transition: background 0.1s;
+}
+.rbc-day-bg + .rbc-day-bg {
+  border-left: 1px solid var(--color-border);
+}
+.rbc-off-range-bg {
+  background: var(--color-surface-2);
+}
+.rbc-today {
+  background: var(--color-primary-subtle) !important;
+}
+
+/* 날짜 숫자 */
+.rbc-date-cell {
+  font-size: 9px;
+  padding: 3px 5px;
+  text-align: right;
+  color: var(--color-muted);
+}
+.rbc-date-cell.rbc-now button {
+  background: var(--color-primary);
+  color: #fff;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+.rbc-date-cell button {
+  font-size: 9px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  padding: 0;
+}
+.rbc-off-range {
+  color: #c5c5c3;
+}
+
+/* 선택된 날 */
+.rbc-selected-cell {
+  background: var(--color-primary-subtle) !important;
+  outline: 1.5px solid var(--color-primary);
+  outline-offset: -1.5px;
+}
+
+/* 이벤트 */
+.rbc-event {
+  font-size: 9px !important;
+  padding: 1px 4px !important;
+  border-radius: 4px !important;
+  background-color: var(--color-primary) !important;
+  border: none !important;
+  color: #fff !important;
+  min-height: 14px;
+}
+.rbc-event:focus {
+  outline: none;
+}
+.rbc-event.rbc-selected {
+  background-color: var(--color-primary-emphasis) !important;
+}
+.rbc-show-more {
+  font-size: 9px;
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+/* 행 내부 */
+.rbc-row-content {
+  z-index: 1;
+}
+
+/* 주 뷰 / 일 뷰 헤더 */
+.rbc-time-header {
+  border-bottom: 1px solid var(--color-border);
+}
+.rbc-time-slot {
+  font-size: 9px;
+  color: var(--color-muted);
+}

@@ -78,23 +78,26 @@ export default function MemoCard({
         </div>
       )}
 
-      <div className="flex items-center gap-2 flex-wrap" onClick={e => e.stopPropagation()}>
+      <div className="flex items-center gap-2 flex-wrap">
         {memo.aiLoading && (
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
             <Spinner size="sm" />
             <span className="text-[9px]" style={{ color: 'var(--color-primary)' }}>AI 처리 중…</span>
           </div>
         )}
         {!memo.aiLoading && (
-          <AiToggleButton
-            mode={aiMode}
-            aiReady={memo.aiReady}
-            onModeChange={onAiModeChange}
-          />
+          <span onClick={e => e.stopPropagation()}>
+            <AiToggleButton
+              mode={aiMode}
+              aiReady={memo.aiReady}
+              onModeChange={onAiModeChange}
+            />
+          </span>
         )}
 
         {memo.alarmSuggestion && !memo.alarmConfirmed && (
           <div
+            onClick={e => e.stopPropagation()}
             className="flex items-center gap-2 px-2 py-1 rounded-lg flex-1 min-w-0"
             style={{ background: '#FAEEDA' }}
           >

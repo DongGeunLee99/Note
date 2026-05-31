@@ -3,9 +3,21 @@ import { IconEdit, IconMicrophone, IconCalendar, IconBriefcase, IconBell, IconNo
 import Badge from '../components/common/Badge'
 import { useToast } from '../contexts/ToastContext'
 
-type Category = '일정' | '알람' | '할일' | '메모' | '나중에' | '언젠가'
+type Category = 'AI' | '일정' | '알람' | '할일' | '메모' | '나중에' | '언젠가'
+type ClassifiedCategory = Exclude<Category, 'AI'>
+
+function classifyWithAI(text: string): ClassifiedCategory {
+  const t = text
+  if (/내일|모레|오전|오후|\d+시|\d+월|\d+일|예약|회의|약속|일정/.test(t)) return '일정'
+  if (/알람|기상|일어나|깨워|울려/.test(t)) return '알람'
+  if (/해야|할일|준비|마감|작성|처리/.test(t)) return '할일'
+  if (/나중에|이따|나중에/.test(t)) return '나중에'
+  if (/언젠가|꿈|버킷|여행|배우고|사고 싶/.test(t)) return '언젠가'
+  return '메모'
+}
 
 const CATEGORY_CONFIG: Record<Category, { icon: React.ReactNode; bg: string; badge: 'blue' | 'amber' | 'gray' | 'violet' | 'green' | 'red' }> = {
+  'AI':  { icon: <IconCalendar size={13} style={{ color: '#185FA5' }} />,  bg: '#E6F1FB', badge: 'blue' },
   '일정':  { icon: <IconCalendar size={13} style={{ color: '#185FA5' }} />,  bg: '#E6F1FB', badge: 'blue' },
   '알람':  { icon: <IconBell size={13} style={{ color: '#185FA5' }} />,      bg: '#E6F1FB', badge: 'blue' },
   '할일':  { icon: <IconBriefcase size={13} style={{ color: '#854F0B' }} />, bg: '#FAEEDA', badge: 'amber' },
@@ -17,7 +29,7 @@ const CATEGORY_CONFIG: Record<Category, { icon: React.ReactNode; bg: string; bad
 interface RecentEntry {
   id: number
   text: string
-  category: Category
+  category: ClassifiedCategory
   createdAt: Date
 }
 
@@ -41,15 +53,22 @@ function formatRelTime(date: Date): string {
 export default function HomePage() {
   const toast = useToast()
   const [text, setText] = useState('')
-  const [category, setCategory] = useState<Category>('일정')
+  const [category, setCategory] = useState<Category>('AI')
   const [entries, setEntries] = useState<RecentEntry[]>(INITIAL_ENTRIES)
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const inputAreaRef = useRef<HTMLDivElement>(null)
 
   function handleSave() {
     if (!text.trim()) return
-    setEntries(prev => [{ id: ++nextEntryId, text: text.trim(), category, createdAt: new Date() }, ...prev])
-    toast(`${category}으로 저장되었습니다`, 'success')
+    const savedCategory: ClassifiedCategory = category === 'AI'
+      ? classifyWithAI(text.trim())
+      : category
+    setEntries(prev => [{ id: ++nextEntryId, text: text.trim(), category: savedCategory, createdAt: new Date() }, ...prev])
+    if (category === 'AI') {
+      toast(`AI가 '${savedCategory}'으로 분류했습니다`, 'success')
+    } else {
+      toast(`${savedCategory}으로 저장되었습니다`, 'success')
+    }
     setText('')
     inputRef.current?.focus()
   }
@@ -87,7 +106,6 @@ export default function HomePage() {
                 className="flex-1 text-[11px] outline-none bg-transparent resize-none leading-relaxed"
                 style={{ color: '#1a1a18' }}
               />
-              <IconMicrophone size={14} style={{ color: 'var(--color-muted)', flexShrink: 0, marginTop: 2 }} />
             </div>
 
             <div className="flex items-center gap-2">
