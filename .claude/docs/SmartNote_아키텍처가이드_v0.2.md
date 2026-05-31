@@ -72,12 +72,15 @@ smartnote/
 │   │   ├── src/
 │   │   │   ├── pages/
 │   │   │   │   ├── HomePage.tsx
+│   │   │   │   ├── DashboardPage.tsx  ← Recharts 기반 통계 대시보드
 │   │   │   │   ├── AlarmPage.tsx
 │   │   │   │   ├── MemoPage.tsx
 │   │   │   │   ├── LaterPage.tsx
 │   │   │   │   ├── SomedayPage.tsx
-│   │   │   │   ├── CalendarPage.tsx
+│   │   │   │   ├── CalendarPage.tsx   ← react-big-calendar 사용
 │   │   │   │   └── TrashPage.tsx
+│   │   │   ├── styles/
+│   │   │   │   └── calendar.css       ← react-big-calendar 테마 오버라이드
 │   │   │   ├── components/
 │   │   │   │   ├── alarm/
 │   │   │   │   │   ├── AlarmGroupList.tsx

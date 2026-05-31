@@ -105,6 +105,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | 알람 (모바일) | FCM (Firebase Cloud Messaging) |
 | 모노레포 | pnpm workspace + Turborepo |
 | 자연어 시간 파싱 | chrono-node |
+| 캘린더 UI | react-big-calendar + date-fns |
+| 차트 | Recharts |
 
 ---
 
@@ -175,7 +177,7 @@ Cloud Function `alarmScheduler`가 매분 실행하며 기기 라우팅:
 
 ## 화면 구성
 
-웹: `HomePage`, `AlarmPage`, `MemoPage`, `LaterPage`, `SomedayPage`, `CalendarPage`, `TrashPage`
+웹: `HomePage`, `DashboardPage`, `AlarmPage`, `MemoPage`, `LaterPage`, `SomedayPage`, `CalendarPage`, `TrashPage`
 모바일: 동일 구조, `Screen` suffix
 
 ---

@@ -32,17 +32,16 @@
 | Props | Type | 설명 |
 |---|---|---|
 | `group` | `AlarmGroup` | 그룹 데이터 |
-| `onToggle` | `() => void` | 토글 ON/OFF |
-| `onEdit` | `() => void` | 편집 시트 열기 |
-| `onDelete` | `() => void` | 그룹 삭제 (기타 그룹 비활성) |
+| `onToggle` | `() => void` | 토글 ON/OFF (stopPropagation 처리됨) |
+| `onEdit` | `() => void` | 카드 클릭 시 편집 모달 열기 |
 
 | State | 설명 |
 |---|---|
 | `enabled` | 토글 ON — 정상 색상 |
 | `disabled` | 토글 OFF — dimmed (opacity 0.35) |
-| `default-group` | isDefault=true — 삭제 버튼 숨김 |
+| `default-group` | isDefault=true — 편집 모달 내 삭제 버튼 숨김 |
 
-> 낙관적 업데이트 적용 — 즉시 UI 변경 후 Firestore 반영.
+> 카드 전체 클릭 → 편집 모달. 삭제는 편집 모달 푸터 내 버튼으로 처리 (기본 그룹 제외).
 
 ---
 
@@ -53,9 +52,8 @@
 |---|---|---|
 | `alarm` | `Alarm` | 알람 데이터 |
 | `groupEnabled` | `boolean` | 부모 그룹 ON/OFF 상태 |
-| `onToggle` | `() => void` | 개별 알람 ON/OFF |
-| `onEdit` | `() => void` | 알람 편집 |
-| `onDelete` | `() => void` | 알람 삭제 (휴지통으로) |
+| `onToggle` | `() => void` | 개별 알람 ON/OFF (stopPropagation 처리됨) |
+| `onEdit` | `() => void` | 행 클릭 시 편집 모달 열기 |
 
 | State | 설명 |
 |---|---|
@@ -231,3 +229,29 @@ ON/OFF 토글 스위치 (공용)
 | `onClose` | `() => void` | 닫기 핸들러 |
 | `title` | `string` | 모달 제목 |
 | `children` | `ReactNode` | 모달 내용 |
+
+---
+
+## 6. 대시보드 컴포넌트
+
+### `<DashboardPage />`
+통계 대시보드 — 요약 스탯 + Recharts 기반 차트 4종
+
+**내부 컴포넌트 (파일 내 정의)**
+
+| 컴포넌트 | 설명 |
+|---|---|
+| `StatCard` | 단일 수치 강조 카드 (값 + 라벨 + 색상) |
+| `ChartCard` | 차트 래퍼 카드 (제목 + 부제목 + children) |
+| `ChartTooltip` | Recharts 커스텀 툴팁 (앱 테마 스타일) |
+
+**차트 구성**
+
+| 차트 | 라이브러리 | 데이터 |
+|---|---|---|
+| 주간 입력 활동량 | `LineChart` | 최근 7일 일별 기록 수 |
+| 카테고리 분포 | `PieChart` (donut) | 카테고리별 기록 수 + 중앙 총합 텍스트 |
+| 알람 시간대 분포 | `BarChart` | 새벽/오전/오후/저녁 4구간 알람 수 |
+| 이번 달 출근일 | `PieChart` (donut) + 진행 바 | 출근일/비출근일 비율 + 출근율 % |
+
+> Phase 1은 목업 데이터 사용. Phase 2에서 Firestore 실시간 데이터로 교체 예정.
