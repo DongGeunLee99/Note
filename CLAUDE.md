@@ -288,7 +288,6 @@ Cloud Function `alarmScheduler`가 매분 실행하며 기기 라우팅:
 node_modules/
 dist/
 *.log
-.claude/
 ```
 
 ### 롤백
