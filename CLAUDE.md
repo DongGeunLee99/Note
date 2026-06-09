@@ -338,6 +338,7 @@ git reset --soft HEAD~1      # 마지막 커밋 취소 (변경 유지)
 - `SmartNote_작업태스크_v0.2.md` — Phase별 전체 태스크 목록 (72개)
 - `SmartNote_컴포넌트명세_v0.2.md` — 컴포넌트 Props/State 명세 (웹 기준)
 - `SmartNote_사용자스토리_v0.2.md` — 사용자 스토리 + 인수 조건
+- `SmartNote_QC시나리오_v0.1.md` — Phase 1 웹 MVP 수동 검수 시나리오 (페이지별 + 회귀 체크)
 - `smartnote_wireframe_v2.html` — 웹 화면 와이어프레임 (브라우저에서 직접 열어서 확인)
 
 `.claude/docs/mmd/` 폴더에 Mermaid 흐름도 보관:
