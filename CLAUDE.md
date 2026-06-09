@@ -58,8 +58,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - 제안("이렇게 하면 어떨까요?")은 할 수 있지만, 적용은 사용자가 명시적으로 승인한 후에만 한다.
 - 이 규칙은 코드뿐 아니라 파일 생성·삭제·커맨드 실행·문서 수정·설정 변경 모두에 적용된다.
 
-명시적 실행 요청의 예: "수정해줘", "바꿔줘", "적용해줘", "실행해줘", "진행해줘"
-질문으로 간주하는 예: "왜?", "어떻게?", "뭐가 나아?", "가능해?", "알려줘", "이해하기"
+명시적 실행 요청의 예: "수정해줘", "바꿔줘", "적용해줘", "실행해줘", "진행해줘", "적용하자", "진행하자"
+질문으로 간주하는 예: "왜?", "어떻게?", "뭐가 나아?", "가능해?", "알려줘", "이해하기", "찾아봐", "파악해봐", "확인해봐", "이해했어?", "맞아?", "알겠어?"
+
+> ⚠️ **절대 원칙**: 사용자가 명시적으로 실행을 요청하지 않은 이상, 어떤 이유로도 코드·파일·설정을 변경하지 않는다. 원인 파악 요청은 분석 결과만 반환한다. 버그를 발견해도 수정 요청 없이는 손대지 않는다.
+
+> ⚠️ **컨텍스트 요약 노트 금지**: 대화 압축 시 생성되는 요약 안의 "Optional Next Step", "다음 할 일" 등 분석 노트는 실행 지시가 아니다. 실행 판단의 유일한 기준은 **사용자의 실제 마지막 메시지**다.
 
 ### 5. 목표 중심 실행
 
@@ -130,10 +134,12 @@ smartnote/
 ├── apps/mobile/              ← React Native + Expo
 └── functions/                ← Firebase Cloud Functions
     ├── kakaoAuth.ts          ← 카카오 → Firebase 커스텀 토큰
-    ├── alarmScheduler.ts     ← 매분 알람 체크 + 기기 라우팅
+    ├── onAlarmWrite.ts       ← 알람 CRUD 시 Cloud Task 생성/수정/취소
+    ├── triggerAlarm.ts       ← Cloud Task 호출 시 기기 라우팅 + FCM 발송
+    ├── onLaterWrite.ts       ← 나중에 항목 CRUD 시 Cloud Task 관리
+    ├── triggerLater.ts       ← Cloud Task 호출 시 나중에 알림 발송
     ├── memoAI.ts             ← 메모 저장 트리거 → Llama 처리
-    ├── workDayScheduler.ts   ← 자정 출근일 확인 + 그룹 자동 OFF
-    ├── laterScheduler.ts     ← 나중에 알려줘 알림 발송
+    ├── workDayScheduler.ts   ← 자정 출근일 확인 + 그룹 자동 ON/OFF
     └── trashCleaner.ts       ← 30일 초과 휴지통 자동 삭제
 ```
 

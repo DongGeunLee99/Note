@@ -1,4 +1,4 @@
-# SmartNote API 명세서 v0.1
+# SmartNote API 명세서 v0.2
 
 > Firebase Cloud Functions 기반 / 모든 요청은 Firebase Auth 인증 필요
 
@@ -52,25 +52,61 @@ Type     : onCall
 
 ## 2. 알람 (Alarm)
 
-### 2-1. 알람 스케줄러 (자동 실행)
+### 2-1. 알람 Firestore 트리거 (자동 실행)
 
-매분 실행. 울릴 알람을 확인하고 기기 라우팅.
+알람 문서 생성/수정/삭제 시 Cloud Task를 생성·수정·취소.
 
 ```
-Function : alarmScheduler
-Type     : onSchedule
-Schedule : every 1 minutes
+Function : onAlarmWrite
+Type     : onDocumentWritten
+Trigger  : users/{uid}/alarms/{alarmId}
 ```
 
 **처리 흐름**
-1. `alarms` 컬렉션에서 현재 시각의 알람 조회
-2. 그룹 `isEnabled` 확인
-3. `devices` 컬렉션에서 활성 기기 확인
-4. 우선순위: 웹 Firestore 트리거 → Electron FCM → 모바일 FCM
+- **생성 / isEnabled=true**: 다음 발화 시각 계산 → Cloud Tasks에 태스크 생성 (`taskId = alarm_{alarmId}`)
+- **수정** (시각 또는 활성 상태 변경): 기존 태스크 삭제 → 새 태스크 재생성
+- **삭제 / isEnabled=false**: Cloud Tasks에서 태스크 취소
 
 ---
 
-### 2-2. 조건부 그룹 자동 OFF (자동 실행)
+### 2-2. 알람 발송 (Cloud Task 호출)
+
+Cloud Task가 알람 발화 시각에 직접 호출하는 HTTP 함수.
+
+```
+Function : triggerAlarm
+Type     : onRequest (HTTP)
+Called by: Google Cloud Tasks
+```
+
+**Request** (Cloud Tasks 자동 전송)
+```json
+{
+  "uid": "사용자 UID",
+  "alarmId": "알람 문서 ID"
+}
+```
+
+**처리 흐름**
+1. `alarms/{alarmId}` 조회 → `isEnabled`, `isDeleted`, `groupId` 확인
+2. 그룹 `isEnabled` 확인
+3. `devices` 컬렉션에서 활성 기기 조회
+4. 우선순위에 따라 발송:
+   - 웹 탭 활성 → `alarmTriggers/{alarmId}` Firestore 문서 업데이트 (클라이언트 실시간 리스너 감지 → `new Notification()`으로 OS 알림 표시)
+   - 웹 비활성 + Electron 활성 → Electron FCM push
+   - 모두 비활성 → 모바일 FCM push
+5. 반복 알람(`repeatDays` 존재)인 경우 → 다음 발화 시각 계산 후 새 Cloud Task 생성
+
+**에러**
+| 코드 | 메시지 | 설명 |
+|---|---|---|
+| `alarm/not-found` | 알람을 찾을 수 없음 | 삭제된 알람 |
+| `alarm/group-disabled` | 그룹이 비활성 상태 | 그룹 OFF |
+| `alarm/no-active-device` | 활성 기기 없음 | 모든 기기 오프라인 |
+
+---
+
+### 2-3. 조건부 그룹 자동 OFF (자동 실행)
 
 매일 자정 실행. 비출근일 시 직장 그룹 자동 OFF.
 
@@ -198,18 +234,35 @@ Type     : onCall
 
 ## 5. 나중에 알려줘 (Later)
 
-### 5-1. 나중에 알림 발송 (자동 실행)
+### 5-1. 나중에 Firestore 트리거 (자동 실행)
+
+나중에 항목 생성/수정 시 Cloud Task를 생성·수정·취소.
 
 ```
-Function : laterScheduler
-Type     : onSchedule
-Schedule : every 1 minutes
+Function : onLaterWrite
+Type     : onDocumentWritten
+Trigger  : users/{uid}/later/{laterId}
 ```
 
 **처리 흐름**
-1. `later` 컬렉션에서 `notifyAt <= 현재시각`, `isCompleted = false` 조회
-2. 기기 라우팅 (Flow C 동일)
-3. 알림 발송 후 `notifyAt` 갱신 (다음 알림 방지)
+- **생성**: `notifyAt` 시각으로 Cloud Task 생성 (`taskId = later_{laterId}`)
+- **수정** (`notifyAt` 변경): 기존 태스크 삭제 → 새 시각으로 재생성
+- **완료 / 삭제**: Cloud Tasks에서 태스크 취소
+
+---
+
+### 5-2. 나중에 알림 발송 (Cloud Task 호출)
+
+```
+Function : triggerLater
+Type     : onRequest (HTTP)
+Called by: Google Cloud Tasks
+```
+
+**처리 흐름**
+1. `later/{laterId}` 조회 → `isCompleted`, `isDeleted` 확인
+2. 기기 라우팅 후 FCM push 발송 (`triggerAlarm`의 라우팅 로직 재사용)
+3. `isCompleted = true` 업데이트
 
 ---
 

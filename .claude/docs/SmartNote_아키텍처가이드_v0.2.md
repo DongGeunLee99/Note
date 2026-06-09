@@ -134,10 +134,12 @@ smartnote/
 ├── functions/                    ← Firebase Cloud Functions
 │   └── src/
 │       ├── kakaoAuth.ts          ← 카카오 → Firebase 커스텀 토큰
-│       ├── alarmScheduler.ts     ← 매분 알람 체크 + 기기 라우팅
+│       ├── onAlarmWrite.ts       ← 알람 CRUD 시 Cloud Task 생성/수정/취소
+│       ├── triggerAlarm.ts       ← Cloud Task 호출 시 기기 라우팅 + FCM 발송
+│       ├── onLaterWrite.ts       ← 나중에 항목 CRUD 시 Cloud Task 관리
+│       ├── triggerLater.ts       ← Cloud Task 호출 시 나중에 알림 발송
 │       ├── memoAI.ts             ← 메모 저장 시 Llama 처리 트리거
-│       ├── workDayScheduler.ts   ← 자정 출근일 확인 + 그룹 OFF
-│       ├── laterScheduler.ts     ← 나중에 알려줘 알림 발송
+│       ├── workDayScheduler.ts   ← 자정 출근일 확인 + 그룹 자동 ON/OFF
 │       └── trashCleaner.ts       ← 30일 초과 휴지통 자동 영구 삭제
 │
 └── docs/                         ← 설계 문서
@@ -234,14 +236,16 @@ export const radius  = { sm:6, md:8, lg:12, full:9999 };
 
 ## 5. 플랫폼별 알람 발생 비교
 
-### 웹 — Web Audio API + 모달
+### 웹 — Web Notification API (OS 알림)
 
 ```typescript
 // apps/web/alarm/webAlarm.ts
 export function triggerWebAlarm(alarm: Alarm) {
-  const audio = new Audio('/sounds/alarm.mp3');
-  audio.play();
-  showAlarmModal(alarm);
+  new Notification('SmartNote', {
+    body: alarm.label,
+    icon: '/icon.png',
+    silent: false,
+  });
 }
 ```
 

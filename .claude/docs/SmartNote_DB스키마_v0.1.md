@@ -31,6 +31,8 @@ users/{uid}
 | `profileImage` | string | `"https://..."` | 카카오 프로필 이미지 URL |
 | `settings.defaultSound` | string | `"default"` | 마지막 사용 알람 소리 |
 | `settings.defaultVibration` | boolean | `true` | 마지막 사용 진동 여부 |
+| `settings.rightPanelWidth` | number | `192` | 우측 패널 너비 (px). 웹/Electron 간 동기화. 미설정 시 기본값 192 |
+| `settings.timeFormat` | string | `"24h"` | 시간 표시 형식. `"24h"` (07:30) \| `"12h"` (7:30 AM). 기본값 `"24h"` |
 | `createdAt` | timestamp | - | 계정 생성 시각 (로컬) |
 | `updatedAt` | timestamp | - | 마지막 업데이트 시각 (로컬) |
 

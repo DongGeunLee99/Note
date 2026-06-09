@@ -11,7 +11,14 @@
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
       "Bash(git push *)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "WebFetch(domain:dororongju.tistory.com)",
+      "Bash(Remove-Item *)",
+      "Bash(npx vite *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5199/)",
+      "Bash(curl -s http://localhost:5199/src/pages/CalendarPage.tsx)",
+      "Bash(kill %1)",
+      "Read(//tmp/**)"
     ]
   }
 }
