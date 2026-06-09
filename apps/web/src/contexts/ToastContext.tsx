@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useCallback, ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { IconCheck, IconX, IconInfoCircle } from '@tabler/icons-react'
+import { TONES, type ToneColors } from '../theme/tones'
 
 type ToastType = 'success' | 'error' | 'info'
 
@@ -22,10 +23,10 @@ const ICONS = {
   info: <IconInfoCircle size={14} />,
 }
 
-const COLORS: Record<ToastType, string> = {
-  success: 'bg-[#EAF3DE] text-[#27500A]',
-  error: 'bg-[#FCEBEB] text-[#791F1F]',
-  info: 'bg-[#E6F1FB] text-[#0C447C]',
+const COLORS: Record<ToastType, ToneColors> = {
+  success: TONES.green,
+  error: TONES.red,
+  info: TONES.blue,
 }
 
 let toastId = 0
@@ -47,7 +48,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
           {toasts.map(t => (
             <div
               key={t.id}
-              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-[11px] font-medium shadow-md ${COLORS[t.type]}`}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg text-[11px] font-medium shadow-md"
+              style={{ background: COLORS[t.type].bg, color: COLORS[t.type].text }}
             >
               {ICONS[t.type]}
               {t.message}

@@ -3,6 +3,7 @@ import ToggleSwitch from '../common/ToggleSwitch'
 import Badge from '../common/Badge'
 import type { LocalAlarm } from '../../types/localAlarm'
 import { formatTime, formatRepeat } from '../../types/localAlarm'
+import { useSettingsStore } from '../../stores/useSettingsStore'
 
 interface AlarmCardProps {
   alarm: LocalAlarm
@@ -12,6 +13,7 @@ interface AlarmCardProps {
 }
 
 export default function AlarmCard({ alarm, groupEnabled, onToggle, onEdit }: AlarmCardProps) {
+  const { timeFormat } = useSettingsStore()
   const isEffectivelyOff = !alarm.isEnabled || !groupEnabled
 
   return (
@@ -22,7 +24,7 @@ export default function AlarmCard({ alarm, groupEnabled, onToggle, onEdit }: Ala
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5">
           <span className="text-[13px] font-medium tabular-nums">
-            {String(alarm.hour).padStart(2, '0')}:{String(alarm.minute).padStart(2, '0')}
+            {formatTime(alarm.hour, alarm.minute, timeFormat)}
           </span>
           <span className="text-[11px] truncate">{alarm.label}</span>
           {alarm.sourceMemoId && (
@@ -30,7 +32,7 @@ export default function AlarmCard({ alarm, groupEnabled, onToggle, onEdit }: Ala
           )}
         </div>
         <p className="text-[9px] mt-0.5" style={{ color: 'var(--color-muted)' }}>
-          {formatTime(alarm.hour, alarm.minute)} · {formatRepeat(alarm.repeatDays)}
+          {formatRepeat(alarm.repeatDays)}
         </p>
       </div>
 

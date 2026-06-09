@@ -11,6 +11,7 @@ import SomedayPage from './pages/SomedayPage'
 import CalendarPage from './pages/CalendarPage'
 import TrashPage from './pages/TrashPage'
 import DashboardPage from './pages/DashboardPage'
+import SettingsPage from './pages/SettingsPage'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>
@@ -32,6 +33,7 @@ export default function App() {
               <Route path="someday" element={<SomedayPage />} />
               <Route path="calendar" element={<CalendarPage />} />
               <Route path="trash" element={<TrashPage />} />
+              <Route path="settings" element={<SettingsPage />} />
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

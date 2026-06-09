@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { parse } from 'chrono-node'
+import { useSettingsStore } from '../../stores/useSettingsStore'
+import { formatTime } from '../../types/localAlarm'
 import { IconBolt, IconX, IconCheck } from '@tabler/icons-react'
 import Spinner from '../common/Spinner'
 import type { LocalAlarmGroup } from '../../types/localAlarm'
@@ -16,6 +18,7 @@ interface QuickAlarmInputProps {
 }
 
 export default function QuickAlarmInput({ groups, onAdd }: QuickAlarmInputProps) {
+  const { timeFormat } = useSettingsStore()
   const [text, setText] = useState('')
   const [parsed, setParsed] = useState<ParsedResult | null>(null)
   const [selectedGroupId, setSelectedGroupId] = useState(groups[0]?.groupId ?? '')
@@ -90,7 +93,7 @@ export default function QuickAlarmInput({ groups, onAdd }: QuickAlarmInputProps)
           <div>
             <p className="text-[9px] mb-0.5" style={{ color: 'var(--color-primary)' }}>인식된 알람</p>
             <p className="text-[12px] font-medium" style={{ color: 'var(--color-primary-emphasis)' }}>
-              {String(parsed.hour).padStart(2, '0')}:{String(parsed.minute).padStart(2, '0')}
+              {formatTime(parsed.hour, parsed.minute, timeFormat)}
             </p>
             <p className="text-[10px]" style={{ color: 'var(--color-primary)' }}>{parsed.label}</p>
           </div>

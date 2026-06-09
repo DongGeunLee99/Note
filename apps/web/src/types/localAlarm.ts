@@ -29,10 +29,13 @@ export const GROUP_COLORS = [
 
 export const GROUP_EMOJIS = ['💼', '🏠', '🏃', '🎯', '📚', '🌙', '✈️', '🎮', '🍳', '💊', '🐶', '⭐']
 
-export function formatTime(hour: number, minute: number): string {
-  const period = hour < 12 ? '오전' : '오후'
+export function formatTime(hour: number, minute: number, fmt: '12h' | '24h' = '24h'): string {
+  if (fmt === '24h') {
+    return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`
+  }
+  const period = hour < 12 ? 'AM' : 'PM'
   const h = hour % 12 === 0 ? 12 : hour % 12
-  return `${period} ${h}:${String(minute).padStart(2, '0')}`
+  return `${h}:${String(minute).padStart(2, '0')} ${period}`
 }
 
 export function formatRepeat(days: number[]): string {
