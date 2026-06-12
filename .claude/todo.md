@@ -6,6 +6,7 @@
 
 ## 미완료
 
+
 ### Step 1. 프로젝트 세팅
 
 - [x] 모노레포 구조 세팅 — pnpm workspace + Turborepo, `apps/web` · `apps/electron` · `apps/mobile` · `packages/shared` 폴더 구성
@@ -74,3 +75,9 @@
 ## 완료
 
 <!-- 완료된 항목은 여기 아래에 최신순으로 추가 -->
+
+### Path Alias(경로 별칭) — `@/` 적용 + 기존 import 일괄 변환 (2026-06-12)
+
+- [x] `vite.config.ts` `resolve.alias` + `tsconfig.app.json` `paths` 설정 (TS 6.0 대응: `baseUrl` 미사용)
+- [x] `apps/web/src` `../` 상대경로 → `@/` 일괄 변환 (48개 파일 / 186건, `./` 형제는 유지)
+- [x] 검증: vite 번들러 빌드 통과(8,268 모듈), 잔여 `../` 0건

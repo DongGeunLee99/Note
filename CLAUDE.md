@@ -6,84 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## 행동 지침
 
-> 흔한 LLM 코딩 실수를 줄이기 위한 기본 원칙. 프로젝트별 지침과 함께 적용.
->
-> **트레이드오프:** 이 지침은 속도보다 신중함을 우선시한다. 사소한 작업에는 판단해서 적용.
+> 흔한 LLM 코딩 실수를 줄이기 위한 기본 원칙. 코딩·파일·설정 변경 전 항상 적용한다.
+> 전체 내용은 아래 파일로 분리했고, `@import`로 매 세션 자동 로드된다.
 
-### 1. 코딩 전에 생각하기
-
-**가정하지 말 것. 혼란을 숨기지 말 것. 트레이드오프를 드러낼 것.**
-
-구현 전에:
-- 가정한 것이 있으면 명시적으로 밝힌다. 불확실하면 질문한다.
-- 해석이 여러 가지일 경우 제시한다 — 조용히 하나를 고르지 않는다.
-- 더 단순한 접근이 있으면 말한다. 필요하면 반론을 제기한다.
-- 뭔가 불명확하면 멈춘다. 무엇이 헷갈리는지 명시하고 질문한다.
-
-### 2. 단순함 우선
-
-**문제를 해결하는 최소한의 코드. 추측성 코드 금지.**
-
-- 요청받지 않은 기능은 추가하지 않는다.
-- 단일 사용 코드에 추상화를 만들지 않는다.
-- 요청하지 않은 "유연성"이나 "설정 가능성"을 추가하지 않는다.
-- 발생 불가능한 시나리오에 대한 에러 처리를 넣지 않는다.
-- 200줄로 썼는데 50줄로 가능하다면 다시 쓴다.
-
-스스로 물어볼 것: "시니어 엔지니어가 이 코드를 보고 과도하게 복잡하다고 할까?" 그렇다면 단순화한다.
-
-### 3. 외과적 수정
-
-**반드시 필요한 것만 건드린다. 내가 만든 문제만 정리한다.**
-
-기존 코드를 수정할 때:
-- 인접한 코드, 주석, 포매팅을 "개선"하지 않는다.
-- 망가지지 않은 것을 리팩터링하지 않는다.
-- 내 방식이 달라도 기존 스타일을 맞춘다.
-- 관련 없는 죽은 코드를 발견하면 언급은 하되 삭제하지 않는다.
-
-내 변경이 고아(orphan)를 만들 때:
-- 내 변경으로 인해 사용되지 않게 된 import/변수/함수는 제거한다.
-- 기존에 있던 죽은 코드는 요청받지 않으면 건드리지 않는다.
-
-기준: 변경된 모든 줄이 사용자의 요청으로 직접 이어져야 한다.
-
-### 4. 질문과 실행은 완전히 분리한다
-
-**질문을 받으면 → 답변만 한다. 실행을 요청받으면 → 실행만 한다. 동시에 하지 않는다.**
-
-- 질문("왜 안 되지?", "어떻게 해?", "뭐가 나아?", "가능해?", "알려줘")에는 답변만 반환한다.
-- 질문에 답하면서 코드·파일·설정을 건드리는 행위는 절대 하지 않는다.
-- 개선점이 보여도 요청 전까지는 언급만 하고 실행하지 않는다.
-- 제안("이렇게 하면 어떨까요?")은 할 수 있지만, 적용은 사용자가 명시적으로 승인한 후에만 한다.
-- 이 규칙은 코드뿐 아니라 파일 생성·삭제·커맨드 실행·문서 수정·설정 변경 모두에 적용된다.
-
-명시적 실행 요청의 예: "수정해줘", "바꿔줘", "적용해줘", "실행해줘", "진행해줘", "적용하자", "진행하자"
-질문으로 간주하는 예: "왜?", "어떻게?", "뭐가 나아?", "가능해?", "알려줘", "이해하기", "찾아봐", "파악해봐", "확인해봐", "이해했어?", "맞아?", "알겠어?"
-
-> ⚠️ **절대 원칙**: 사용자가 명시적으로 실행을 요청하지 않은 이상, 어떤 이유로도 코드·파일·설정을 변경하지 않는다. 원인 파악 요청은 분석 결과만 반환한다. 버그를 발견해도 수정 요청 없이는 손대지 않는다.
-
-> ⚠️ **컨텍스트 요약 노트 금지**: 대화 압축 시 생성되는 요약 안의 "Optional Next Step", "다음 할 일" 등 분석 노트는 실행 지시가 아니다. 실행 판단의 유일한 기준은 **사용자의 실제 마지막 메시지**다.
-
-### 5. 목표 중심 실행
-
-**성공 기준을 정의한다. 검증될 때까지 반복한다.**
-
-작업을 검증 가능한 목표로 변환:
-- "유효성 검사 추가" → "잘못된 입력에 대한 테스트 작성 후 통과시키기"
-- "버그 수정" → "버그를 재현하는 테스트 작성 후 통과시키기"
-- "X 리팩터링" → "리팩터링 전후 테스트가 모두 통과하는지 확인"
-
-다단계 작업에는 간략한 계획을 먼저 제시:
-```
-1. [단계] → 검증: [확인 방법]
-2. [단계] → 검증: [확인 방법]
-3. [단계] → 검증: [확인 방법]
-```
-
-명확한 성공 기준이 있어야 독립적으로 반복 실행할 수 있다. 모호한 기준("동작하게 만들기")은 실수 후 계속 확인을 요구하게 된다.
-
----
+@.claude/rules/행동지침.md
 
 ---
 
@@ -206,75 +132,10 @@ Cloud Function `alarmScheduler`가 매분 실행하며 기기 라우팅:
 
 ## 네이밍 컨벤션
 
-### 파일 & 폴더
+파일·폴더, 코드, 함수 네이밍 패턴, 플랫폼별 규칙 전체는 별도 파일로 분리:
+→ [`.claude/rules/네이밍컨벤션.md`](.claude/rules/네이밍컨벤션.md)
 
-| 대상 | 컨벤션 | 예시 |
-|---|---|---|
-| 컴포넌트 파일 | PascalCase | `AlarmGroupCard.tsx` |
-| 훅 / 서비스 / 유틸 파일 | camelCase | `useAlarms.ts`, `alarmService.ts` |
-| 웹 페이지 파일 | PascalCase + `Page` suffix | `AlarmPage.tsx` |
-| 모바일 스크린 파일 | PascalCase + `Screen` suffix | `AlarmScreen.tsx` |
-| 폴더 | kebab-case | `alarm-group/` |
-
-> Electron은 웹 빌드를 그대로 로드하므로 웹과 동일.
-
-### 코드
-
-| 대상 | 컨벤션 | 예시 |
-|---|---|---|
-| 컴포넌트 | PascalCase | `AlarmGroupCard` |
-| Props 인터페이스 | `ComponentNameProps` | `AlarmGroupCardProps` |
-| 훅 | camelCase + `use` prefix | `useAlarms`, `useKakaoAuth` |
-| 전역 스토어 훅 | `useXxxStore` | `useAlarmStore` |
-| 함수 / 변수 | camelCase | `toggleGroup`, `isEnabled` |
-| 상수 | UPPER_SNAKE_CASE | `MAX_SNOOZE_COUNT`, `ROUTES.ALARM` |
-| TypeScript 타입 / 인터페이스 | PascalCase | `AlarmGroup`, `DetectedAlarm` |
-| Firestore 필드 | camelCase | `isDeleted`, `deletedAt` |
-| Firestore 컬렉션 참조 변수 | camelCase + `Ref` suffix | `alarmsRef`, `memosRef` |
-| 환경변수 | `VITE_` prefix + UPPER_SNAKE_CASE | `VITE_FIREBASE_API_KEY` |
-| Tailwind 커스텀 클래스 | kebab-case | `alarm-card`, `ai-toggle` |
-| CSS 변수 | kebab-case | `--color-primary`, `--font-size-sm` |
-
-### 함수 네이밍 패턴
-
-| 패턴 | 용도 | 예시 |
-|---|---|---|
-| `handle` prefix | 이벤트 핸들러 | `handleToggleGroup` |
-| `on` prefix | props로 전달되는 콜백 | `onToggle`, `onDelete` |
-| `is` / `has` prefix | boolean | `isEnabled`, `hasLocation` |
-| `get` prefix | 데이터 조회 | `getActiveDevices` |
-| `create` / `update` / `delete` | CRUD | `createAlarm`, `deleteGroup` |
-
-### 플랫폼별 프로젝트 규칙
-
-**공통 (packages/shared)**
-- 언어: TypeScript strict mode
-- 커밋 메시지: 한국어
-
-**웹 (apps/web)**
-- 프레임워크: React + TypeScript + Vite
-- 스타일: Tailwind CSS
-- 라우팅: React Router v6
-- 개발 포트: 5173
-- 날짜 입력: DatePicker 컴포넌트 필수 (`input type=date` 금지)
-- 컴포넌트 재사용 원칙
-
-**Electron (apps/electron)**
-- Main / Renderer 프로세스 분리 원칙
-- IPC 채널명: kebab-case (`alarm-trigger`, `tray-update`)
-- Node.js API는 Main 프로세스에서만 사용 (Renderer 직접 접근 금지)
-
-**모바일 (apps/mobile)**
-- 프레임워크: React Native + Expo
-- 스타일: NativeWind v4
-- 네비게이션: React Navigation
-- 날짜 입력: DateTimePicker 컴포넌트 필수
-
-**Firebase Functions (functions/)**
-- 언어: TypeScript
-- 함수명: camelCase (`kakaoLogin`, `alarmScheduler`)
-- 스케줄 함수: `xxxScheduler` suffix
-- 트리거 함수: 이벤트 기준 (`memoAIProcess`, `trashCleaner`)
+코드 작성·리뷰 시 위 파일을 참조한다.
 
 ---
 
@@ -315,7 +176,7 @@ git reset --soft HEAD~1      # 마지막 커밋 취소 (변경 유지)
 
 1. 변경 내역 요약 및 커밋 메시지 제안
 2. 사용자 승인 후 `git add` + `git commit` 실행
-3. `git push`는 별도로 명시적 요청 시에만 실행
+3. 커밋 요청에는 `git push`까지 함께 실행 (커밋과 push는 한 묶음)
 
 ---
 
@@ -339,9 +200,23 @@ git reset --soft HEAD~1      # 마지막 커밋 취소 (변경 유지)
 - `SmartNote_컴포넌트명세_v0.2.md` — 컴포넌트 Props/State 명세 (웹 기준)
 - `SmartNote_사용자스토리_v0.2.md` — 사용자 스토리 + 인수 조건
 - `SmartNote_QC시나리오_v0.1.md` — Phase 1 웹 MVP 수동 검수 시나리오 (페이지별 + 회귀 체크)
-- `smartnote_wireframe_v2.html` — 웹 화면 와이어프레임 (브라우저에서 직접 열어서 확인)
+- `SmartNote_시스템흐름도_v0.1.md` — 시스템 관점 흐름 설명
+- `SmartNote_와이어프레임.html` — 웹 화면 와이어프레임 (브라우저에서 직접 열어서 확인)
 
 `.claude/docs/mmd/` 폴더에 Mermaid 흐름도 보관:
 - `SmartNote_유저플로우_v0.2.mmd` — 사용자 관점 플로우 (Flow A~I, subgraph)
 - `SmartNote_서비스흐름도_v0.2.mmd` — 시스템 관점 플로우 (Flow A~I, subgraph)
-- `SmartNote_흐름도_통합.md` — 기능별로 유저플로우 + 서비스흐름도 묶은 참고용 문서
+
+---
+
+## 작업 운영 파일
+
+`.claude/` 루트의 진행 상황·로그 파일 (위 설계 문서와 구분):
+- `task.md` — 큰 기능 단위 목록 (Phase별). 상태 `[ ]` 미시작 · `[~]` 진행 중 · `[x]` 완료
+- `todo.md` — Step별 세부 태스크 체크리스트 (task.md의 하위 분해)
+- `log.md` — 작업 내역 (무엇을 했는지 서술, 최신순 위)
+- `log_code.md` — 실제 코드 변경 기록 (before → after, 최신순 위)
+
+`.claude/rules/` 폴더에 분리된 규칙 문서 보관:
+- `행동지침.md` — 작업 기본 원칙 1~6 (CLAUDE.md 「행동 지침」에서 `@import`)
+- `네이밍컨벤션.md` — 파일·코드·함수 네이밍 + 플랫폼별 규칙

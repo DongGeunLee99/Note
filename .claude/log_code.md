@@ -5,6 +5,323 @@
 
 ---
 
+## 2026-06-12 (3)
+
+### · Path Alias `@/` 도입 + 상대경로 일괄 변환
+
+---
+
+#### `apps/web/vite.config.ts`
+
+```ts
+// before
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
+
+export default defineConfig({
+  plugins: [react(), tailwindcss()],
+})
+
+// after
+import { fileURLToPath, URL } from 'node:url'
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
+
+export default defineConfig({
+  plugins: [react(), tailwindcss()],
+  resolve: {
+    alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+    },
+  },
+})
+```
+
+---
+
+#### `apps/web/tsconfig.app.json`
+
+```jsonc
+// after — moduleResolution 아래에 paths 추가 (baseUrl 미사용: TS 6.0 deprecated)
+"moduleResolution": "bundler",
+"paths": { "@/*": ["./src/*"] },
+"allowImportingTsExtensions": true,
+```
+
+---
+
+#### `apps/web/src/**` (48개 파일 / 186건)
+
+`../` 상대경로 import만 `@/`로 변환. `./` 형제 import는 유지.
+
+```ts
+// before (깊이마다 다름)
+import { useLang } from '../../i18n'          // pages/, components/*/
+import { tones } from '../theme/tones'
+
+// after (어느 깊이에서든 동일)
+import { useLang } from '@/i18n'
+import { tones } from '@/theme/tones'
+```
+
+---
+
+## 2026-06-12 (2)
+
+### · i18n을 i18next + JSON 구조로 전환
+
+---
+
+#### `apps/web/src/i18n/locales/ko.json` · `en.json` (신규)
+
+함수형 문구는 보간으로, 배열·Record는 객체로:
+
+```jsonc
+// ko.json (발췌)
+{
+  "common": { "count": "{{n}}개" },
+  "home": { "recent": "최근 기록 ({{n}})", "aiClassified": "AI가 '{{cat}}'으로 분류했습니다" },
+  "trash": { "deleteBody": "\"{{title}}\"을 영구 삭제합니다." },
+  "calendar": { "alarmBefore": { "0": "정시", "5": "5분 전", "30": "30분 전" } },
+  "time": { "dayNames": ["일","월","화","수","목","금","토"] },
+  "notification": { "tips": [{ "step": "1", "label": "...", "desc": "..." }] }
+}
+```
+
+---
+
+#### `apps/web/src/i18n/index.ts` (신규)
+
+```ts
+import i18n from 'i18next'
+import { initReactI18next, useTranslation } from 'react-i18next'
+import ko from './locales/ko.json'
+import en from './locales/en.json'
+
+export type Language = 'ko' | 'en'
+
+i18n.use(initReactI18next).init({
+  resources: { ko: { translation: ko }, en: { translation: en } },
+  lng: 'ko',
+  fallbackLng: 'ko',
+  interpolation: { escapeValue: false },
+  returnNull: false,
+})
+
+export default i18n
+
+export function useLang(): Language {
+  return useTranslation().i18n.language as Language
+}
+```
+
+---
+
+#### `apps/web/src/main.tsx`
+
+```tsx
+// import './index.css' 다음 줄에 추가
+import './i18n'
+```
+
+---
+
+#### `apps/web/tsconfig.app.json`
+
+```jsonc
+// compilerOptions에 추가 — JSON import 허용
+"resolveJsonModule": true,
+```
+
+---
+
+#### `apps/web/src/stores/useSettingsStore.ts`
+
+```ts
+// before
+setLanguage: (language) => set({ language }),
+// ...
+{ name: 'smartnote_settings' }
+
+// after
+import i18n from '../i18n'
+// ...
+setLanguage: (language) => {
+  i18n.changeLanguage(language)
+  set({ language })
+},
+// ...
+{
+  name: 'smartnote_settings',
+  onRehydrateStorage: () => (state) => {
+    if (state?.language) i18n.changeLanguage(state.language)
+  },
+}
+```
+
+---
+
+#### 호출부 전환 패턴 (33개 파일 공통)
+
+```tsx
+// before
+import { useT, useLang } from '../../i18n/translations'
+const t = useT()
+<span>{t.alarm.pageTitle}</span>
+<span>{t.home.recent(entries.length)}</span>
+{t.time.dayNames.map(...)}
+<span>{t.category[cat]}</span>
+
+// after
+import { useTranslation } from 'react-i18next'
+import { useLang } from '../../i18n'        // useLang 쓰는 파일만
+const { t } = useTranslation()
+<span>{t('alarm.pageTitle')}</span>
+<span>{t('home.recent', { n: entries.length })}</span>
+{(t('time.dayNames', { returnObjects: true }) as string[]).map(...)}
+<span>{t(`category.${cat}`)}</span>
+```
+
+---
+
+#### 비훅 유틸 — `utils/formatDate.ts` · `components/calendar/calendarUtils.ts`
+
+```ts
+// before
+import { translations, type Language } from '../i18n/translations'
+const t = translations[lang].time
+return t.minutesAgo(diffMin)
+
+// after
+import i18n, { type Language } from '../i18n'
+const t = i18n.getFixedT(lang)
+return t('time.minutesAgo', { n: diffMin })
+```
+
+calendarUtils의 rbc `showMore`는 함수 시그니처 유지:
+```ts
+showMore: (total: number) => t('calendar.showMore', { n: total }),
+```
+
+---
+
+#### 삭제
+
+- `apps/web/src/i18n/translations.ts` — 단일 TS 사전 파일 (JSON + i18next로 대체)
+
+---
+
+## 2026-06-12
+
+### · 앱 전체 한/영 다국어(i18n) 적용
+
+---
+
+#### `apps/web/src/i18n/translations.ts` (신규)
+
+```ts
+// ko 사전이 기준 스키마. en은 satisfies typeof ko로 구조 강제.
+export type Language = 'ko' | 'en'
+
+const ko = { common: { add: '추가', ... }, sidebar: { ... }, ... }
+const en = { common: { add: 'Add', ... }, sidebar: { ... }, ... } satisfies typeof ko
+
+export const translations: Record<Language, typeof ko> = { ko, en }
+
+export function useT() {
+  const language = useSettingsStore(s => s.language)
+  return translations[language]
+}
+
+export function useLang(): Language {
+  return useSettingsStore(s => s.language)
+}
+```
+
+---
+
+#### `apps/web/src/stores/useSettingsStore.ts`
+
+```ts
+// before
+interface SettingsState {
+  timeFormat: TimeFormat
+  setTimeFormat: (fmt: TimeFormat) => void
+  theme: ThemeMode
+  setTheme: (theme: ThemeMode) => void
+}
+
+// after
+export type AppLanguage = 'ko' | 'en'
+
+interface SettingsState {
+  timeFormat: TimeFormat
+  setTimeFormat: (fmt: TimeFormat) => void
+  theme: ThemeMode
+  setTheme: (theme: ThemeMode) => void
+  language: AppLanguage          // 추가
+  setLanguage: (language: AppLanguage) => void  // 추가
+}
+
+// 초기값
+language: 'ko',
+setLanguage: (language) => set({ language }),
+```
+
+---
+
+#### `apps/web/src/utils/formatDate.ts`
+
+```ts
+// before: 한국어 하드코딩
+export function formatFullDate(date: Date): string { ... }
+
+// after: lang 파라미터 추가, 영어 분기
+export function formatFullDate(date: Date, lang: Language = 'ko'): string {
+  if (lang === 'en') {
+    return date.toLocaleString('en-US', { year: 'numeric', month: 'short', ... })
+  }
+  // 기존 한국어 포맷
+}
+```
+
+---
+
+#### `apps/web/src/components/calendar/calendarUtils.ts`
+
+```ts
+// before
+export function formatSectionDate(date: Date): string { ... }
+export function formatToolbarTitle(date: Date, view: CalView): string { ... }
+
+// after: lang 파라미터 추가
+export function formatSectionDate(date: Date, lang: Language = 'en'): string {
+  if (lang === 'ko') return `${...}월 ${...}일 (${DAY_SHORT_KO[...]})`
+  return `${DAY_SHORT[...]}, ${MONTH_SHORT[...]} ${...}`
+}
+export function formatToolbarTitle(date: Date, view: CalView, lang: Language = 'en'): string { ... }
+```
+
+---
+
+#### 컴포넌트 적용 패턴 (33개 파일 공통)
+
+```tsx
+// before
+<span>알람</span>
+<button>취소</button>
+
+// after
+import { useT } from '../../i18n/translations'
+const t = useT()
+<span>{t.sidebar.alarm}</span>
+<button>{t.common.cancel}</button>
+```
+
+---
+
 ## 2026-06-09
 
 ### · 캘린더 Week 뷰 — 30분 구분선 제거

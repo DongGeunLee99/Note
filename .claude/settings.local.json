@@ -18,7 +18,13 @@
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5199/)",
       "Bash(curl -s http://localhost:5199/src/pages/CalendarPage.tsx)",
       "Bash(kill %1)",
-      "Read(//tmp/**)"
+      "Read(//tmp/**)",
+      "Bash(git -C /c/00.WorkSpace/Note status --short)",
+      "PowerShell(\\(Get-Content \"apps\\\\web\\\\src\\\\i18n\\\\translations.ts\" | Measure-Object -Line\\).Lines)",
+      "PowerShell($files = @\\(\"apps\\\\web\\\\src\\\\components\\\\layout\\\\Sidebar.tsx\",\"apps\\\\web\\\\src\\\\components\\\\calendar\\\\DayView.tsx\",\"apps\\\\web\\\\src\\\\components\\\\calendar\\\\MiniCalendar.tsx\",\"apps\\\\web\\\\src\\\\components\\\\alarm\\\\QuickAlarmInput.tsx\",\"apps\\\\web\\\\src\\\\components\\\\common\\\\ConfirmModal.tsx\",\"apps\\\\web\\\\src\\\\components\\\\home\\\\TodayTimeline.tsx\",\"apps\\\\web\\\\src\\\\components\\\\home\\\\UpcomingDeadlines.tsx\",\"apps\\\\web\\\\src\\\\components\\\\calendar\\\\CalendarRightPanel.tsx\",\"apps\\\\web\\\\src\\\\components\\\\calendar\\\\DateTimePicker.tsx\",\"apps\\\\web\\\\src\\\\pages\\\\SettingsPage.tsx\",\"apps\\\\web\\\\src\\\\components\\\\home\\\\categoryConfig.tsx\"\\); foreach \\($f in $files\\) { Write-Output \"=== $f ===\"; Select-String -Path $f -Pattern '[가-힣]' | ForEach-Object { \"{0}: {1}\" -f $_.LineNumber, $_.Line.Trim\\(\\) } })",
+      "Bash(node scripts/codemod-alias.mjs)",
+      "Bash(rm scripts/codemod-alias.mjs)",
+      "Bash(rmdir scripts *)"
     ]
   }
 }

@@ -4,6 +4,111 @@
 
 ---
 
+## 2026-06-12 (4)
+
+### · Path Alias `@/` 도입 + apps/web 상대경로 일괄 변환
+
+> 파일 깊이마다 제각각이던 `../../`, `../` import를 `@/` 별칭으로 통일. 별칭은 번들러(vite)와 타입체커(tsc) 두 곳이 각자 경로를 해석하므로 두 설정을 동기화.
+
+- 설정 2곳
+  - `apps/web/vite.config.ts` — `resolve.alias['@'] → ./src` 추가 (번들러 경로 해석)
+  - `apps/web/tsconfig.app.json` — `paths: { "@/*": ["./src/*"] }` 추가 (tsc 타입체크 + IDE 점프)
+  - TS 6.0이 `baseUrl`을 deprecated 처리 → `baseUrl` 없이 `paths`만 사용(TS 5+ 부터 tsconfig 위치 기준 해석)
+- 일괄 변환 — `apps/web/src` 전체 `../` 상대경로 import → `@/` (48개 파일 / 186건)
+  - `./` 형제 import(47건)는 변경 이유 없어 유지
+  - 임시 codemod 스크립트로 각 파일 위치를 `path.resolve`로 절대 해석 후 치환 → 실행 후 스크립트 삭제
+- 별칭은 `@/`로 선택 — 기존 npm 스코프(`@smartnote/shared`, `@tabler/...`)와 충돌 방지
+- 검증
+  - vite 번들러 빌드 통과 (8,268 모듈 변환, dist 생성) → `@/` 186건 전부 정상 해석 확인
+  - 잔여 `../` import 0건
+  - baseline 대조: `@/` 모듈 에러는 설정을 뺀 baseline에서만 발생, 설정 있는 빌드에선 0건
+
+### · 확인 필요 (이번 작업과 별개, 사전 존재 타입 에러)
+- `tsc -b`는 아래 기존 에러로 미통과 (별칭과 무관, baseline에서도 동일하게 존재 → 손대지 않음)
+  - `AuthContext.tsx` `firebase/auth` 모듈 없음 + `ReactNode` type-only import 필요
+  - `ToastContext.tsx` `ReactNode` type-only import 필요
+  - `main.tsx` / `packages/shared/hooks/useKakaoAuth.ts` `window.Kakao` 타입 미선언
+  - `packages/shared/hooks/useAuth.ts` react 타입 선언 못 찾음
+  - `DashboardPage.tsx` 미사용 `Legend`, `AlarmGroupModal.tsx` useState 색상 타입 좁힘
+- 별도 정리 작업 필요
+
+---
+
+## 2026-06-12 (3)
+
+### · CLAUDE.md 역할 분배 + 정합성 정리
+
+> 비대해진 CLAUDE.md(408줄)를 역할별로 분리하고, 「상세 문서 위치」 섹션의 실제 파일 불일치를 수정.
+
+- `.claude/rules/` 폴더 신설 — 규칙 문서 분리 보관
+  - `행동지침.md` 신규 — 행동 지침 1~6 전체 이동. CLAUDE.md에서 `@.claude/rules/행동지침.md`로 자동 로드
+  - `네이밍컨벤션.md` 신규 — 파일·코드·함수 네이밍 + 플랫폼별 규칙 전체 이동. CLAUDE.md에서 링크로 참조(필요시 로드)
+- `CLAUDE.md` 수정
+  - 행동지침 블록 → `@import` 한 줄로 대체
+  - 네이밍 블록 → 링크로 대체
+  - 분량 408줄 → 222줄 (내용은 잘라낸 것이 아니라 이동 — 손실 없음)
+  - 「상세 문서 위치」 정합성 수정:
+    - `smartnote_wireframe_v2.html` → `SmartNote_와이어프레임.html` (실제 파일명으로 정정)
+    - `SmartNote_흐름도_통합.md` 제거 (실존하지 않던 참조)
+    - `SmartNote_시스템흐름도_v0.1.md` 추가 (실존하나 목록 누락분)
+  - 「작업 운영 파일」 섹션 신설 — `task.md`/`todo.md`/`log.md`/`log_code.md` 역할 + `rules/` 폴더 정의
+- 검증: `.claude/docs/` 실제 파일(10개 + mmd 2개)이 CLAUDE.md 목록과 1:1 대응(불일치 0), rules 2개 파일 실제 존재
+
+### · 확인 필요 (미검증)
+- `@import`가 **한글 경로(`행동지침.md`)에서 동작하는지** 미확인 — 다음 세션 CLAUDE.md 로드 시점에서만 확정 가능한 런타임 동작
+- 새 세션에서 행동지침 자동 적용 여부 확인 → 한글 경로를 못 읽으면 파일명을 영문(`work-guidelines.md` 등)으로 교체 필요
+
+---
+
+## 2026-06-12 (2)
+
+### · i18n을 i18next + JSON 구조로 전환 (이전 단일 TS 파일 방식 대체)
+
+> 같은 날 적용한 `translations.ts`(단일 TS 객체) 방식을 라이브러리 기반으로 마이그레이션. 사전을 한/영 JSON으로 분리하고 표준 `useTranslation()` 패턴 채택.
+
+- `pnpm --filter @smartnote/web add i18next react-i18next`
+- `apps/web/src/i18n/locales/ko.json`, `en.json` 신규 — 문구 사전을 한/영 JSON으로 분리
+  - 함수형 문구는 `{{n}}`·`{{cat}}`·`{{label}}`·`{{title}}` 보간으로 변환
+  - 배열(`time.dayNames`, `dashboard.timeSlots`, `notification.tips`)·Record(`category`, `someday.categoryNames`, `calendar.alarmBefore`)는 JSON 객체로 유지
+- `apps/web/src/i18n/index.ts` 신규 — i18next 초기화 + `Language` 타입 + `useLang()` 훅
+  - `interpolation.escapeValue: false` (React가 XSS 방어), `fallbackLng: 'ko'`
+- `apps/web/src/main.tsx` — `import './i18n'` 추가
+- `apps/web/tsconfig.app.json` — `resolveJsonModule: true` 추가 (JSON import 허용)
+- `stores/useSettingsStore.ts` — `setLanguage`·`onRehydrateStorage`에서 `i18n.changeLanguage` 동기화 (language는 여전히 persist의 source of truth)
+- 전 페이지·컴포넌트 33개 호출부 전환:
+  - `const t = useT()` → `const { t } = useTranslation()`
+  - `t.x.y` → `t('x.y')`, `t.x.y(n)` → `t('x.y', { n })`
+  - 배열 → `t('x.y', { returnObjects: true }) as T[]`, 동적 키 → `` t(`category.${k}`) ``
+- 비훅 유틸 `utils/formatDate.ts`·`components/calendar/calendarUtils.ts` — `translations[lang]` → `i18n.getFixedT(lang)`
+- `apps/web/src/i18n/translations.ts` 삭제
+- 검증: `tsc -b` 기준 i18n 관련 타입 에러 0. 잔존 에러(firebase 미설치, react 타입 선언, window.Kakao, GROUP_COLORS as const, 미사용 import)는 전부 기존 빌드 이슈
+- 미적용 잔여(DashboardPage·LoginPage·ConfirmModal·HomeRightPanel 목업)는 그대로 — 사전 키는 준비됨
+
+---
+
+## 2026-06-12
+
+### · 앱 전체 한/영 다국어(i18n) 적용
+
+- `apps/web/src/i18n/translations.ts` 신규 — ko/en 두 객체를 단일 TS 파일로 관리
+  - `satisfies typeof ko`로 en이 ko와 구조 동일함을 타입 레벨에서 강제
+  - 섹션: common / sidebar / category / home / alarm / memo / calendar / later / someday / trash / settings / login / dashboard / time / notification
+  - 저장 값(카테고리 '일정', '여행' 등)은 한글 유지 → 표시 시 매핑
+  - `useT()` 훅 — 현재 언어 사전 반환 / `useLang()` 훅 — 언어 코드 반환
+- `stores/useSettingsStore.ts` — `language: AppLanguage` 필드 + `setLanguage` 액션 추가 (persist로 localStorage 유지)
+- `pages/SettingsPage.tsx` — 언어 선택 UI 추가 (한국어 / English)
+- 전 페이지·컴포넌트 33개에 `useT()` 적용 — 하드코딩 문구 제거
+- `utils/formatDate.ts` — `lang` 파라미터 추가, 영어 시 `toLocaleString('en-US')` 분기
+- `components/calendar/calendarUtils.ts` — `formatSectionDate` / `formatToolbarTitle` `lang` 파라미터 추가
+
+### · 미적용 잔여 (추후 작업)
+- `DashboardPage.tsx` — 하드코딩 다수 (사전 준비 완료)
+- `LoginPage.tsx` — 3곳 하드코딩
+- `ConfirmModal.tsx` — "취소" 1곳
+- `HomeRightPanel.tsx` — 목업 "오전 7:30 / 기상 · 직장" 문구
+
+---
+
 ## 2026-06-10 (6)
 
 ### · QC 시나리오 문서 신설
