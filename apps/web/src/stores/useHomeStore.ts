@@ -1,9 +1,9 @@
 import { create } from 'zustand'
-import type { RecentEntry } from '../types/localItems'
-import type { ClassifiedCategory } from '../services/llamaService'
-import { classifyText } from '../services/llamaService'
-import { INITIAL_HOME_ENTRIES } from '../mocks/mockData'
-import { newLocalId } from '../utils/id'
+import type { RecentEntry } from '@/types/localItems'
+import type { ClassifiedCategory } from '@/services/llamaService'
+import { classifyText } from '@/services/llamaService'
+import { INITIAL_HOME_ENTRIES } from '@/mocks/mockData'
+import { newLocalId } from '@/utils/id'
 
 export type HomeCategory = 'AI' | ClassifiedCategory
 

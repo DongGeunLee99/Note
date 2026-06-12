@@ -1,9 +1,9 @@
 // Phase 1 로컬 목업 데이터 모음.
 // Phase 2에서 Firestore 연동 시 이 파일과 스토어의 초기값 참조만 제거하면 된다.
 
-import type { LocalAlarm, LocalAlarmGroup } from '../types/localAlarm'
-import type { LocalMemo } from '../types/localMemo'
-import type { LaterItem, SomedayItem, TrashItem, RecentEntry } from '../types/localItems'
+import type { LocalAlarm, LocalAlarmGroup } from '@/types/localAlarm'
+import type { LocalMemo } from '@/types/localMemo'
+import type { LaterItem, SomedayItem, TrashItem, RecentEntry, TodayScheduleItem } from '@/types/localItems'
 
 export const INITIAL_GROUPS: LocalAlarmGroup[] = [
   { groupId: 'g1', name: '직장', color: '#185FA5', emoji: '💼', isEnabled: true, isDefault: false },
@@ -84,4 +84,15 @@ export const INITIAL_HOME_ENTRIES: RecentEntry[] = [
   { id: 'e1', text: '내일 9시 병원 예약', category: '일정', createdAt: new Date(Date.now() - 1000 * 60 * 25) },
   { id: 'e2', text: '회사 프로젝트 회의 준비', category: '할일', createdAt: new Date(Date.now() - 1000 * 60 * 75) },
   { id: 'e3', text: '아이디어 — 주말에 블로그 포스팅', category: '메모', createdAt: new Date(Date.now() - 1000 * 60 * 60 * 25) },
+]
+
+export const INITIAL_TODAY_SCHEDULE: TodayScheduleItem[] = [
+  { id: 'ts1', hour: 7,  minute: 30, title: '기상',         kind: '알람', group: '직장', tone: 'blue' },
+  { id: 'ts2', hour: 9,  minute: 0,  title: '팀 회의',       kind: '일정', group: null,   tone: 'violet' },
+  { id: 'ts3', hour: 12, minute: 30, title: '점심 약속',     kind: '일정', group: null,   tone: 'green' },
+  { id: 'ts4', hour: 14, minute: 0,  title: '치과 예약',     kind: '일정', group: null,   tone: 'amber' },
+  { id: 'ts5', hour: 16, minute: 0,  title: '프로젝트 리뷰',  kind: '일정', group: null,   tone: 'blue' },
+  { id: 'ts6', hour: 18, minute: 30, title: '퇴근',          kind: '알람', group: '직장', tone: 'blue' },
+  { id: 'ts7', hour: 20, minute: 0,  title: '운동',          kind: '일정', group: null,   tone: 'green' },
+  { id: 'ts8', hour: 22, minute: 30, title: '취침 준비',     kind: '알람', group: '집',   tone: 'amber' },
 ]

@@ -1,7 +1,10 @@
 import { IconMapPin, IconTrash, IconBell } from '@tabler/icons-react'
-import AiToggleButton from '../common/AiToggleButton'
-import Spinner from '../common/Spinner'
-import type { LocalMemo } from '../../types/localMemo'
+import AiToggleButton from '@/components/common/AiToggleButton'
+import Spinner from '@/components/common/Spinner'
+import { useTranslation } from 'react-i18next'
+import { useLang } from '@/i18n'
+import { formatRelTime, formatSuggestionTime } from '@/utils/formatDate'
+import type { LocalMemo } from '@/types/localMemo'
 
 interface MemoCardProps {
   memo: LocalMemo
@@ -14,32 +17,12 @@ interface MemoCardProps {
   onDelete: () => void
 }
 
-function formatDate(date: Date): string {
-  const now = new Date()
-  const diffMs = now.getTime() - date.getTime()
-  const diffMin = Math.floor(diffMs / 60000)
-  const diffHour = Math.floor(diffMin / 60)
-  const diffDay = Math.floor(diffHour / 24)
-  if (diffMin < 1) return '방금 전'
-  if (diffMin < 60) return `${diffMin}분 전`
-  if (diffHour < 24) return `${diffHour}시간 전`
-  if (diffDay < 7) return `${diffDay}일 전`
-  return date.toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' })
-}
-
-function formatSuggestionTime(date: Date): string {
-  const h = date.getHours()
-  const m = date.getMinutes()
-  const period = h < 12 ? '오전' : '오후'
-  const hour = h % 12 === 0 ? 12 : h % 12
-  const min = m > 0 ? ` ${m}분` : ''
-  return `${date.getMonth() + 1}/${date.getDate()} ${period} ${hour}시${min}`
-}
-
 export default function MemoCard({
   memo, isSelected, aiMode,
   onSelect, onAiModeChange, onAlarmConfirm, onAlarmDismiss, onDelete,
 }: MemoCardProps) {
+  const { t } = useTranslation()
+  const lang = useLang()
   const displayText = aiMode === 'ai' && memo.aiSummary ? memo.aiSummary : memo.body
   const preview = displayText.length > 80 ? displayText.slice(0, 80) + '…' : displayText
 
@@ -57,12 +40,12 @@ export default function MemoCard({
           {memo.title || memo.body.split('\n')[0].slice(0, 30)}
         </span>
         <div className="flex items-center gap-1 flex-shrink-0">
-          <span className="text-[9px]" style={{ color: 'var(--color-muted)' }}>{formatDate(memo.createdAt)}</span>
+          <span className="text-[9px]" style={{ color: 'var(--color-muted)' }}>{formatRelTime(memo.createdAt, lang)}</span>
           <button
             onClick={e => { e.stopPropagation(); onDelete() }}
-            className="p-0.5 rounded hover:bg-red-50 transition-colors"
+            className="p-0.5 rounded hover-danger transition-colors"
           >
-            <IconTrash size={11} style={{ color: '#791F1F' }} />
+            <IconTrash size={11} style={{ color: 'var(--color-danger)' }} />
           </button>
         </div>
       </div>
@@ -82,7 +65,7 @@ export default function MemoCard({
         {memo.aiLoading && (
           <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
             <Spinner size="sm" />
-            <span className="text-[9px]" style={{ color: 'var(--color-primary)' }}>AI 처리 중…</span>
+            <span className="text-[9px]" style={{ color: 'var(--color-primary)' }}>{t('memo.aiProcessing')}</span>
           </div>
         )}
         {!memo.aiLoading && (
@@ -99,25 +82,26 @@ export default function MemoCard({
           <div
             onClick={e => e.stopPropagation()}
             className="flex items-center gap-2 px-2 py-1 rounded-lg flex-1 min-w-0"
-            style={{ background: '#FAEEDA' }}
+            style={{ background: 'var(--tone-amber-bg)' }}
           >
-            <IconBell size={11} style={{ color: '#854F0B', flexShrink: 0 }} />
-            <span className="text-[10px] flex-1 truncate" style={{ color: '#633806' }}>
-              {formatSuggestionTime(memo.alarmSuggestion.datetime)} 알람?
+            <IconBell size={11} style={{ color: 'var(--tone-amber-fg)', flexShrink: 0 }} />
+            <span className="text-[10px] flex-1 truncate" style={{ color: 'var(--tone-amber-text)' }}>
+              {t('memo.alarmSuggest', { time: formatSuggestionTime(memo.alarmSuggestion.datetime, lang) })}
             </span>
             <button
               onClick={onAlarmConfirm}
-              className="text-[9px] px-1.5 py-px rounded-full bg-[#185FA5] text-white flex-shrink-0"
+              className="text-[9px] px-1.5 py-px rounded-full text-white flex-shrink-0"
+              style={{ background: 'var(--color-primary)' }}
             >
-              추가
+              {t('common.add')}
             </button>
-            <button onClick={onAlarmDismiss} className="text-[9px] flex-shrink-0" style={{ color: '#633806' }}>
-              취소
+            <button onClick={onAlarmDismiss} className="text-[9px] flex-shrink-0" style={{ color: 'var(--tone-amber-text)' }}>
+              {t('common.cancel')}
             </button>
           </div>
         )}
         {memo.alarmSuggestion && memo.alarmConfirmed && (
-          <span className="text-[9px]" style={{ color: 'var(--color-muted)' }}>✓ 알람 추가됨</span>
+          <span className="text-[9px]" style={{ color: 'var(--color-muted)' }}>{t('memo.alarmAdded')}</span>
         )}
       </div>
     </div>

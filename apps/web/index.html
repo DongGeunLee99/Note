@@ -5,6 +5,19 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SmartNote</title>
+    <script>
+      // 첫 페인트 전에 저장된 테마 적용 — 다크 모드에서 라이트 화면 깜빡임 방지
+      (function () {
+        try {
+          var saved = JSON.parse(localStorage.getItem('smartnote_settings') || '{}')
+          var theme = (saved.state && saved.state.theme) || 'system'
+          if (theme === 'system') {
+            theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+          }
+          document.documentElement.dataset.theme = theme
+        } catch (e) { /* 저장값 파싱 실패 시 기본(라이트) 유지 */ }
+      })()
+    </script>
     <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
   </head>
   <body>

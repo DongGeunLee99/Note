@@ -1,7 +1,7 @@
 import { create } from 'zustand'
-import type { LaterItem } from '../types/localItems'
-import { INITIAL_LATER } from '../mocks/mockData'
-import { newLocalId } from '../utils/id'
+import type { LaterItem } from '@/types/localItems'
+import { INITIAL_LATER } from '@/mocks/mockData'
+import { newLocalId } from '@/utils/id'
 
 interface LaterState {
   items: LaterItem[]

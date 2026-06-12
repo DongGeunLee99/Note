@@ -1,7 +1,7 @@
 import { create } from 'zustand'
-import type { LocalAlarm, LocalAlarmGroup } from '../types/localAlarm'
-import { INITIAL_GROUPS, INITIAL_ALARMS } from '../mocks/mockData'
-import { newLocalId } from '../utils/id'
+import type { LocalAlarm, LocalAlarmGroup } from '@/types/localAlarm'
+import { INITIAL_GROUPS, INITIAL_ALARMS } from '@/mocks/mockData'
+import { newLocalId } from '@/utils/id'
 
 interface AlarmState {
   groups: LocalAlarmGroup[]

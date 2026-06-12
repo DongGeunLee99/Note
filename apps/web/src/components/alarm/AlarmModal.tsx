@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
-import Modal from '../common/Modal'
-import type { LocalAlarm, LocalAlarmGroup } from '../../types/localAlarm'
+import Modal from '@/components/common/Modal'
+import { useTranslation } from 'react-i18next'
+import type { LocalAlarm, LocalAlarmGroup } from '@/types/localAlarm'
 
 interface AlarmModalProps {
   isOpen: boolean
@@ -12,11 +13,11 @@ interface AlarmModalProps {
   defaultGroupId?: string
 }
 
-const DAY_LABELS = ['일', '월', '화', '수', '목', '금', '토']
 const HOURS = Array.from({ length: 24 }, (_, i) => i)
 const MINUTES = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
 
 export default function AlarmModal({ isOpen, onClose, onSave, onDelete, groups, initial, defaultGroupId }: AlarmModalProps) {
+  const { t } = useTranslation()
   const [label, setLabel] = useState('')
   const [hour, setHour] = useState(7)
   const [minute, setMinute] = useState(0)
@@ -51,16 +52,16 @@ export default function AlarmModal({ isOpen, onClose, onSave, onDelete, groups, 
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={initial ? '알람 편집' : '알람 추가'}
+      title={initial ? t('alarm.modalEdit') : t('alarm.modalAdd')}
       footer={
         <>
           {initial && onDelete && (
             <button
               onClick={onDelete}
               className="text-[10px] px-3 py-1.5 rounded-lg border mr-auto"
-              style={{ borderColor: '#fca5a5', color: '#791F1F' }}
+              style={{ borderColor: 'var(--color-danger-border)', color: 'var(--color-danger)' }}
             >
-              삭제
+              {t('common.delete')}
             </button>
           )}
           <button
@@ -68,7 +69,7 @@ export default function AlarmModal({ isOpen, onClose, onSave, onDelete, groups, 
             className="text-[10px] px-3 py-1.5 rounded-lg border"
             style={{ borderColor: 'var(--color-border-2)', color: 'var(--color-muted)' }}
           >
-            취소
+            {t('common.cancel')}
           </button>
           <button
             onClick={handleSave}
@@ -76,7 +77,7 @@ export default function AlarmModal({ isOpen, onClose, onSave, onDelete, groups, 
             className="text-[10px] px-3 py-1.5 rounded-lg text-white disabled:opacity-40"
             style={{ background: 'var(--color-primary)' }}
           >
-            저장
+            {t('common.save')}
           </button>
         </>
       }
@@ -84,13 +85,13 @@ export default function AlarmModal({ isOpen, onClose, onSave, onDelete, groups, 
       <div className="flex flex-col gap-0">
         {[
           {
-            label: '이름',
+            label: t('alarm.fieldName'),
             content: (
               <input
                 type="text"
                 value={label}
                 onChange={e => setLabel(e.target.value)}
-                placeholder="알람 이름"
+                placeholder={t('alarm.namePlaceholder')}
                 maxLength={30}
                 className="text-right text-[11px] outline-none bg-transparent w-36"
                 onKeyDown={e => e.key === 'Enter' && handleSave()}
@@ -98,7 +99,7 @@ export default function AlarmModal({ isOpen, onClose, onSave, onDelete, groups, 
             ),
           },
           {
-            label: '시간',
+            label: t('alarm.fieldTime'),
             content: (
               <div className="flex items-center gap-1">
                 <select
@@ -126,7 +127,7 @@ export default function AlarmModal({ isOpen, onClose, onSave, onDelete, groups, 
             ),
           },
           {
-            label: '그룹',
+            label: t('alarm.fieldGroup'),
             content: (
               <select
                 value={groupId}
@@ -152,9 +153,9 @@ export default function AlarmModal({ isOpen, onClose, onSave, onDelete, groups, 
         ))}
 
         <div className="pt-2">
-          <p className="text-[10px] mb-2" style={{ color: 'var(--color-muted)' }}>반복</p>
+          <p className="text-[10px] mb-2" style={{ color: 'var(--color-muted)' }}>{t('alarm.fieldRepeat')}</p>
           <div className="flex gap-1.5">
-            {DAY_LABELS.map((label, i) => (
+            {(t('time.dayNames', { returnObjects: true }) as string[]).map((label, i) => (
               <button
                 key={i}
                 onClick={() => toggleDay(i)}

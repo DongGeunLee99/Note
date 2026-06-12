@@ -1,9 +1,11 @@
 import { IconNote } from '@tabler/icons-react'
-import ToggleSwitch from '../common/ToggleSwitch'
-import Badge from '../common/Badge'
-import type { LocalAlarm } from '../../types/localAlarm'
-import { formatTime, formatRepeat } from '../../types/localAlarm'
-import { useSettingsStore } from '../../stores/useSettingsStore'
+import ToggleSwitch from '@/components/common/ToggleSwitch'
+import Badge from '@/components/common/Badge'
+import type { LocalAlarm } from '@/types/localAlarm'
+import { formatTime, formatRepeat } from '@/types/localAlarm'
+import { useSettingsStore } from '@/stores/useSettingsStore'
+import { useTranslation } from 'react-i18next'
+import { useLang } from '@/i18n'
 
 interface AlarmCardProps {
   alarm: LocalAlarm
@@ -14,12 +16,14 @@ interface AlarmCardProps {
 
 export default function AlarmCard({ alarm, groupEnabled, onToggle, onEdit }: AlarmCardProps) {
   const { timeFormat } = useSettingsStore()
+  const { t } = useTranslation()
+  const lang = useLang()
   const isEffectivelyOff = !alarm.isEnabled || !groupEnabled
 
   return (
     <div
       onClick={onEdit}
-      className={`flex items-center gap-2 pl-8 pr-2 py-1.5 rounded-lg cursor-pointer transition-colors hover:bg-black/[0.03] ${isEffectivelyOff ? 'opacity-35' : ''}`}
+      className={`flex items-center gap-2 pl-8 pr-2 py-1.5 rounded-lg cursor-pointer transition-colors hover-tint ${isEffectivelyOff ? 'opacity-35' : ''}`}
     >
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5">
@@ -28,15 +32,15 @@ export default function AlarmCard({ alarm, groupEnabled, onToggle, onEdit }: Ala
           </span>
           <span className="text-[11px] truncate">{alarm.label}</span>
           {alarm.sourceMemoId && (
-            <IconNote size={11} style={{ color: 'var(--color-primary)', flexShrink: 0 }} title="메모 연동" />
+            <IconNote size={11} style={{ color: 'var(--color-primary)', flexShrink: 0 }} title={t('alarm.memoLinked')} />
           )}
         </div>
         <p className="text-[9px] mt-0.5" style={{ color: 'var(--color-muted)' }}>
-          {formatRepeat(alarm.repeatDays)}
+          {formatRepeat(alarm.repeatDays, lang)}
         </p>
       </div>
 
-      <Badge variant="gray">{formatRepeat(alarm.repeatDays)}</Badge>
+      <Badge variant="gray">{formatRepeat(alarm.repeatDays, lang)}</Badge>
 
       <div onClick={e => e.stopPropagation()}>
         <ToggleSwitch

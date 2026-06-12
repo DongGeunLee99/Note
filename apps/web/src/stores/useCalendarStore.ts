@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { useMemo } from 'react'
-import { PRESET_EVENTS, timeToDate } from '../components/calendar/calendarUtils'
-import type { CalendarEventData, RbcEvent, CalView } from '../components/calendar/types'
+import { PRESET_EVENTS, timeToDate } from '@/components/calendar/calendarUtils'
+import type { CalendarEventData, RbcEvent, CalView } from '@/components/calendar/types'
 
 let _nextId = 1
 

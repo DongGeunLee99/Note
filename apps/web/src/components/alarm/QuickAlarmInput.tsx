@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { parse } from 'chrono-node'
-import { useSettingsStore } from '../../stores/useSettingsStore'
-import { formatTime } from '../../types/localAlarm'
+import { useSettingsStore } from '@/stores/useSettingsStore'
+import { useTranslation } from 'react-i18next'
+import { formatTime } from '@/types/localAlarm'
 import { IconBolt, IconX, IconCheck } from '@tabler/icons-react'
-import Spinner from '../common/Spinner'
-import type { LocalAlarmGroup } from '../../types/localAlarm'
+import Spinner from '@/components/common/Spinner'
+import type { LocalAlarmGroup } from '@/types/localAlarm'
 
 interface ParsedResult {
   hour: number
@@ -19,6 +20,7 @@ interface QuickAlarmInputProps {
 
 export default function QuickAlarmInput({ groups, onAdd }: QuickAlarmInputProps) {
   const { timeFormat } = useSettingsStore()
+  const { t } = useTranslation()
   const [text, setText] = useState('')
   const [parsed, setParsed] = useState<ParsedResult | null>(null)
   const [selectedGroupId, setSelectedGroupId] = useState(groups[0]?.groupId ?? '')
@@ -37,7 +39,7 @@ export default function QuickAlarmInput({ groups, onAdd }: QuickAlarmInputProps)
         const label = text
           .replace(/\d+시(\s*\d+분)?/, '')
           .replace(/오전|오후|내일|모레|다음주?\s*\w+요일/, '')
-          .trim() || '알람'
+          .trim() || t('alarm.defaultLabel')
         setParsed({ hour: date.getHours(), minute: date.getMinutes(), label })
       } else {
         setError(true)
@@ -72,16 +74,16 @@ export default function QuickAlarmInput({ groups, onAdd }: QuickAlarmInputProps)
           value={text}
           onChange={e => { setText(e.target.value); setParsed(null); setError(false) }}
           onKeyDown={e => e.key === 'Enter' && handleParse()}
-          placeholder="내일 오전 9시에 알려줘"
+          placeholder={t('alarm.quickPlaceholder')}
           className="flex-1 text-[11px] outline-none bg-transparent"
-          style={{ color: parsed ? '#1a1a18' : 'var(--color-muted)' }}
+          style={{ color: parsed ? 'var(--color-text)' : 'var(--color-muted)' }}
         />
         {loading && <Spinner size="sm" />}
       </div>
 
       {error && (
-        <p className="text-[10px] px-1" style={{ color: '#791F1F' }}>
-          시간을 인식하지 못했어요. 다시 입력해보세요.
+        <p className="text-[10px] px-1" style={{ color: 'var(--color-danger)' }}>
+          {t('alarm.quickParseError')}
         </p>
       )}
 
@@ -91,7 +93,7 @@ export default function QuickAlarmInput({ groups, onAdd }: QuickAlarmInputProps)
           style={{ background: 'var(--color-primary-subtle)', borderColor: 'var(--color-border-2)' }}
         >
           <div>
-            <p className="text-[9px] mb-0.5" style={{ color: 'var(--color-primary)' }}>인식된 알람</p>
+            <p className="text-[9px] mb-0.5" style={{ color: 'var(--color-primary)' }}>{t('alarm.quickRecognized')}</p>
             <p className="text-[12px] font-medium" style={{ color: 'var(--color-primary-emphasis)' }}>
               {formatTime(parsed.hour, parsed.minute, timeFormat)}
             </p>
@@ -115,7 +117,7 @@ export default function QuickAlarmInput({ groups, onAdd }: QuickAlarmInputProps)
               className="flex-1 flex items-center justify-center gap-1 text-[10px] py-1.5 rounded-lg text-white"
               style={{ background: 'var(--color-primary)' }}
             >
-              <IconCheck size={12} /> 추가
+              <IconCheck size={12} /> {t('common.add')}
             </button>
             <button
               onClick={handleCancel}
@@ -135,7 +137,7 @@ export default function QuickAlarmInput({ groups, onAdd }: QuickAlarmInputProps)
           className="text-[10px] py-1.5 rounded-lg border disabled:opacity-40 transition-opacity"
           style={{ borderColor: 'var(--color-primary)', color: 'var(--color-primary)' }}
         >
-          시간 인식하기
+          {t('alarm.quickParseBtn')}
         </button>
       )}
     </div>

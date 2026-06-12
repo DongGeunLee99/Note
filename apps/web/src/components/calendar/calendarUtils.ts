@@ -1,8 +1,9 @@
 import { dateFnsLocalizer } from 'react-big-calendar'
 import { format, parse, startOfWeek, getDay } from 'date-fns'
 import { ko } from 'date-fns/locale'
-import { formatClockFromDate, formatHourLabel, type TimeFormat } from '../../stores/useSettingsStore'
-import type { RbcEvent } from './types'
+import { formatClockFromDate, formatHourLabel, type TimeFormat } from '@/stores/useSettingsStore'
+import i18n, { type Language } from '@/i18n'
+import type { RbcEvent, CalView } from './types'
 
 export const rbcLocalizer = dateFnsLocalizer({
   format, parse,
@@ -10,11 +11,15 @@ export const rbcLocalizer = dateFnsLocalizer({
   getDay, locales: { ko },
 })
 
-export const RBC_MESSAGES = {
-  next: '›', previous: '‹', today: 'Today',
-  month: 'Month', week: 'Week', day: 'Day', agenda: 'Agenda',
-  date: 'Date', time: 'Time', event: 'Event',
-  noEventsInRange: 'No events', showMore: (n: number) => `+${n} more`,
+export function getRbcMessages(lang: Language) {
+  const t = i18n.getFixedT(lang)
+  return {
+    next: '›', previous: '‹', today: t('calendar.today'),
+    month: t('calendar.month'), week: t('calendar.week'), day: t('calendar.day'), agenda: 'Agenda',
+    date: 'Date', time: 'Time', event: 'Event',
+    noEventsInRange: t('calendar.noEventsInRange'),
+    showMore: (total: number) => t('calendar.showMore', { n: total }),
+  }
 }
 
 export function getEventProps(event: RbcEvent) {
@@ -50,8 +55,26 @@ export const PRESET_EVENTS: Record<number, { time: string; title: string; color:
 export function fmtTime(date: Date, fmt: TimeFormat) { return formatClockFromDate(date, fmt) }
 export function fmtHour(h: number, fmt: TimeFormat)  { return formatHourLabel(h, fmt) }
 
-export function formatSectionDate(date: Date) {
+export const DAY_SHORT_KO = ['일', '월', '화', '수', '목', '금', '토']
+
+export function formatSectionDate(date: Date, lang: Language = 'en') {
+  if (lang === 'ko') {
+    return `${date.getMonth() + 1}월 ${date.getDate()}일 (${DAY_SHORT_KO[date.getDay()]})`
+  }
   return `${DAY_SHORT[date.getDay()]}, ${MONTH_SHORT[date.getMonth()]} ${date.getDate()}`
+}
+
+/** 툴바 타이틀 공용 포맷 — Month/Week/Day 탭 통일 */
+export function formatToolbarTitle(date: Date, view: CalView, lang: Language = 'en'): string {
+  // Week는 헤더에 날짜·요일이 이미 보이므로 Month와 동일한 "월 + 연도"만 표시
+  if (view === 'month' || view === 'week') {
+    if (lang === 'ko') return `${date.getFullYear()}년 ${date.getMonth() + 1}월`
+    return `${MONTH_FULL[date.getMonth()]} ${date.getFullYear()}`
+  }
+  if (lang === 'ko') {
+    return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 (${DAY_SHORT_KO[date.getDay()]})`
+  }
+  return `${DAY_SHORT[date.getDay()]}, ${MONTH_SHORT[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`
 }
 
 export function toDateKey(date: Date) {

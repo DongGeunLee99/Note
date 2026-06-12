@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { IconMapPin, IconX } from '@tabler/icons-react'
-import Spinner from '../common/Spinner'
-import type { LocalMemo } from '../../types/localMemo'
+import Spinner from '@/components/common/Spinner'
+import { useTranslation } from 'react-i18next'
+import type { LocalMemo } from '@/types/localMemo'
 
 interface MemoEditorProps {
   isOpen: boolean
@@ -10,7 +11,7 @@ interface MemoEditorProps {
   initial?: LocalMemo | null
 }
 
-async function fetchReverseGeocode(lat: number, lng: number): Promise<string> {
+async function fetchReverseGeocode(lat: number, lng: number, fallback: string): Promise<string> {
   try {
     const res = await fetch(
       `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=ko`,
@@ -18,13 +19,14 @@ async function fetchReverseGeocode(lat: number, lng: number): Promise<string> {
     )
     const data = await res.json()
     const addr = data.address ?? {}
-    return addr.suburb ?? addr.neighbourhood ?? addr.quarter ?? addr.city_district ?? addr.city ?? '현재 위치'
+    return addr.suburb ?? addr.neighbourhood ?? addr.quarter ?? addr.city_district ?? addr.city ?? fallback
   } catch {
-    return '현재 위치'
+    return fallback
   }
 }
 
 export default function MemoEditor({ isOpen, onClose, onSave, initial }: MemoEditorProps) {
+  const { t } = useTranslation()
   const [title, setTitle] = useState('')
   const [body, setBody] = useState('')
   const [locationLoading, setLocationLoading] = useState(false)
@@ -46,12 +48,12 @@ export default function MemoEditor({ isOpen, onClose, onSave, initial }: MemoEdi
     setLocationLoading(true)
     navigator.geolocation.getCurrentPosition(
       async pos => {
-        const label = await fetchReverseGeocode(pos.coords.latitude, pos.coords.longitude)
+        const label = await fetchReverseGeocode(pos.coords.latitude, pos.coords.longitude, t('memo.currentLocation'))
         setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude, label })
         setLocationLoading(false)
       },
       () => {
-        setLocation({ lat: null, lng: null, label: '위치 권한 없음' })
+        setLocation({ lat: null, lng: null, label: t('memo.locationDenied') })
         setLocationLoading(false)
       },
     )
@@ -80,8 +82,8 @@ export default function MemoEditor({ isOpen, onClose, onSave, initial }: MemoEdi
           className="flex items-center justify-between px-4 py-3 border-b flex-shrink-0"
           style={{ borderColor: 'var(--color-border)' }}
         >
-          <span className="text-[12px] font-medium">{initial ? '메모 편집' : '새 메모'}</span>
-          <button onClick={onClose} className="p-0.5 rounded hover:bg-black/5">
+          <span className="text-[12px] font-medium">{initial ? t('memo.editorEdit') : t('memo.editorNew')}</span>
+          <button onClick={onClose} className="p-0.5 rounded hover-tint">
             <IconX size={14} style={{ color: 'var(--color-muted)' }} />
           </button>
         </div>
@@ -91,18 +93,18 @@ export default function MemoEditor({ isOpen, onClose, onSave, initial }: MemoEdi
             type="text"
             value={title}
             onChange={e => setTitle(e.target.value)}
-            placeholder="제목 (선택)"
+            placeholder={t('memo.titlePlaceholder')}
             className="text-[12px] font-medium outline-none border-b pb-2"
-            style={{ borderColor: 'var(--color-border)', color: '#1a1a18' }}
+            style={{ borderColor: 'var(--color-border)', color: 'var(--color-text)' }}
           />
 
           <textarea
             value={body}
             onChange={e => setBody(e.target.value)}
-            placeholder="내용을 입력하세요&#10;&#10;날짜/시간이 포함되면 알람을 자동으로 감지해요"
+            placeholder={t('memo.bodyPlaceholder')}
             rows={8}
             className="text-[11px] leading-relaxed outline-none resize-none"
-            style={{ color: '#1a1a18' }}
+            style={{ color: 'var(--color-text)' }}
             autoFocus={!initial}
           />
 
@@ -129,7 +131,7 @@ export default function MemoEditor({ isOpen, onClose, onSave, initial }: MemoEdi
                 style={{ borderColor: 'var(--color-border-2)', color: 'var(--color-muted)' }}
               >
                 {locationLoading ? <Spinner size="sm" /> : <IconMapPin size={11} />}
-                {locationLoading ? '위치 가져오는 중…' : '위치 태그'}
+                {locationLoading ? t('memo.locationLoading') : t('memo.locationTag')}
               </button>
             )}
           </div>
@@ -144,7 +146,7 @@ export default function MemoEditor({ isOpen, onClose, onSave, initial }: MemoEdi
             className="text-[10px] px-3 py-1.5 rounded-lg border"
             style={{ borderColor: 'var(--color-border-2)', color: 'var(--color-muted)' }}
           >
-            취소
+            {t('common.cancel')}
           </button>
           <button
             onClick={handleSave}
@@ -152,7 +154,7 @@ export default function MemoEditor({ isOpen, onClose, onSave, initial }: MemoEdi
             className="text-[10px] px-3 py-1.5 rounded-lg text-white disabled:opacity-40"
             style={{ background: 'var(--color-primary)' }}
           >
-            저장
+            {t('common.save')}
           </button>
         </div>
       </div>

@@ -1,8 +1,8 @@
 import { create } from 'zustand'
-import type { LocalMemo, LocalMemoLocation } from '../types/localMemo'
-import { INITIAL_MEMOS } from '../mocks/mockData'
-import { detectAlarmSuggestion, generateAiSummary } from '../services/llamaService'
-import { newLocalId } from '../utils/id'
+import type { LocalMemo, LocalMemoLocation } from '@/types/localMemo'
+import { INITIAL_MEMOS } from '@/mocks/mockData'
+import { detectAlarmSuggestion, generateAiSummary } from '@/services/llamaService'
+import { newLocalId } from '@/utils/id'
 
 interface MemoState {
   memos: LocalMemo[]

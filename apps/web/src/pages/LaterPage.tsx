@@ -1,19 +1,21 @@
 import { useState } from 'react'
 import { IconBell, IconCheck, IconTrash, IconPlus } from '@tabler/icons-react'
-import Badge from '../components/common/Badge'
-import ConfirmModal from '../components/common/ConfirmModal'
-import ContextMenu, { useContextMenu } from '../components/common/ContextMenu'
-import PageHeader from '../components/common/PageHeader'
-import SectionLabel from '../components/common/SectionLabel'
-import StatCards from '../components/common/StatCards'
-import EmptyState from '../components/common/EmptyState'
-import ResizableRightPanel from '../components/common/ResizableRightPanel'
-import { useToast } from '../contexts/ToastContext'
-import { useLaterStore } from '../stores/useLaterStore'
-import { TONES } from '../theme/tones'
+import Badge from '@/components/common/Badge'
+import ConfirmModal from '@/components/common/ConfirmModal'
+import ContextMenu, { useContextMenu } from '@/components/common/ContextMenu'
+import PageHeader from '@/components/common/PageHeader'
+import SectionLabel from '@/components/common/SectionLabel'
+import StatCards from '@/components/common/StatCards'
+import EmptyState from '@/components/common/EmptyState'
+import ResizableRightPanel from '@/components/common/ResizableRightPanel'
+import { useToast } from '@/contexts/ToastContext'
+import { useTranslation } from 'react-i18next'
+import { useLaterStore } from '@/stores/useLaterStore'
+import { TONES } from '@/theme/tones'
 
 export default function LaterPage() {
   const toast = useToast()
+  const { t } = useTranslation()
   const items = useLaterStore(s => s.items)
   const { addItem, toggleComplete, deleteItem } = useLaterStore.getState()
   const [modalOpen, setModalOpen] = useState(false)
@@ -24,7 +26,7 @@ export default function LaterPage() {
   function handleAdd() {
     if (!text.trim()) return
     addItem(text.trim(), notifyAt.trim())
-    toast('항목이 추가되었습니다', 'success')
+    toast(t('later.toastAdded'), 'success')
     setText('')
     setNotifyAt('')
     setModalOpen(false)
@@ -32,7 +34,7 @@ export default function LaterPage() {
 
   function handleDelete(id: string) {
     deleteItem(id)
-    toast('항목이 삭제되었습니다', 'info')
+    toast(t('later.toastDeleted'), 'info')
   }
 
   const pending = items.filter(i => !i.isCompleted).length
@@ -40,13 +42,13 @@ export default function LaterPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <PageHeader title="나중에 알려줘">
+      <PageHeader title={t('later.pageTitle')}>
         <button
           onClick={() => setModalOpen(true)}
           className="text-[10px] px-2.5 py-1.5 rounded-lg text-white"
           style={{ background: 'var(--color-primary)' }}
         >
-          + 추가
+          {t('later.add')}
         </button>
       </PageHeader>
 
@@ -57,7 +59,7 @@ export default function LaterPage() {
           onContextMenu={openMenu}
         >
           {items.length === 0 ? (
-            <EmptyState emoji="🔔" title="항목이 없습니다" />
+            <EmptyState emoji="🔔" title={t('later.emptyTitle')} />
           ) : (
             items.map(item => (
               <div
@@ -79,7 +81,7 @@ export default function LaterPage() {
                   <p className="text-[9px]" style={{ color: 'var(--color-muted)' }}>{item.notifyAt}</p>
                 </div>
                 <Badge variant={item.isCompleted ? 'green' : 'violet'}>
-                  {item.isCompleted ? '완료' : '대기'}
+                  {item.isCompleted ? t('later.done') : t('later.waiting')}
                 </Badge>
                 <button
                   onClick={() => handleDelete(item.id)}
@@ -94,8 +96,8 @@ export default function LaterPage() {
 
         <ResizableRightPanel>
           <div className="p-3 flex flex-col gap-2 h-full">
-            <SectionLabel>요약</SectionLabel>
-            <StatCards items={[{ value: pending, label: '대기 중' }, { value: done, label: '완료' }]} />
+            <SectionLabel>{t('common.summary')}</SectionLabel>
+            <StatCards items={[{ value: pending, label: t('later.pendingLabel') }, { value: done, label: t('later.done') }]} />
           </div>
         </ResizableRightPanel>
       </div>
@@ -106,7 +108,7 @@ export default function LaterPage() {
           y={menu.y}
           onClose={closeMenu}
           items={[
-            { label: '항목 추가', icon: <IconPlus size={12} />, onClick: () => setModalOpen(true) },
+            { label: t('later.ctxNew'), icon: <IconPlus size={12} />, onClick: () => setModalOpen(true) },
           ]}
         />
       )}
@@ -114,15 +116,15 @@ export default function LaterPage() {
       <ConfirmModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
-        title="나중에 알려줘 추가"
-        confirmLabel="추가"
+        title={t('later.modalTitle')}
+        confirmLabel={t('common.add')}
         onConfirm={handleAdd}
         confirmDisabled={!text.trim()}
       >
         <div className="flex flex-col gap-0">
           {[
-            { label: '내용', content: <input type="text" value={text} onChange={e => setText(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleAdd()} placeholder="무엇을 알려드릴까요?" autoFocus maxLength={50} className="text-right text-[11px] outline-none bg-transparent w-40" /> },
-            { label: '알림 시간', content: <input type="text" value={notifyAt} onChange={e => setNotifyAt(e.target.value)} placeholder="오늘 오후 3시" className="text-right text-[11px] outline-none bg-transparent w-40" style={{ color: 'var(--color-muted)' }} /> },
+            { label: t('later.fieldContent'), content: <input type="text" value={text} onChange={e => setText(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleAdd()} placeholder={t('later.contentPlaceholder')} autoFocus maxLength={50} className="text-right text-[11px] outline-none bg-transparent w-40" /> },
+            { label: t('later.fieldNotifyAt'), content: <input type="text" value={notifyAt} onChange={e => setNotifyAt(e.target.value)} placeholder={t('later.notifyAtPlaceholder')} className="text-right text-[11px] outline-none bg-transparent w-40" style={{ color: 'var(--color-muted)' }} /> },
           ].map(row => (
             <div key={row.label} className="flex items-center justify-between py-2 border-b text-[11px]" style={{ borderColor: 'var(--color-border)' }}>
               <span style={{ color: 'var(--color-muted)' }}>{row.label}</span>

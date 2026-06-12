@@ -3,7 +3,7 @@
 .rbc-calendar {
   font-family: var(--font-family-sans);
   font-size: 11px;
-  color: #1a1a18;
+  color: var(--color-text);
 }
 
 /* 툴바 */
@@ -124,7 +124,7 @@
   padding: 0;
 }
 .rbc-off-range {
-  color: #c5c5c3;
+  color: var(--color-off-range);
 }
 
 /* week/day 뷰 기본 드래그 오버레이 숨김 — slotPropGetter 방식으로 대체 */
@@ -151,16 +151,12 @@
   --ws-b: 0 0 0 transparent;
   --ws-l: 0 0 0 transparent;
   --ws-r: 0 0 0 transparent;
-  box-shadow: var(--ws-t), var(--ws-l), var(--ws-r);
-}
-.rbc-week-sel.rbc-week-sel-top  { --ws-t: inset 0 2px 0 var(--color-primary); }
-.rbc-week-sel.rbc-week-sel-left { --ws-l: inset 2px 0 0 var(--color-primary); }
-.rbc-week-sel.rbc-week-sel-right { --ws-r: inset -2px 0 0 var(--color-primary); }
-/* 하단: :last-child로 sub-slot 개수와 무관하게 마지막 슬롯에만 적용 */
-.rbc-timeslot-group .rbc-week-sel.rbc-week-sel-btm:last-child {
-  --ws-b: inset 0 -2px 0 var(--color-primary);
   box-shadow: var(--ws-t), var(--ws-b), var(--ws-l), var(--ws-r);
 }
+.rbc-week-sel.rbc-week-sel-top  { --ws-t: inset 0 2px 0 var(--color-primary); }
+.rbc-week-sel.rbc-week-sel-btm  { --ws-b: inset 0 -2px 0 var(--color-primary); }
+.rbc-week-sel.rbc-week-sel-left { --ws-l: inset 2px 0 0 var(--color-primary); }
+.rbc-week-sel.rbc-week-sel-right { --ws-r: inset -2px 0 0 var(--color-primary); }
 /* gutter(시간 레이블 열)는 선택 하이라이트 제외 */
 .rbc-time-gutter .rbc-week-sel {
   background: transparent !important;

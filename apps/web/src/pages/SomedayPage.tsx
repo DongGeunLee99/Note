@@ -1,18 +1,19 @@
 import { useState } from 'react'
 import { IconPlane, IconBook, IconShoppingCart, IconStar, IconTrash, IconPlus } from '@tabler/icons-react'
-import Badge from '../components/common/Badge'
-import ConfirmModal from '../components/common/ConfirmModal'
-import ContextMenu, { useContextMenu } from '../components/common/ContextMenu'
-import PageHeader from '../components/common/PageHeader'
-import SectionLabel from '../components/common/SectionLabel'
-import Divider from '../components/common/Divider'
-import PillButton from '../components/common/PillButton'
-import EmptyState from '../components/common/EmptyState'
-import ResizableRightPanel from '../components/common/ResizableRightPanel'
-import { useToast } from '../contexts/ToastContext'
-import { useSomedayStore } from '../stores/useSomedayStore'
-import type { SomedayCategory } from '../types/localItems'
-import { TONES, type Tone } from '../theme/tones'
+import Badge from '@/components/common/Badge'
+import ConfirmModal from '@/components/common/ConfirmModal'
+import ContextMenu, { useContextMenu } from '@/components/common/ContextMenu'
+import PageHeader from '@/components/common/PageHeader'
+import SectionLabel from '@/components/common/SectionLabel'
+import Divider from '@/components/common/Divider'
+import PillButton from '@/components/common/PillButton'
+import EmptyState from '@/components/common/EmptyState'
+import ResizableRightPanel from '@/components/common/ResizableRightPanel'
+import { useToast } from '@/contexts/ToastContext'
+import { useTranslation } from 'react-i18next'
+import { useSomedayStore } from '@/stores/useSomedayStore'
+import type { SomedayCategory } from '@/types/localItems'
+import { TONES, type Tone } from '@/theme/tones'
 
 const CATEGORY_TONES: Record<SomedayCategory, Tone> = {
   '여행': 'blue', '배움': 'violet', '구매': 'amber', '기타': 'gray',
@@ -31,6 +32,7 @@ const FAVORITE_COLOR = TONES.amber.text
 
 export default function SomedayPage() {
   const toast = useToast()
+  const { t } = useTranslation()
   const items = useSomedayStore(s => s.items)
   const { addItem, deleteItem, toggleFavorite } = useSomedayStore.getState()
   const [modalOpen, setModalOpen] = useState(false)
@@ -42,7 +44,7 @@ export default function SomedayPage() {
   function handleAdd() {
     if (!title.trim()) return
     addItem(title.trim(), category, isFavorite)
-    toast('항목이 추가되었습니다', 'success')
+    toast(t('someday.toastAdded'), 'success')
     setTitle('')
     setCategory('기타')
     setIsFavorite(false)
@@ -51,18 +53,18 @@ export default function SomedayPage() {
 
   function handleDelete(id: string) {
     deleteItem(id)
-    toast('항목이 삭제되었습니다', 'info')
+    toast(t('someday.toastDeleted'), 'info')
   }
 
   return (
     <div className="flex flex-col h-full">
-      <PageHeader title="언젠가 리스트">
+      <PageHeader title={t('someday.pageTitle')}>
         <button
           onClick={() => setModalOpen(true)}
           className="text-[10px] px-2.5 py-1.5 rounded-lg text-white"
           style={{ background: 'var(--color-primary)' }}
         >
-          + 추가
+          {t('someday.add')}
         </button>
       </PageHeader>
 
@@ -73,7 +75,7 @@ export default function SomedayPage() {
           onContextMenu={openMenu}
         >
           {items.length === 0 ? (
-            <EmptyState emoji="⭐" title="언젠가 리스트가 비어있습니다" />
+            <EmptyState emoji="⭐" title={t('someday.emptyTitle')} />
           ) : (
             items.map(item => {
               const tone = TONES[CATEGORY_TONES[item.category]]
@@ -90,7 +92,7 @@ export default function SomedayPage() {
                   <button onClick={() => toggleFavorite(item.id)} className="flex-shrink-0">
                     <IconStar size={13} style={{ color: FAVORITE_COLOR, fill: item.isFavorite ? FAVORITE_COLOR : 'none', flexShrink: 0 }} />
                   </button>
-                  <Badge variant={CATEGORY_TONES[item.category]}>{item.category}</Badge>
+                  <Badge variant={CATEGORY_TONES[item.category]}>{t(`someday.categoryNames.${item.category}`)}</Badge>
                   <button onClick={() => handleDelete(item.id)} className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded flex-shrink-0">
                     <IconTrash size={11} style={{ color: 'var(--color-danger)' }} />
                   </button>
@@ -102,13 +104,13 @@ export default function SomedayPage() {
 
         <ResizableRightPanel>
           <div className="p-3 flex flex-col gap-2 h-full">
-            <SectionLabel>카테고리</SectionLabel>
+            <SectionLabel>{t('someday.fieldCategory')}</SectionLabel>
             {CATEGORIES.map(name => {
               const count = items.filter(i => i.category === name).length
               return (
                 <div key={name} className="flex items-center gap-2 text-[11px]">
                   <div className="w-2 h-2 rounded-full" style={{ background: TONES[CATEGORY_TONES[name]].fg }} />
-                  <span className="flex-1">{name}</span>
+                  <span className="flex-1">{t(`someday.categoryNames.${name}`)}</span>
                   <span style={{ color: 'var(--color-muted)' }}>{count}</span>
                 </div>
               )
@@ -116,7 +118,7 @@ export default function SomedayPage() {
             <Divider className="mt-1" />
             <div className="flex items-center gap-2 text-[11px]">
               <IconStar size={11} style={{ color: FAVORITE_COLOR, fill: FAVORITE_COLOR }} />
-              <span className="flex-1">즐겨찾기</span>
+              <span className="flex-1">{t('someday.favorite')}</span>
               <span style={{ color: 'var(--color-muted)' }}>{items.filter(i => i.isFavorite).length}</span>
             </div>
           </div>
@@ -129,7 +131,7 @@ export default function SomedayPage() {
           y={menu.y}
           onClose={closeMenu}
           items={[
-            { label: '항목 추가', icon: <IconPlus size={12} />, onClick: () => setModalOpen(true) },
+            { label: t('someday.ctxNew'), icon: <IconPlus size={12} />, onClick: () => setModalOpen(true) },
           ]}
         />
       )}
@@ -137,30 +139,30 @@ export default function SomedayPage() {
       <ConfirmModal
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
-        title="언젠가 추가"
-        confirmLabel="추가"
+        title={t('someday.modalTitle')}
+        confirmLabel={t('common.add')}
         onConfirm={handleAdd}
         confirmDisabled={!title.trim()}
       >
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between py-2 border-b text-[11px]" style={{ borderColor: 'var(--color-border)' }}>
-            <span style={{ color: 'var(--color-muted)' }}>제목</span>
-            <input type="text" value={title} onChange={e => setTitle(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleAdd()} placeholder="언젠가 하고 싶은 것" autoFocus maxLength={40} className="text-right text-[11px] outline-none bg-transparent w-40" />
+            <span style={{ color: 'var(--color-muted)' }}>{t('someday.fieldTitle')}</span>
+            <input type="text" value={title} onChange={e => setTitle(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleAdd()} placeholder={t('someday.titlePlaceholder')} autoFocus maxLength={40} className="text-right text-[11px] outline-none bg-transparent w-40" />
           </div>
 
           <div>
-            <p className="text-[9px] uppercase tracking-wide mb-2" style={{ color: 'var(--color-muted)' }}>카테고리</p>
+            <p className="text-[9px] uppercase tracking-wide mb-2" style={{ color: 'var(--color-muted)' }}>{t('someday.fieldCategory')}</p>
             <div className="flex gap-1.5 flex-wrap">
               {CATEGORIES.map(cat => (
                 <PillButton key={cat} active={category === cat} onClick={() => setCategory(cat)}>
-                  {cat}
+                  {t(`someday.categoryNames.${cat}`)}
                 </PillButton>
               ))}
             </div>
           </div>
 
           <div className="flex items-center justify-between py-2 border-t text-[11px]" style={{ borderColor: 'var(--color-border)' }}>
-            <span style={{ color: 'var(--color-muted)' }}>즐겨찾기</span>
+            <span style={{ color: 'var(--color-muted)' }}>{t('someday.favorite')}</span>
             <button onClick={() => setIsFavorite(f => !f)}>
               <IconStar size={16} style={{ color: FAVORITE_COLOR, fill: isFavorite ? FAVORITE_COLOR : 'none' }} />
             </button>

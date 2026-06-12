@@ -12,12 +12,98 @@
   --color-border-2: #e2e2de;
   --color-danger: #791F1F;
   --color-danger-subtle: #FCEBEB;
+  --color-danger-border: #fca5a5;
   --color-text: #1a1a18;
+  --color-off-range: #c5c5c3;
   --font-family-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+}
+
+/* 배지·아이콘 톤 팔레트 (tones.ts에서 참조) */
+:root {
+  --color-hover: rgba(0, 0, 0, 0.04);
+  --tone-blue-bg: #E6F1FB;   --tone-blue-fg: #185FA5;   --tone-blue-text: #0C447C;
+  --tone-amber-bg: #FAEEDA;  --tone-amber-fg: #854F0B;  --tone-amber-text: #633806;
+  --tone-gray-bg: #F1EFE8;   --tone-gray-fg: #444441;   --tone-gray-text: #444441;
+  --tone-violet-bg: #EEEDFE; --tone-violet-fg: #3C3489; --tone-violet-text: #3C3489;
+  --tone-green-bg: #EAF3DE;  --tone-green-fg: #27500A;  --tone-green-text: #27500A;
+  --tone-red-bg: #FCEBEB;    --tone-red-fg: #791F1F;    --tone-red-text: #791F1F;
+}
+
+/* ── 테마: 다크 ───────────────────────────────────────── */
+[data-theme="dark"] {
+  --color-hover: rgba(255, 255, 255, 0.07);
+  --color-primary: #5B9BD9;
+  --color-primary-subtle: #1C2E42;
+  --color-primary-emphasis: #8FBEE8;
+  --color-surface: #232321;
+  --color-surface-2: #2B2B29;
+  --color-surface-3: #1A1A18;
+  --color-muted: #9c9c9a;
+  --color-border: #333331;
+  --color-border-2: #3F3F3D;
+  --color-danger: #E08585;
+  --color-danger-subtle: #3A2222;
+  --color-danger-border: #6E3A3A;
+  --color-text: #E8E8E6;
+  --color-off-range: #5A5A58;
+
+  --tone-blue-bg: #1C2E42;   --tone-blue-fg: #6FA8DC;   --tone-blue-text: #A9CBE8;
+  --tone-amber-bg: #3A2D18;  --tone-amber-fg: #D9A661;  --tone-amber-text: #E6C695;
+  --tone-gray-bg: #2E2E2C;   --tone-gray-fg: #AFAFAD;   --tone-gray-text: #C2C2C0;
+  --tone-violet-bg: #2A2750; --tone-violet-fg: #9C93E8; --tone-violet-text: #BCB6F0;
+  --tone-green-bg: #243218;  --tone-green-fg: #92C46C;  --tone-green-text: #B5D89B;
+  --tone-red-bg: #3A2222;    --tone-red-fg: #E08585;    --tone-red-text: #EDAFAF;
+}
+
+/* ── 테마: 보라 (파스텔 틴트 — UI 전체가 보라 색조) ───── */
+[data-theme="purple"] {
+  --color-primary: #7C3AED;
+  --color-primary-subtle: #E5D8FA;
+  --color-primary-emphasis: #5B21B6;
+  --color-surface: #FAF7FE;
+  --color-surface-2: #F0EAF9;
+  --color-surface-3: #E9E1F6;
+  --color-muted: #7A6F92;
+  --color-border: #DCD0EE;
+  --color-border-2: #CFC0E5;
+  --color-text: #2A2140;
+  --color-off-range: #BBAED4;
+}
+
+/* ── 테마: 파랑 (파스텔 틴트 — UI 전체가 파랑 색조) ───── */
+[data-theme="blue"] {
+  --color-primary: #1668B8;
+  --color-primary-subtle: #D7E8F8;
+  --color-primary-emphasis: #0C447C;
+  --color-surface: #F7FAFD;
+  --color-surface-2: #EAF2F9;
+  --color-surface-3: #DFEAF4;
+  --color-muted: #5E7186;
+  --color-border: #CDDDEC;
+  --color-border-2: #BCD2E6;
+  --color-text: #16283A;
+  --color-off-range: #A9BFD2;
 }
 
 body {
   font-family: var(--font-family-sans);
   background-color: var(--color-surface-3);
-  color: #1a1a18;
+  color: var(--color-text);
+  /* 앱 전역 텍스트 선택 차단 — 드래그 시 라벨 선택·네이티브 DnD 방지 */
+  user-select: none;
+}
+
+/* 입력 영역은 텍스트 선택 허용 */
+input,
+textarea,
+[contenteditable] {
+  user-select: text;
+}
+
+/* 테마 추종 호버 틴트 — Tailwind hover:bg-* 하드코딩 대체 */
+.hover-tint:hover {
+  background: var(--color-hover);
+}
+.hover-danger:hover {
+  background: var(--color-danger-subtle);
 }

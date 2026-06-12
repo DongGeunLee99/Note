@@ -1,7 +1,7 @@
 import { create } from 'zustand'
-import type { SomedayCategory, SomedayItem } from '../types/localItems'
-import { INITIAL_SOMEDAY } from '../mocks/mockData'
-import { newLocalId } from '../utils/id'
+import type { SomedayCategory, SomedayItem } from '@/types/localItems'
+import { INITIAL_SOMEDAY } from '@/mocks/mockData'
+import { newLocalId } from '@/utils/id'
 
 interface SomedayState {
   items: SomedayItem[]

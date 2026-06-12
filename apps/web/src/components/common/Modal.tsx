@@ -28,7 +28,7 @@ export default function Modal({ isOpen, onClose, title, children, footer }: Moda
           style={{ borderColor: 'var(--color-border)' }}
         >
           <span className="text-[12px] font-medium">{title}</span>
-          <button onClick={onClose} className="p-0.5 rounded hover:bg-black/5 transition-colors">
+          <button onClick={onClose} className="p-0.5 rounded hover-tint transition-colors">
             <IconX size={14} style={{ color: 'var(--color-muted)' }} />
           </button>
         </div>

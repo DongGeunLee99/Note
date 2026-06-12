@@ -1,5 +1,6 @@
 // 배지·아이콘·칩 등에서 공용으로 쓰는 톤 팔레트.
-// 새 색 조합이 필요하면 여기에 추가하고, 컴포넌트에는 hex를 직접 쓰지 않는다.
+// 실제 색 값은 index.css의 --tone-* 변수에 정의 (테마별 오버라이드).
+// 새 색 조합이 필요하면 index.css에 변수를 추가하고 여기서 참조한다.
 
 export type Tone = 'blue' | 'amber' | 'gray' | 'violet' | 'green' | 'red'
 
@@ -10,10 +11,10 @@ export interface ToneColors {
 }
 
 export const TONES: Record<Tone, ToneColors> = {
-  blue:   { bg: '#E6F1FB', fg: '#185FA5', text: '#0C447C' },
-  amber:  { bg: '#FAEEDA', fg: '#854F0B', text: '#633806' },
-  gray:   { bg: '#F1EFE8', fg: '#444441', text: '#444441' },
-  violet: { bg: '#EEEDFE', fg: '#3C3489', text: '#3C3489' },
-  green:  { bg: '#EAF3DE', fg: '#27500A', text: '#27500A' },
-  red:    { bg: '#FCEBEB', fg: '#791F1F', text: '#791F1F' },
+  blue:   { bg: 'var(--tone-blue-bg)',   fg: 'var(--tone-blue-fg)',   text: 'var(--tone-blue-text)' },
+  amber:  { bg: 'var(--tone-amber-bg)',  fg: 'var(--tone-amber-fg)',  text: 'var(--tone-amber-text)' },
+  gray:   { bg: 'var(--tone-gray-bg)',   fg: 'var(--tone-gray-fg)',   text: 'var(--tone-gray-text)' },
+  violet: { bg: 'var(--tone-violet-bg)', fg: 'var(--tone-violet-fg)', text: 'var(--tone-violet-text)' },
+  green:  { bg: 'var(--tone-green-bg)',  fg: 'var(--tone-green-fg)',  text: 'var(--tone-green-text)' },
+  red:    { bg: 'var(--tone-red-bg)',    fg: 'var(--tone-red-fg)',    text: 'var(--tone-red-text)' },
 }

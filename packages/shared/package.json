@@ -11,5 +11,8 @@
   },
   "dependencies": {
     "firebase": "^12.14.0"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
   }
 }

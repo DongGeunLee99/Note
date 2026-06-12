@@ -3,12 +3,23 @@ import { isSameDay } from 'date-fns'
 import { useShallow } from 'zustand/react/shallow'
 import { IconBell } from '@tabler/icons-react'
 import type { RbcEvent, CalView } from './types'
-import type { TimeFormat } from '../../stores/useSettingsStore'
-import { useSettingsStore } from '../../stores/useSettingsStore'
-import { useCalendarStore, useAllEvents } from '../../stores/useCalendarStore'
-import { fmtTime, fmtHour, DAY_SHORT, MONTH_FULL } from './calendarUtils'
+import type { TimeFormat } from '@/stores/useSettingsStore'
+import { useSettingsStore } from '@/stores/useSettingsStore'
+import { useCalendarStore, useAllEvents } from '@/stores/useCalendarStore'
+import { useDayDragSelect } from '@/hooks/useDayDragSelect'
+import { useTranslation } from 'react-i18next'
+import { useLang } from '@/i18n'
+import { fmtTime, fmtHour, formatToolbarTitle } from './calendarUtils'
 
 export const HOUR_H = 52
+
+// 드래그 선택 오버레이 — 컬럼과 교차하는 구간 + 실제 시작/끝 여부
+interface SelOverlay {
+  top: number
+  height: number
+  borderTop: boolean
+  borderBottom: boolean
+}
 
 // ── HalfDayColumn ──────────────────────────────────────────────
 interface HalfDayColumnProps {
@@ -17,17 +28,18 @@ interface HalfDayColumnProps {
   events: RbcEvent[]
   nowLine: number | null
   timeFormat: TimeFormat
+  sel: SelOverlay | null
   onHourContextMenu: (e: React.MouseEvent, hour: number) => void
 }
 
-export function HalfDayColumn({ label, startHour, events, nowLine, timeFormat, onHourContextMenu }: HalfDayColumnProps) {
+export function HalfDayColumn({ label, startHour, events, nowLine, timeFormat, sel, onHourContextMenu }: HalfDayColumnProps) {
   return (
     <div className="flex-1 min-w-0 flex flex-col">
       <div className="text-center text-[9px] font-bold uppercase tracking-widest py-1.5 border-b sticky top-0 z-10 flex-shrink-0"
         style={{ color: 'var(--color-muted)', background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
         {label}
       </div>
-      <div className="relative" style={{ height: HOUR_H * 12 }}>
+      <div className="relative day-grid" style={{ height: HOUR_H * 12 }}>
         {Array.from({ length: 12 }, (_, i) => startHour + i).map(hour => (
           <div key={hour}
             className="absolute w-full flex border-b cursor-context-menu"
@@ -39,6 +51,23 @@ export function HalfDayColumn({ label, startHour, events, nowLine, timeFormat, o
             </span>
           </div>
         ))}
+
+        {sel && (
+          <div
+            className="absolute pointer-events-none"
+            style={{
+              top: sel.top,
+              height: sel.height,
+              left: 44,
+              right: 0,
+              background: 'var(--color-primary-subtle)',
+              borderLeft: '2px solid var(--color-primary)',
+              borderRight: '2px solid var(--color-primary)',
+              borderTop: sel.borderTop ? '2px solid var(--color-primary)' : 'none',
+              borderBottom: sel.borderBottom ? '2px solid var(--color-primary)' : 'none',
+            }}
+          />
+        )}
 
         {events.map(event => {
           const top    = (event.start.getHours() - startHour + event.start.getMinutes() / 60) * HOUR_H
@@ -70,13 +99,39 @@ export function HalfDayColumn({ label, startHour, events, nowLine, timeFormat, o
 // ── CustomDayView ──────────────────────────────────────────────
 export function CustomDayView() {
   const timeFormat = useSettingsStore(s => s.timeFormat)
-  const { selectedDate, setSelectedDate, setCurrentDate, view, setView, openCtxMenu } = useCalendarStore(useShallow(s => ({
+  const { t } = useTranslation()
+  const lang = useLang()
+  const { selectedDate, setSelectedDate, setCurrentDate, view, setView, openCtxMenu, setSelectedSlot } = useCalendarStore(useShallow(s => ({
     selectedDate: s.selectedDate, setSelectedDate: s.setSelectedDate,
     setCurrentDate: s.setCurrentDate,
     view: s.view, setView: s.setView,
     openCtxMenu: s.openCtxMenu,
+    setSelectedSlot: s.setSelectedSlot,
   })))
   const allEvents = useAllEvents()
+
+  const { containerRef, daySel, onMouseDown, onMouseMove, onMouseUp, clearDaySel } = useDayDragSelect(sel => {
+    const d = selectedDate
+    setSelectedSlot({
+      start: new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, sel.startMin),
+      end:   new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, sel.endMin),
+    })
+  })
+
+  /** daySel을 컬럼(12시간) 구간과 교차해 오버레이 위치 계산 */
+  function colSel(colStartMin: number): SelOverlay | null {
+    if (!daySel) return null
+    const colEndMin = colStartMin + 720
+    const s = Math.max(daySel.startMin, colStartMin)
+    const e = Math.min(daySel.endMin, colEndMin)
+    if (s >= e) return null
+    return {
+      top:    ((s - colStartMin) / 60) * HOUR_H,
+      height: ((e - s) / 60) * HOUR_H,
+      borderTop:    s === daySel.startMin, // 정오 경계에는 테두리 생략 → 이어져 보이게
+      borderBottom: e === daySel.endMin,
+    }
+  }
 
   const today = useMemo(() => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), d.getDate()) }, [])
 
@@ -88,34 +143,52 @@ export function CustomDayView() {
   const isToday = isSameDay(selectedDate, today)
   const amNow = isToday && now.getHours() < 12  ? (now.getHours() + now.getMinutes() / 60) * HOUR_H : null
   const pmNow = isToday && now.getHours() >= 12 ? ((now.getHours() - 12) + now.getMinutes() / 60) * HOUR_H : null
-  const label = `${DAY_SHORT[selectedDate.getDay()]}, ${MONTH_FULL[selectedDate.getMonth()]} ${selectedDate.getDate()}, ${selectedDate.getFullYear()}`
+  const label = formatToolbarTitle(selectedDate, 'day', lang)
 
-  function navigate(d: Date) { setSelectedDate(d); setCurrentDate(d) }
+  function navigate(d: Date) {
+    setSelectedDate(d)
+    setCurrentDate(d)
+    clearDaySel()
+    setSelectedSlot(null)
+  }
+
+  function handleHourContextMenu(e: React.MouseEvent, hour: number) {
+    e.preventDefault()
+    // 드래그 선택이 있으면 hour 대신 selectedSlot이 쓰이도록 hour를 생략
+    openCtxMenu(e.clientX, e.clientY, daySel ? undefined : hour)
+  }
 
   return (
     <div className="flex flex-col h-full">
       <div className="rbc-toolbar flex-shrink-0">
         <div className="rbc-btn-group">
           <button onClick={() => navigate(new Date(selectedDate.getTime() - 86400000))}>‹</button>
-          <button onClick={() => navigate(today)}>Today</button>
+          <button onClick={() => navigate(today)}>{t('calendar.today')}</button>
           <button onClick={() => navigate(new Date(selectedDate.getTime() + 86400000))}>›</button>
         </div>
         <span className="rbc-toolbar-label">{label}</span>
         <div className="rbc-btn-group">
           {(['month', 'week', 'day'] as CalView[]).map(v => (
             <button key={v} onClick={() => setView(v)} className={view === v ? 'rbc-active' : ''}>
-              {v === 'month' ? 'Month' : v === 'week' ? 'Week' : 'Day'}
+              {v === 'month' ? t('calendar.month') : v === 'week' ? t('calendar.week') : t('calendar.day')}
             </button>
           ))}
         </div>
       </div>
 
-      <div className="flex flex-1 overflow-y-auto rounded-lg border" style={{ borderColor: 'var(--color-border)' }}>
-        <HalfDayColumn label="AM" startHour={0}  events={amEvents} nowLine={amNow} timeFormat={timeFormat}
-          onHourContextMenu={(e, hour) => { e.preventDefault(); openCtxMenu(e.clientX, e.clientY, hour) }} />
+      <div
+        ref={containerRef}
+        className="flex flex-1 overflow-y-auto rounded-lg border"
+        style={{ borderColor: 'var(--color-border)' }}
+        onMouseDown={e => { onMouseDown(e); if (e.button === 0) setSelectedSlot(null) }}
+        onMouseMove={onMouseMove}
+        onMouseUp={onMouseUp}
+      >
+        <HalfDayColumn label={t('calendar.am')} startHour={0}  events={amEvents} nowLine={amNow} timeFormat={timeFormat}
+          sel={colSel(0)} onHourContextMenu={handleHourContextMenu} />
         <div className="w-px flex-shrink-0" style={{ background: 'var(--color-border)' }} />
-        <HalfDayColumn label="PM" startHour={12} events={pmEvents} nowLine={pmNow} timeFormat={timeFormat}
-          onHourContextMenu={(e, hour) => { e.preventDefault(); openCtxMenu(e.clientX, e.clientY, hour) }} />
+        <HalfDayColumn label={t('calendar.pm')} startHour={12} events={pmEvents} nowLine={pmNow} timeFormat={timeFormat}
+          sel={colSel(720)} onHourContextMenu={handleHourContextMenu} />
       </div>
     </div>
   )

@@ -2,10 +2,11 @@ import { useMemo, useCallback } from 'react'
 import { Calendar } from 'react-big-calendar'
 import { startOfWeek, addDays } from 'date-fns'
 import { useShallow } from 'zustand/react/shallow'
-import { useCalendarStore, useAllEvents } from '../../stores/useCalendarStore'
-import { useWeekDragSelect } from '../../hooks/useWeekDragSelect'
+import { useCalendarStore, useAllEvents } from '@/stores/useCalendarStore'
+import { useWeekDragSelect } from '@/hooks/useWeekDragSelect'
 import CalendarToolbar from './CalendarToolbar'
-import { rbcLocalizer, RBC_MESSAGES, getEventProps } from './calendarUtils'
+import { rbcLocalizer, getRbcMessages, getEventProps } from './calendarUtils'
+import { useLang } from '@/i18n'
 import type { RbcEvent, CalView } from './types'
 
 export default function WeekView() {
@@ -21,6 +22,7 @@ export default function WeekView() {
     openCtxMenu: s.openCtxMenu,
   })))
   const allEvents = useAllEvents()
+  const lang = useLang()
 
   const today = useMemo(() => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), d.getDate()) }, [])
 
@@ -64,7 +66,7 @@ export default function WeekView() {
         localizer={rbcLocalizer} events={allEvents}
         views={['month', 'week', 'day']} view="week"
         onView={v => setView(v as CalView)}
-        culture="ko" messages={RBC_MESSAGES}
+        culture="ko" messages={getRbcMessages(lang)}
         date={currentDate}
         onNavigate={(date, _view, action) => {
           setCurrentDate(date)

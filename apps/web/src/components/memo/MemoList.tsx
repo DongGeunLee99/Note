@@ -1,5 +1,6 @@
 import MemoCard from './MemoCard'
-import type { LocalMemo } from '../../types/localMemo'
+import { useTranslation } from 'react-i18next'
+import type { LocalMemo } from '@/types/localMemo'
 
 interface MemoListProps {
   memos: LocalMemo[]
@@ -16,13 +17,15 @@ export default function MemoList({
   memos, selectedId, aiModes,
   onSelect, onAiModeChange, onAlarmConfirm, onAlarmDismiss, onDelete,
 }: MemoListProps) {
+  const { t } = useTranslation()
+
   if (memos.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center flex-1 gap-2 py-12">
         <span className="text-3xl">📝</span>
-        <p className="text-[12px] font-medium">메모가 없습니다</p>
+        <p className="text-[12px] font-medium">{t('memo.emptyTitle')}</p>
         <p className="text-[10px]" style={{ color: 'var(--color-muted)' }}>
-          위의 메모 작성 버튼으로 시작해보세요
+          {t('memo.emptyDesc')}
         </p>
       </div>
     )

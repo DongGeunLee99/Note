@@ -2,12 +2,14 @@ import { useMemo } from 'react'
 import { isSameDay } from 'date-fns'
 import { useShallow } from 'zustand/react/shallow'
 import { IconPlus } from '@tabler/icons-react'
-import Badge from '../common/Badge'
-import ResizableRightPanel from '../common/ResizableRightPanel'
+import Badge from '@/components/common/Badge'
+import ResizableRightPanel from '@/components/common/ResizableRightPanel'
 import MiniCalendar from './MiniCalendar'
 import AgendaItem from './AgendaItem'
-import { useCalendarStore, useAllEvents } from '../../stores/useCalendarStore'
-import { DAY_SHORT, MONTH_SHORT, formatSectionDate, toDateKey } from './calendarUtils'
+import { useCalendarStore, useAllEvents } from '@/stores/useCalendarStore'
+import { useTranslation } from 'react-i18next'
+import { useLang } from '@/i18n'
+import { DAY_SHORT, MONTH_SHORT, DAY_SHORT_KO, formatSectionDate, toDateKey } from './calendarUtils'
 
 export default function CalendarRightPanel() {
   const {
@@ -19,6 +21,8 @@ export default function CalendarRightPanel() {
     deleteEvent: s.deleteEvent, openEventModal: s.openEventModal,
   })))
   const allEvents = useAllEvents()
+  const { t } = useTranslation()
+  const lang = useLang()
 
   const today    = useMemo(() => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), d.getDate()) }, [])
   const tomorrow = useMemo(() => new Date(today.getTime() + 86400000), [today])
@@ -85,7 +89,9 @@ export default function CalendarRightPanel() {
           {/* Selected date */}
           <div>
             <p className="text-[12px] font-semibold leading-tight">
-              {DAY_SHORT[selectedDate.getDay()]}, {MONTH_SHORT[selectedDate.getMonth()]} {selectedDate.getDate()}
+              {lang === 'ko'
+                ? `${selectedDate.getMonth() + 1}월 ${selectedDate.getDate()}일 (${DAY_SHORT_KO[selectedDate.getDay()]})`
+                : `${DAY_SHORT[selectedDate.getDay()]}, ${MONTH_SHORT[selectedDate.getMonth()]} ${selectedDate.getDate()}`}
             </p>
             <p className="text-[9px] mt-0.5" style={{ color: 'var(--color-muted)' }}>{selectedDate.getFullYear()}</p>
           </div>
@@ -94,7 +100,7 @@ export default function CalendarRightPanel() {
           <button onClick={handleNewEvent}
             className="flex items-center justify-center gap-1 text-[10px] py-1.5 rounded-lg border transition-colors hover:opacity-80"
             style={{ borderColor: 'var(--color-primary)', color: 'var(--color-primary)' }}>
-            <IconPlus size={11} /> New Event
+            <IconPlus size={11} /> {t('calendar.newEvent')}
           </button>
 
           <div className="h-px" style={{ background: 'var(--color-border)' }} />
@@ -102,10 +108,10 @@ export default function CalendarRightPanel() {
           {/* TODAY */}
           <div>
             <p className="text-[9px] font-bold uppercase tracking-wider mb-1.5" style={{ color: 'var(--color-primary)' }}>
-              Today — {formatSectionDate(today)}
+              {t('calendar.panelToday')} — {formatSectionDate(today, lang)}
             </p>
             {agendaToday.length === 0
-              ? <p className="text-[9px] italic" style={{ color: 'var(--color-muted)' }}>No events</p>
+              ? <p className="text-[9px] italic" style={{ color: 'var(--color-muted)' }}>{t('calendar.noEvents')}</p>
               : agendaToday.map(e => <AgendaItem key={e.id} event={e} onDelete={!e.isPreset ? () => deleteEvent(e.id) : undefined} />)
             }
           </div>
@@ -113,10 +119,10 @@ export default function CalendarRightPanel() {
           {/* TOMORROW */}
           <div>
             <p className="text-[9px] font-bold uppercase tracking-wider mb-1.5" style={{ color: 'var(--color-muted)' }}>
-              Tomorrow — {formatSectionDate(tomorrow)}
+              {t('calendar.panelTomorrow')} — {formatSectionDate(tomorrow, lang)}
             </p>
             {agendaTomorrow.length === 0
-              ? <p className="text-[9px] italic" style={{ color: 'var(--color-muted)' }}>No events</p>
+              ? <p className="text-[9px] italic" style={{ color: 'var(--color-muted)' }}>{t('calendar.noEvents')}</p>
               : agendaTomorrow.map(e => <AgendaItem key={e.id} event={e} onDelete={!e.isPreset ? () => deleteEvent(e.id) : undefined} />)
             }
           </div>
@@ -124,10 +130,10 @@ export default function CalendarRightPanel() {
           {/* THIS WEEK */}
           {agendaWeekGrouped.length > 0 && (
             <div>
-              <p className="text-[9px] font-bold uppercase tracking-wider mb-1.5" style={{ color: 'var(--color-muted)' }}>This Week</p>
+              <p className="text-[9px] font-bold uppercase tracking-wider mb-1.5" style={{ color: 'var(--color-muted)' }}>{t('calendar.panelThisWeek')}</p>
               {agendaWeekGrouped.map(({ date, events }) => (
                 <div key={date.toDateString()} className="mb-2">
-                  <p className="text-[9px] font-semibold mb-1" style={{ color: 'var(--color-muted)' }}>{formatSectionDate(date)}</p>
+                  <p className="text-[9px] font-semibold mb-1" style={{ color: 'var(--color-muted)' }}>{formatSectionDate(date, lang)}</p>
                   {events.map(e => <AgendaItem key={e.id} event={e} onDelete={!e.isPreset ? () => deleteEvent(e.id) : undefined} />)}
                 </div>
               ))}
@@ -137,9 +143,9 @@ export default function CalendarRightPanel() {
           <div className="h-px" style={{ background: 'var(--color-border)' }} />
 
           {/* THIS MONTH */}
-          <p className="text-[9px] font-bold uppercase tracking-wider" style={{ color: 'var(--color-muted)' }}>This Month</p>
+          <p className="text-[9px] font-bold uppercase tracking-wider" style={{ color: 'var(--color-muted)' }}>{t('calendar.panelThisMonth')}</p>
           <div className="flex items-center justify-between text-[10px]">
-            <span style={{ color: 'var(--color-muted)' }}>Days w/ events</span>
+            <span style={{ color: 'var(--color-muted)' }}>{t('calendar.daysWithEvents')}</span>
             <Badge variant="violet">{alarmDayCount}</Badge>
           </div>
         </div>

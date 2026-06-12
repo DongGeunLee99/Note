@@ -38,11 +38,13 @@ export function formatTime(hour: number, minute: number, fmt: '12h' | '24h' = '2
   return `${h}:${String(minute).padStart(2, '0')} ${period}`
 }
 
-export function formatRepeat(days: number[]): string {
-  if (days.length === 0) return '한 번'
-  if (days.length === 7) return '매일'
-  if (days.length === 5 && [1, 2, 3, 4, 5].every(d => days.includes(d))) return '평일'
-  if (days.length === 2 && days.includes(0) && days.includes(6)) return '주말'
-  const LABELS = ['일', '월', '화', '수', '목', '금', '토']
-  return [...days].sort((a, b) => a - b).map(d => LABELS[d]).join('·')
+export function formatRepeat(days: number[], lang: 'ko' | 'en' = 'ko'): string {
+  const L = lang === 'ko'
+    ? { once: '한 번', daily: '매일', weekdays: '평일', weekends: '주말', names: ['일', '월', '화', '수', '목', '금', '토'] }
+    : { once: 'Once', daily: 'Daily', weekdays: 'Weekdays', weekends: 'Weekends', names: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] }
+  if (days.length === 0) return L.once
+  if (days.length === 7) return L.daily
+  if (days.length === 5 && [1, 2, 3, 4, 5].every(d => days.includes(d))) return L.weekdays
+  if (days.length === 2 && days.includes(0) && days.includes(6)) return L.weekends
+  return [...days].sort((a, b) => a - b).map(d => L.names[d]).join('·')
 }

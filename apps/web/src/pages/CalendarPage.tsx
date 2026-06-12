@@ -3,19 +3,21 @@ import 'react-big-calendar/lib/css/react-big-calendar.css'
 import '../styles/calendar.css'
 import { IconPlus } from '@tabler/icons-react'
 import { useShallow } from 'zustand/react/shallow'
-import ContextMenu from '../components/common/ContextMenu'
-import PageHeader from '../components/common/PageHeader'
-import { useToast } from '../contexts/ToastContext'
-import { useCalendarStore, useAllEvents } from '../stores/useCalendarStore'
-import MonthView from '../components/calendar/MonthView'
-import WeekView from '../components/calendar/WeekView'
-import { CustomDayView } from '../components/calendar/DayView'
-import CalendarRightPanel from '../components/calendar/CalendarRightPanel'
-import NewEventModal from '../components/calendar/NewEventModal'
-import type { CalendarEventData } from '../components/calendar/types'
+import ContextMenu from '@/components/common/ContextMenu'
+import PageHeader from '@/components/common/PageHeader'
+import { useToast } from '@/contexts/ToastContext'
+import { useTranslation } from 'react-i18next'
+import { useCalendarStore, useAllEvents } from '@/stores/useCalendarStore'
+import MonthView from '@/components/calendar/MonthView'
+import WeekView from '@/components/calendar/WeekView'
+import { CustomDayView } from '@/components/calendar/DayView'
+import CalendarRightPanel from '@/components/calendar/CalendarRightPanel'
+import NewEventModal from '@/components/calendar/NewEventModal'
+import type { CalendarEventData } from '@/components/calendar/types'
 
 export default function CalendarPage() {
   const toast = useToast()
+  const { t } = useTranslation()
   const {
     view,
     ctxMenu, closeCtxMenu, handleCtxNewEvent,
@@ -38,13 +40,13 @@ export default function CalendarPage() {
 
   function handleSaveEvent(data: Omit<CalendarEventData, 'id'>) {
     saveEvent(data)
-    toast('Event added', 'success')
+    toast(t('calendar.toastEventAdded'), 'success')
   }
 
   return (
     <div className="flex flex-col h-full">
-      <PageHeader title="Calendar">
-        <span className="text-[10px]" style={{ color: 'var(--color-muted)' }}>{alarmDayCount} days with events this month</span>
+      <PageHeader title={t('sidebar.calendar')}>
+        <span className="text-[10px]" style={{ color: 'var(--color-muted)' }}>{t('calendar.headerInfo', { n: alarmDayCount })}</span>
       </PageHeader>
 
       <div className="flex flex-1 overflow-hidden">
@@ -60,7 +62,7 @@ export default function CalendarPage() {
         <ContextMenu
           x={ctxMenu.x} y={ctxMenu.y}
           onClose={closeCtxMenu}
-          items={[{ label: 'New Event', icon: <IconPlus size={12} />, onClick: handleCtxNewEvent }]}
+          items={[{ label: t('calendar.newEvent'), icon: <IconPlus size={12} />, onClick: handleCtxNewEvent }]}
         />
       )}
 

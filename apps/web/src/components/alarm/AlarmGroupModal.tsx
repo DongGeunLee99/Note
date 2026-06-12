@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
-import Modal from '../common/Modal'
-import type { LocalAlarmGroup } from '../../types/localAlarm'
-import { GROUP_COLORS, GROUP_EMOJIS } from '../../types/localAlarm'
+import Modal from '@/components/common/Modal'
+import { useTranslation } from 'react-i18next'
+import type { LocalAlarmGroup } from '@/types/localAlarm'
+import { GROUP_COLORS, GROUP_EMOJIS } from '@/types/localAlarm'
 
 interface AlarmGroupModalProps {
   isOpen: boolean
@@ -12,6 +13,7 @@ interface AlarmGroupModalProps {
 }
 
 export default function AlarmGroupModal({ isOpen, onClose, onSave, onDelete, initial }: AlarmGroupModalProps) {
+  const { t } = useTranslation()
   const [name, setName] = useState('')
   const [color, setColor] = useState(GROUP_COLORS[0].fg)
   const [emoji, setEmoji] = useState(GROUP_EMOJIS[0])
@@ -34,16 +36,16 @@ export default function AlarmGroupModal({ isOpen, onClose, onSave, onDelete, ini
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={initial ? '그룹 편집' : '그룹 추가'}
+      title={initial ? t('alarm.groupModalEdit') : t('alarm.groupModalAdd')}
       footer={
         <>
           {initial && !initial.isDefault && onDelete && (
             <button
               onClick={onDelete}
               className="text-[10px] px-3 py-1.5 rounded-lg border mr-auto"
-              style={{ borderColor: '#fca5a5', color: '#791F1F' }}
+              style={{ borderColor: 'var(--color-danger-border)', color: 'var(--color-danger)' }}
             >
-              삭제
+              {t('common.delete')}
             </button>
           )}
           <button
@@ -51,7 +53,7 @@ export default function AlarmGroupModal({ isOpen, onClose, onSave, onDelete, ini
             className="text-[10px] px-3 py-1.5 rounded-lg border"
             style={{ borderColor: 'var(--color-border-2)', color: 'var(--color-muted)' }}
           >
-            취소
+            {t('common.cancel')}
           </button>
           <button
             onClick={handleSave}
@@ -59,7 +61,7 @@ export default function AlarmGroupModal({ isOpen, onClose, onSave, onDelete, ini
             className="text-[10px] px-3 py-1.5 rounded-lg text-white disabled:opacity-40"
             style={{ background: 'var(--color-primary)' }}
           >
-            저장
+            {t('common.save')}
           </button>
         </>
       }
@@ -69,12 +71,12 @@ export default function AlarmGroupModal({ isOpen, onClose, onSave, onDelete, ini
           className="flex items-center justify-between py-1.5 border-b text-[11px]"
           style={{ borderColor: 'var(--color-border)' }}
         >
-          <span style={{ color: 'var(--color-muted)' }}>그룹 이름</span>
+          <span style={{ color: 'var(--color-muted)' }}>{t('alarm.fieldGroupName')}</span>
           <input
             type="text"
             value={name}
             onChange={e => setName(e.target.value)}
-            placeholder="이름 입력"
+            placeholder={t('alarm.groupNamePlaceholder')}
             maxLength={20}
             className="text-right text-[11px] outline-none bg-transparent w-32"
             onKeyDown={e => e.key === 'Enter' && handleSave()}
@@ -82,7 +84,7 @@ export default function AlarmGroupModal({ isOpen, onClose, onSave, onDelete, ini
         </div>
 
         <div>
-          <p className="text-[9px] uppercase tracking-wide mb-2" style={{ color: 'var(--color-muted)' }}>색상</p>
+          <p className="text-[9px] uppercase tracking-wide mb-2" style={{ color: 'var(--color-muted)' }}>{t('alarm.fieldColor')}</p>
           <div className="flex gap-2">
             {GROUP_COLORS.map(c => (
               <button
@@ -100,7 +102,7 @@ export default function AlarmGroupModal({ isOpen, onClose, onSave, onDelete, ini
         </div>
 
         <div>
-          <p className="text-[9px] uppercase tracking-wide mb-2" style={{ color: 'var(--color-muted)' }}>아이콘</p>
+          <p className="text-[9px] uppercase tracking-wide mb-2" style={{ color: 'var(--color-muted)' }}>{t('alarm.fieldIcon')}</p>
           <div className="flex flex-wrap gap-1.5">
             {GROUP_EMOJIS.map(e => (
               <button

@@ -1,4 +1,4 @@
-import { TONES, type Tone } from '../../theme/tones'
+import { TONES, type Tone } from '@/theme/tones'
 
 interface BadgeProps {
   children: React.ReactNode

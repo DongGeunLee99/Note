@@ -2,7 +2,7 @@ import {
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
 } from 'recharts'
-import PageHeader from '../components/common/PageHeader'
+import PageHeader from '@/components/common/PageHeader'
 
 // ── 목업 데이터 ──────────────────────────────────────────
 const WEEKLY_DATA = [

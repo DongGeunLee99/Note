@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useCallback, ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { IconCheck, IconX, IconInfoCircle } from '@tabler/icons-react'
-import { TONES, type ToneColors } from '../theme/tones'
+import { TONES, type ToneColors } from '@/theme/tones'
 
 type ToastType = 'success' | 'error' | 'info'
 

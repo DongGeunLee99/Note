@@ -1,6 +1,7 @@
-import ToggleSwitch from '../common/ToggleSwitch'
-import type { LocalAlarmGroup } from '../../types/localAlarm'
-import { GROUP_COLORS } from '../../types/localAlarm'
+import ToggleSwitch from '@/components/common/ToggleSwitch'
+import { useTranslation } from 'react-i18next'
+import type { LocalAlarmGroup } from '@/types/localAlarm'
+import { GROUP_COLORS } from '@/types/localAlarm'
 
 interface AlarmGroupCardProps {
   group: LocalAlarmGroup
@@ -10,12 +11,13 @@ interface AlarmGroupCardProps {
 }
 
 export default function AlarmGroupCard({ group, alarmCount, onToggle, onEdit }: AlarmGroupCardProps) {
+  const { t } = useTranslation()
   const colorDef = GROUP_COLORS.find(c => c.fg === group.color) ?? GROUP_COLORS[0]
 
   return (
     <div
       onClick={onEdit}
-      className="flex items-center gap-2 px-2.5 py-2 rounded-lg cursor-pointer transition-colors hover:bg-black/[0.04]"
+      className="flex items-center gap-2 px-2.5 py-2 rounded-lg cursor-pointer transition-colors hover-tint"
       style={{ background: 'var(--color-surface-2)' }}
     >
       <div
@@ -28,7 +30,7 @@ export default function AlarmGroupCard({ group, alarmCount, onToggle, onEdit }: 
       <span className="text-[11px] font-medium flex-1">{group.name}</span>
 
       <span className="text-[9px]" style={{ color: 'var(--color-muted)' }}>
-        {alarmCount}개
+        {t('common.count', { n: alarmCount })}
       </span>
 
       <div onClick={e => e.stopPropagation()}>

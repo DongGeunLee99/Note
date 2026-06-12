@@ -1,17 +1,19 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
 import { IconBell } from '@tabler/icons-react'
-import Badge from '../common/Badge'
-import SectionLabel from '../common/SectionLabel'
-import Divider from '../common/Divider'
-import StatCards from '../common/StatCards'
-import { useToast } from '../../contexts/ToastContext'
-import { useHomeStore } from '../../stores/useHomeStore'
-import type { ClassifiedCategory } from '../../services/llamaService'
-import { sendTestNotification, NOTIFICATION_TIPS } from '../../services/notificationService'
+import Badge from '@/components/common/Badge'
+import SectionLabel from '@/components/common/SectionLabel'
+import Divider from '@/components/common/Divider'
+import StatCards from '@/components/common/StatCards'
+import { useToast } from '@/contexts/ToastContext'
+import { useTranslation } from 'react-i18next'
+import { useHomeStore } from '@/stores/useHomeStore'
+import type { ClassifiedCategory } from '@/services/llamaService'
+import { sendTestNotification } from '@/services/notificationService'
 import { HOME_CATEGORIES, CATEGORY_CONFIG } from './categoryConfig'
 
 export default function HomeRightPanel() {
   const toast = useToast()
+  const { t } = useTranslation()
   const entries = useHomeStore(s => s.entries)
   const [showNotifTips, setShowNotifTips] = useState(false)
   const tipsRef = useRef<HTMLDivElement>(null)
@@ -42,25 +44,25 @@ export default function HomeRightPanel() {
   }, [entries])
 
   async function handleTestNotification() {
-    const result = await sendTestNotification()
-    if (result === 'unsupported') toast('이 브라우저는 알림을 지원하지 않아요', 'error')
-    if (result === 'denied') toast('알림이 차단되어 있어요. 브라우저 설정에서 허용해주세요', 'error')
+    const result = await sendTestNotification(t('notification.testBody'))
+    if (result === 'unsupported') toast(t('home.notifUnsupported'), 'error')
+    if (result === 'denied') toast(t('home.notifDenied'), 'error')
   }
 
   return (
     <div className="p-3 flex flex-col gap-3 h-full overflow-auto">
-      <SectionLabel>오늘 기록</SectionLabel>
+      <SectionLabel>{t('home.todayRecord')}</SectionLabel>
       <StatCards
         items={[
-          { value: todayCount, label: '전체' },
-          { value: countByCategory['할일'] ?? 0, label: '할일' },
-          { value: countByCategory['메모'] ?? 0, label: '메모' },
+          { value: todayCount, label: t('common.all') },
+          { value: countByCategory['할일'] ?? 0, label: t('category.할일') },
+          { value: countByCategory['메모'] ?? 0, label: t('category.메모') },
         ]}
       />
 
       <Divider />
 
-      <SectionLabel>다음 알람</SectionLabel>
+      <SectionLabel>{t('home.nextAlarm')}</SectionLabel>
       <div
         className="flex items-center gap-2 p-2 rounded-lg"
         style={{ background: 'var(--color-primary-subtle)' }}
@@ -80,7 +82,7 @@ export default function HomeRightPanel() {
             style={{ borderColor: 'var(--color-primary)', color: 'var(--color-primary)' }}
           >
             <IconBell size={12} />
-            알림 테스트
+            {t('home.notifTest')}
           </button>
           <button
             onClick={() => setShowNotifTips(v => !v)}
@@ -99,9 +101,9 @@ export default function HomeRightPanel() {
             style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border-2)' }}
           >
             <p className="text-[10px] font-semibold" style={{ color: 'var(--color-text)' }}>
-              알림이 안 울린다면?
+              {t('home.notifTipsTitle')}
             </p>
-            {NOTIFICATION_TIPS.map(tip => (
+            {(t('notification.tips', { returnObjects: true }) as Array<{ step: string; label: string; desc: string }>).map(tip => (
               <div key={tip.step} className="flex gap-2">
                 <span
                   className="w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-bold flex-shrink-0 mt-0.5"
@@ -121,13 +123,13 @@ export default function HomeRightPanel() {
 
       <Divider />
 
-      <SectionLabel>카테고리별</SectionLabel>
+      <SectionLabel>{t('home.byCategory')}</SectionLabel>
       {HOME_CATEGORIES.map(cat => {
         const count = cat === 'AI' ? 0 : countByCategory[cat] ?? 0
         if (count === 0) return null
         return (
           <div key={cat} className="flex items-center justify-between text-[10px]">
-            <span style={{ color: 'var(--color-muted)' }}>{cat}</span>
+            <span style={{ color: 'var(--color-muted)' }}>{t(`category.${cat}`)}</span>
             <Badge variant={CATEGORY_CONFIG[cat].tone}>{count}</Badge>
           </div>
         )

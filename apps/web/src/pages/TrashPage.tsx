@@ -1,27 +1,30 @@
 import { useState, useMemo } from 'react'
 import { IconNote, IconBell, IconClock, IconRefresh, IconTrash } from '@tabler/icons-react'
-import Badge from '../components/common/Badge'
-import ConfirmModal from '../components/common/ConfirmModal'
-import PageHeader from '../components/common/PageHeader'
-import SectionLabel from '../components/common/SectionLabel'
-import Divider from '../components/common/Divider'
-import PillButton from '../components/common/PillButton'
-import EmptyState from '../components/common/EmptyState'
-import ResizableRightPanel from '../components/common/ResizableRightPanel'
-import { useToast } from '../contexts/ToastContext'
-import { useTrashStore } from '../stores/useTrashStore'
-import type { TrashItem, TrashType } from '../types/localItems'
-import { daysLeft } from '../utils/formatDate'
-import { TONES, type Tone } from '../theme/tones'
+import Badge from '@/components/common/Badge'
+import ConfirmModal from '@/components/common/ConfirmModal'
+import PageHeader from '@/components/common/PageHeader'
+import SectionLabel from '@/components/common/SectionLabel'
+import Divider from '@/components/common/Divider'
+import PillButton from '@/components/common/PillButton'
+import EmptyState from '@/components/common/EmptyState'
+import ResizableRightPanel from '@/components/common/ResizableRightPanel'
+import { useToast } from '@/contexts/ToastContext'
+import { useTranslation } from 'react-i18next'
+import { useTrashStore } from '@/stores/useTrashStore'
+import type { TrashItem, TrashType } from '@/types/localItems'
+import { daysLeft } from '@/utils/formatDate'
+import { TONES, type Tone } from '@/theme/tones'
 
-const TYPE_CONFIG: Record<TrashType, { icon: React.ReactNode; tone: Tone; label: string }> = {
-  memo:  { icon: <IconNote size={14} style={{ color: TONES.gray.fg }} />,    tone: 'gray',   label: '메모' },
-  alarm: { icon: <IconBell size={14} style={{ color: TONES.blue.fg }} />,    tone: 'blue',   label: '알람' },
-  later: { icon: <IconClock size={14} style={{ color: TONES.violet.fg }} />, tone: 'violet', label: '나중에' },
+const TYPE_CONFIG: Record<TrashType, { icon: React.ReactNode; tone: Tone }> = {
+  memo:  { icon: <IconNote size={14} style={{ color: TONES.gray.fg }} />,    tone: 'gray' },
+  alarm: { icon: <IconBell size={14} style={{ color: TONES.blue.fg }} />,    tone: 'blue' },
+  later: { icon: <IconClock size={14} style={{ color: TONES.violet.fg }} />, tone: 'violet' },
 }
 
 export default function TrashPage() {
   const toast = useToast()
+  const { t } = useTranslation()
+  const typeLabels: Record<TrashType, string> = { memo: t('trash.typeMemo'), alarm: t('trash.typeAlarm'), later: t('trash.typeLater') }
   const items = useTrashStore(s => s.items)
   const { restore, permanentDelete, emptyAll } = useTrashStore.getState()
   const [confirmDelete, setConfirmDelete] = useState<TrashItem | null>(null)
@@ -37,27 +40,27 @@ export default function TrashPage() {
 
   function handleRestore(item: TrashItem) {
     restore(item.id)
-    toast(`"${item.title}" 복원되었습니다`, 'success')
+    toast(t('trash.toastRestored', { title: item.title }), 'success')
   }
 
   function confirmPermanentDelete() {
     if (!confirmDelete) return
     permanentDelete(confirmDelete.id)
-    toast('영구 삭제되었습니다', 'info')
+    toast(t('trash.toastDeleted'), 'info')
     setConfirmDelete(null)
   }
 
   function handleEmptyAll() {
     emptyAll()
-    toast('휴지통을 비웠습니다', 'info')
+    toast(t('trash.toastEmptied'), 'info')
     setConfirmEmpty(false)
   }
 
   return (
     <div className="flex flex-col h-full">
-      <PageHeader title="휴지통">
+      <PageHeader title={t('trash.pageTitle')}>
         <span className="text-[10px]" style={{ color: 'var(--color-muted)' }}>
-          {items.length}개 · 30일 후 자동 삭제
+          {t('trash.headerInfo', { n: items.length })}
         </span>
         {items.length > 0 && (
           <button
@@ -65,7 +68,7 @@ export default function TrashPage() {
             className="text-[10px] px-2.5 py-1.5 rounded-lg border"
             style={{ borderColor: 'var(--color-danger-subtle)', color: 'var(--color-danger)', background: 'var(--color-danger-subtle)' }}
           >
-            전체 비우기
+            {t('trash.emptyAll')}
           </button>
         )}
       </PageHeader>
@@ -78,14 +81,14 @@ export default function TrashPage() {
           >
             {(['all', 'memo', 'alarm', 'later'] as const).map(f => (
               <PillButton key={f} active={filter === f} onClick={() => setFilter(f)}>
-                {f === 'all' ? '전체' : TYPE_CONFIG[f].label}
+                {f === 'all' ? t('common.all') : typeLabels[f]}
               </PillButton>
             ))}
           </div>
 
           <div className="flex-1 p-3 overflow-auto">
             {displayed.length === 0 ? (
-              <EmptyState emoji="🗑️" title="휴지통이 비어있습니다" description="삭제된 항목이 여기에 표시됩니다" />
+              <EmptyState emoji="🗑️" title={t('trash.emptyTitle')} description={t('trash.emptyDesc')} />
             ) : (
               <div className="flex flex-col gap-2">
                 {displayed.map(item => {
@@ -109,7 +112,7 @@ export default function TrashPage() {
                           {item.preview}
                         </p>
                         <p className="text-[9px] mt-0.5" style={{ color: left <= 3 ? 'var(--color-danger)' : 'var(--color-muted)' }}>
-                          {left}일 후 영구 삭제
+                          {t('trash.expireIn', { n: left })}
                         </p>
                       </div>
                       <Badge variant={left <= 3 ? 'red' : left <= 7 ? 'amber' : 'gray'}>
@@ -118,17 +121,17 @@ export default function TrashPage() {
                       <div className="flex gap-1 flex-shrink-0">
                         <button
                           onClick={() => handleRestore(item)}
-                          className="flex items-center gap-1 text-[9px] px-2 py-1 rounded border transition-colors hover:bg-gray-50"
+                          className="flex items-center gap-1 text-[9px] px-2 py-1 rounded border transition-colors hover-tint"
                           style={{ borderColor: 'var(--color-border-2)', color: 'var(--color-muted)' }}
                         >
-                          <IconRefresh size={10} /> 복원
+                          <IconRefresh size={10} /> {t('common.restore')}
                         </button>
                         <button
                           onClick={() => setConfirmDelete(item)}
                           className="flex items-center gap-1 text-[9px] px-2 py-1 rounded border transition-colors"
                           style={{ borderColor: 'var(--color-danger-subtle)', color: 'var(--color-danger)', background: 'var(--color-danger-subtle)' }}
                         >
-                          <IconTrash size={10} /> 삭제
+                          <IconTrash size={10} /> {t('common.delete')}
                         </button>
                       </div>
                     </div>
@@ -141,13 +144,13 @@ export default function TrashPage() {
 
         <ResizableRightPanel>
           <div className="p-3 flex flex-col gap-3 h-full overflow-auto">
-            <SectionLabel>현황</SectionLabel>
+            <SectionLabel>{t('common.status')}</SectionLabel>
             {(['memo', 'alarm', 'later'] as TrashType[]).map(type => {
               const count = items.filter(i => i.type === type).length
               return (
                 <div key={type} className="flex items-center justify-between text-[10px]">
-                  <span style={{ color: 'var(--color-muted)' }}>{TYPE_CONFIG[type].label}</span>
-                  <Badge variant="gray">{count}개</Badge>
+                  <span style={{ color: 'var(--color-muted)' }}>{typeLabels[type]}</span>
+                  <Badge variant="gray">{t('common.count', { n: count })}</Badge>
                 </div>
               )
             })}
@@ -157,7 +160,7 @@ export default function TrashPage() {
                 className="p-2 rounded-lg text-[10px]"
                 style={{ background: 'var(--color-danger-subtle)', color: 'var(--color-danger)' }}
               >
-                ⚠️ 7일 내 영구 삭제 예정: {expiringSoon}개
+                {t('trash.expiringSoon', { n: expiringSoon })}
               </div>
             )}
           </div>
@@ -167,28 +170,28 @@ export default function TrashPage() {
       <ConfirmModal
         isOpen={confirmEmpty}
         onClose={() => setConfirmEmpty(false)}
-        title="전체 비우기 확인"
-        confirmLabel="전체 삭제"
+        title={t('trash.confirmEmptyTitle')}
+        confirmLabel={t('trash.confirmEmptyLabel')}
         onConfirm={handleEmptyAll}
         danger
       >
         <p className="text-[11px]" style={{ color: 'var(--color-muted)' }}>
-          휴지통의 <strong style={{ color: 'var(--color-text)' }}>모든 항목 ({items.length}개)</strong>을 영구 삭제합니다.<br />
-          이 작업은 되돌릴 수 없습니다.
+          {t('trash.emptyBody', { n: items.length })}<br />
+          {t('trash.irreversible')}
         </p>
       </ConfirmModal>
 
       <ConfirmModal
         isOpen={!!confirmDelete}
         onClose={() => setConfirmDelete(null)}
-        title="영구 삭제 확인"
-        confirmLabel="영구 삭제"
+        title={t('trash.confirmDeleteTitle')}
+        confirmLabel={t('trash.confirmDeleteLabel')}
         onConfirm={confirmPermanentDelete}
         danger
       >
         <p className="text-[11px]" style={{ color: 'var(--color-muted)' }}>
-          <strong style={{ color: 'var(--color-text)' }}>"{confirmDelete?.title}"</strong>을 영구 삭제합니다.
-          이 작업은 되돌릴 수 없습니다.
+          {t('trash.deleteBody', { title: confirmDelete?.title ?? '' })}{' '}
+          {t('trash.irreversible')}
         </p>
       </ConfirmModal>
     </div>

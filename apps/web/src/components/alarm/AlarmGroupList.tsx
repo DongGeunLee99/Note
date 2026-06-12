@@ -1,6 +1,7 @@
 import AlarmGroupCard from './AlarmGroupCard'
 import AlarmCard from './AlarmCard'
-import type { LocalAlarmGroup, LocalAlarm } from '../../types/localAlarm'
+import { useTranslation } from 'react-i18next'
+import type { LocalAlarmGroup, LocalAlarm } from '@/types/localAlarm'
 
 interface AlarmGroupListProps {
   groups: LocalAlarmGroup[]
@@ -21,13 +22,15 @@ export default function AlarmGroupList({
   onToggleAlarm,
   onEditAlarm,
 }: AlarmGroupListProps) {
+  const { t } = useTranslation()
+
   if (groups.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center flex-1 gap-2 py-12">
         <span className="text-3xl">🔔</span>
-        <p className="text-[12px] font-medium">알람 그룹이 없습니다</p>
+        <p className="text-[12px] font-medium">{t('alarm.emptyTitle')}</p>
         <p className="text-[10px]" style={{ color: 'var(--color-muted)' }}>
-          위의 그룹 추가 버튼으로 시작해보세요
+          {t('alarm.emptyDesc')}
         </p>
       </div>
     )
@@ -65,7 +68,7 @@ export default function AlarmGroupList({
                 className="pl-8 pr-2 py-1 text-[10px] hover:opacity-70 transition-opacity"
                 style={{ color: 'var(--color-primary)' }}
               >
-                + 알람 추가
+                {t('alarm.addAlarm')}
               </button>
             </div>
           </div>

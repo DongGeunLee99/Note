@@ -1,6 +1,6 @@
 import { create } from 'zustand'
-import type { TrashItem } from '../types/localItems'
-import { INITIAL_TRASH } from '../mocks/mockData'
+import type { TrashItem } from '@/types/localItems'
+import { INITIAL_TRASH } from '@/mocks/mockData'
 
 interface TrashState {
   items: TrashItem[]

@@ -3,25 +3,27 @@ import {
   IconHome, IconBell, IconNote, IconClock, IconStar,
   IconCalendar, IconTrash, IconSettings, IconLogout, IconLayoutDashboard,
 } from '@tabler/icons-react'
+import { useTranslation } from 'react-i18next'
 
-type NavItem = { to: string; icon: React.ComponentType<{ size?: number; style?: React.CSSProperties }>; label: string; count?: number }
+type NavItem = { to: string; icon: React.ComponentType<{ size?: number; style?: React.CSSProperties }>; labelKey: 'home' | 'memo' | 'calendar' | 'alarm' | 'later' | 'someday' | 'dashboard' | 'trash'; count?: number }
 
 // 실제 배포 시 useAuthContext()에서 가져옴
 const MOCK_USER = { name: '홍길동', initial: '홍' }
 
 const NAV_ITEMS: NavItem[] = [
-  { to: '/', icon: IconHome, label: '홈' },
-  { to: '/memo', icon: IconNote, label: '메모' },
-  { to: '/calendar', icon: IconCalendar, label: '캘린더' },
-  { to: '/alarm', icon: IconBell, label: '알람', count: 12 },
-  { to: '/later', icon: IconClock, label: '나중에', count: 3 },
-  { to: '/someday', icon: IconStar, label: '언젠가' },
-  { to: '/dashboard', icon: IconLayoutDashboard, label: '대시보드' },
-  { to: '/trash', icon: IconTrash, label: '휴지통', count: 5 },
+  { to: '/', icon: IconHome, labelKey: 'home' },
+  { to: '/memo', icon: IconNote, labelKey: 'memo' },
+  { to: '/calendar', icon: IconCalendar, labelKey: 'calendar' },
+  { to: '/alarm', icon: IconBell, labelKey: 'alarm', count: 12 },
+  { to: '/later', icon: IconClock, labelKey: 'later', count: 3 },
+  { to: '/someday', icon: IconStar, labelKey: 'someday' },
+  { to: '/dashboard', icon: IconLayoutDashboard, labelKey: 'dashboard' },
+  { to: '/trash', icon: IconTrash, labelKey: 'trash', count: 5 },
 ]
 
 export default function Sidebar() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
 
   return (
     <aside
@@ -37,11 +39,11 @@ export default function Sidebar() {
       </NavLink>
 
       <p className="px-3 pt-2 pb-0.5 text-[9px] uppercase tracking-wide" style={{ color: 'var(--color-muted)' }}>
-        메뉴
+        {t('sidebar.menu')}
       </p>
 
       <nav className="flex flex-col flex-1">
-        {NAV_ITEMS.map(({ to, icon: Icon, label, count }) => (
+        {NAV_ITEMS.map(({ to, icon: Icon, labelKey, count }) => (
           <NavLink
             key={to}
             to={to}
@@ -50,7 +52,7 @@ export default function Sidebar() {
               `flex items-center gap-1.5 px-3 py-[6px] text-[11px] border-r-2 transition-colors ${
                 isActive
                   ? 'font-medium border-[var(--color-primary)] bg-[var(--color-surface)]'
-                  : 'border-transparent hover:bg-white/60'
+                  : 'border-transparent hover-tint'
               }`
             }
             style={({ isActive }) => ({
@@ -58,7 +60,7 @@ export default function Sidebar() {
             })}
           >
             <Icon size={15} />
-            <span className="flex-1">{label}</span>
+            <span className="flex-1">{t(`sidebar.${labelKey}`)}</span>
             {count !== undefined && (
               <span
                 className="text-[9px] px-1.5 py-px rounded-full"
@@ -72,7 +74,7 @@ export default function Sidebar() {
 
         <div className="mt-auto border-t" style={{ borderColor: 'var(--color-border)' }}>
           <p className="px-3 pt-2 pb-0.5 text-[9px] uppercase tracking-wide" style={{ color: 'var(--color-muted)' }}>
-            계정
+            {t('sidebar.account')}
           </p>
 
           {/* 프로필 행 */}
@@ -86,8 +88,8 @@ export default function Sidebar() {
             <span className="flex-1 text-[11px] font-medium truncate">{MOCK_USER.name}</span>
             <button
               onClick={() => navigate('/login')}
-              className="p-1 rounded hover:bg-black/5 transition-colors flex-shrink-0"
-              title="로그아웃"
+              className="p-1 rounded hover-tint transition-colors flex-shrink-0"
+              title={t('sidebar.logout')}
             >
               <IconLogout size={13} style={{ color: 'var(--color-muted)' }} />
             </button>
@@ -99,13 +101,13 @@ export default function Sidebar() {
               `flex items-center gap-1.5 px-3 py-[6px] text-[11px] border-r-2 transition-colors ${
                 isActive
                   ? 'font-medium border-[var(--color-primary)] bg-[var(--color-surface)]'
-                  : 'border-transparent hover:bg-white/60'
+                  : 'border-transparent hover-tint'
               }`
             }
             style={{ color: 'var(--color-muted)' }}
           >
             <IconSettings size={15} />
-            <span>설정</span>
+            <span>{t('sidebar.settings')}</span>
           </NavLink>
         </div>
       </nav>

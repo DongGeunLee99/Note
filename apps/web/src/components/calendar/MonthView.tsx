@@ -2,9 +2,10 @@ import { useMemo, useCallback } from 'react'
 import { Calendar } from 'react-big-calendar'
 import { isSameDay } from 'date-fns'
 import { useShallow } from 'zustand/react/shallow'
-import { useCalendarStore, useAllEvents } from '../../stores/useCalendarStore'
+import { useCalendarStore, useAllEvents } from '@/stores/useCalendarStore'
 import CalendarToolbar from './CalendarToolbar'
-import { rbcLocalizer, RBC_MESSAGES, getEventProps } from './calendarUtils'
+import { rbcLocalizer, getRbcMessages, getEventProps } from './calendarUtils'
+import { useLang } from '@/i18n'
 import type { RbcEvent, CalView } from './types'
 
 export default function MonthView() {
@@ -22,6 +23,7 @@ export default function MonthView() {
     openCtxMenu: s.openCtxMenu,
   })))
   const allEvents = useAllEvents()
+  const lang = useLang()
 
   const today = useMemo(() => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), d.getDate()) }, [])
 
@@ -66,10 +68,11 @@ export default function MonthView() {
         localizer={rbcLocalizer} events={allEvents}
         views={['month', 'week', 'day']} view="month"
         onView={v => setView(v as CalView)}
-        culture="ko" messages={RBC_MESSAGES}
+        culture="ko" messages={getRbcMessages(lang)}
         date={currentDate}
         onNavigate={(date, _view, action) => {
           setCurrentDate(date)
+          setSelectedSlot(null)
           if (action === 'TODAY') setSelectedDate(today)
         }}
         onSelectSlot={handleSelectSlot}

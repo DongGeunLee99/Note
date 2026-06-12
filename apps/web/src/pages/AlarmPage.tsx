@@ -1,22 +1,24 @@
 import { useState } from 'react'
-import AlarmGroupList from '../components/alarm/AlarmGroupList'
-import AlarmGroupModal from '../components/alarm/AlarmGroupModal'
-import AlarmModal from '../components/alarm/AlarmModal'
-import QuickAlarmInput from '../components/alarm/QuickAlarmInput'
-import PageHeader from '../components/common/PageHeader'
-import SectionLabel from '../components/common/SectionLabel'
-import Divider from '../components/common/Divider'
-import StatCards from '../components/common/StatCards'
-import ResizableRightPanel from '../components/common/ResizableRightPanel'
-import type { LocalAlarmGroup, LocalAlarm } from '../types/localAlarm'
-import { useToast } from '../contexts/ToastContext'
-import { useAlarmStore } from '../stores/useAlarmStore'
+import AlarmGroupList from '@/components/alarm/AlarmGroupList'
+import AlarmGroupModal from '@/components/alarm/AlarmGroupModal'
+import AlarmModal from '@/components/alarm/AlarmModal'
+import QuickAlarmInput from '@/components/alarm/QuickAlarmInput'
+import PageHeader from '@/components/common/PageHeader'
+import SectionLabel from '@/components/common/SectionLabel'
+import Divider from '@/components/common/Divider'
+import StatCards from '@/components/common/StatCards'
+import ResizableRightPanel from '@/components/common/ResizableRightPanel'
+import type { LocalAlarmGroup, LocalAlarm } from '@/types/localAlarm'
+import { useToast } from '@/contexts/ToastContext'
+import { useTranslation } from 'react-i18next'
+import { useAlarmStore } from '@/stores/useAlarmStore'
 
 type GroupModalState = { isOpen: false } | { isOpen: true; target: LocalAlarmGroup | null }
 type AlarmModalState = { isOpen: false } | { isOpen: true; target: LocalAlarm | null; defaultGroupId?: string }
 
 export default function AlarmPage() {
   const toast = useToast()
+  const { t } = useTranslation()
   const groups = useAlarmStore(s => s.groups)
   const alarms = useAlarmStore(s => s.alarms)
   const { toggleGroup, deleteGroup, saveGroup, toggleAlarm, deleteAlarm, saveAlarm, quickAddAlarm } = useAlarmStore.getState()
@@ -25,29 +27,29 @@ export default function AlarmPage() {
 
   function handleDeleteGroup(groupId: string) {
     deleteGroup(groupId)
-    toast('그룹이 삭제되었습니다', 'info')
+    toast(t('alarm.toastGroupDeleted'), 'info')
   }
 
   function handleSaveGroup(data: { name: string; color: string; emoji: string }) {
     const targetId = groupModal.isOpen && groupModal.target ? groupModal.target.groupId : undefined
     saveGroup(data, targetId)
-    toast(targetId ? '그룹이 수정되었습니다' : '그룹이 추가되었습니다', 'success')
+    toast(targetId ? t('alarm.toastGroupUpdated') : t('alarm.toastGroupAdded'), 'success')
   }
 
   function handleDeleteAlarm(alarmId: string) {
     deleteAlarm(alarmId)
-    toast('알람이 삭제되었습니다', 'info')
+    toast(t('alarm.toastAlarmDeleted'), 'info')
   }
 
   function handleSaveAlarm(data: Omit<LocalAlarm, 'alarmId' | 'sourceMemoId'>) {
     const targetId = alarmModal.isOpen && alarmModal.target ? alarmModal.target.alarmId : undefined
     saveAlarm(data, targetId)
-    toast(targetId ? '알람이 수정되었습니다' : '알람이 추가되었습니다', 'success')
+    toast(targetId ? t('alarm.toastAlarmUpdated') : t('alarm.toastAlarmAdded'), 'success')
   }
 
   function handleQuickAdd(groupId: string, hour: number, minute: number, label: string) {
     quickAddAlarm(groupId, hour, minute, label)
-    toast(`${label} 알람이 추가되었습니다`, 'success')
+    toast(t('alarm.toastQuickAdded', { label }), 'success')
   }
 
   const totalActive = alarms.filter(a => {
@@ -57,20 +59,20 @@ export default function AlarmPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <PageHeader title="알람">
+      <PageHeader title={t('alarm.pageTitle')}>
         <button
           onClick={() => setGroupModal({ isOpen: true, target: null })}
           className="text-[10px] px-2.5 py-1.5 rounded-lg border"
           style={{ color: 'var(--color-primary)', borderColor: 'var(--color-primary)' }}
         >
-          + 그룹 추가
+          {t('alarm.addGroup')}
         </button>
         <button
           onClick={() => setAlarmModal({ isOpen: true, target: null })}
           className="text-[10px] px-2.5 py-1.5 rounded-lg text-white"
           style={{ background: 'var(--color-primary)' }}
         >
-          + 알람 추가
+          {t('alarm.addAlarm')}
         </button>
       </PageHeader>
 
@@ -92,16 +94,16 @@ export default function AlarmPage() {
 
         <ResizableRightPanel>
           <div className="p-3 flex flex-col gap-3 h-full">
-            <SectionLabel>빠른 알람</SectionLabel>
+            <SectionLabel>{t('alarm.quickAlarm')}</SectionLabel>
             <QuickAlarmInput groups={groups} onAdd={handleQuickAdd} />
 
             <Divider />
 
-            <SectionLabel>현황</SectionLabel>
+            <SectionLabel>{t('common.status')}</SectionLabel>
             <StatCards
               items={[
-                { value: groups.filter(g => g.isEnabled).length, label: '활성 그룹' },
-                { value: totalActive, label: '활성 알람' },
+                { value: groups.filter(g => g.isEnabled).length, label: t('alarm.activeGroups') },
+                { value: totalActive, label: t('alarm.activeAlarms') },
               ]}
             />
           </div>

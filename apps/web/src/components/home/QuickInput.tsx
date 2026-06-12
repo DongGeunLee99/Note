@@ -1,12 +1,14 @@
 import { useState, useRef } from 'react'
 import { IconEdit } from '@tabler/icons-react'
-import PillButton from '../common/PillButton'
-import { useToast } from '../../contexts/ToastContext'
-import { useHomeStore, type HomeCategory } from '../../stores/useHomeStore'
+import PillButton from '@/components/common/PillButton'
+import { useToast } from '@/contexts/ToastContext'
+import { useTranslation } from 'react-i18next'
+import { useHomeStore, type HomeCategory } from '@/stores/useHomeStore'
 import { HOME_CATEGORIES } from './categoryConfig'
 
 export default function QuickInput() {
   const toast = useToast()
+  const { t } = useTranslation()
   const addEntry = useHomeStore(s => s.addEntry)
   const [text, setText] = useState('')
   const [category, setCategory] = useState<HomeCategory>('AI')
@@ -16,9 +18,9 @@ export default function QuickInput() {
     if (!text.trim()) return
     const saved = addEntry(text.trim(), category)
     if (category === 'AI') {
-      toast(`AI가 '${saved}'으로 분류했습니다`, 'success')
+      toast(t('home.aiClassified', { cat: t(`category.${saved}`) }), 'success')
     } else {
-      toast(`${saved}으로 저장되었습니다`, 'success')
+      toast(t('home.savedAs', { cat: t(`category.${saved}`) }), 'success')
     }
     setText('')
     inputRef.current?.focus()
@@ -36,7 +38,7 @@ export default function QuickInput() {
           value={text}
           onChange={e => setText(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSave() } }}
-          placeholder="생각나는 모든 것을 입력해 보세요…"
+          placeholder={t('home.quickPlaceholder')}
           rows={2}
           className="flex-1 text-[11px] outline-none bg-transparent resize-none leading-relaxed"
           style={{ color: 'var(--color-text)' }}
@@ -47,7 +49,7 @@ export default function QuickInput() {
         <div className="flex flex-wrap gap-1.5 flex-1">
           {HOME_CATEGORIES.map(cat => (
             <PillButton key={cat} active={category === cat} onClick={() => setCategory(cat)}>
-              {cat}
+              {t(`category.${cat}`)}
             </PillButton>
           ))}
         </div>
@@ -57,7 +59,7 @@ export default function QuickInput() {
           className="text-[10px] px-2.5 py-1 rounded-lg text-white flex-shrink-0 disabled:opacity-40"
           style={{ background: 'var(--color-primary)' }}
         >
-          저장
+          {t('common.save')}
         </button>
       </div>
     </div>

@@ -1,4 +1,5 @@
 import { isSameDay } from 'date-fns'
+import { useLang } from '@/i18n'
 import { DAY_SHORT, MONTH_FULL, MONTH_SHORT, toDateKey } from './calendarUtils'
 
 interface Props {
@@ -12,6 +13,7 @@ interface Props {
 }
 
 export default function MiniCalendar({ year, month, selected, today, eventDates, onSelect, onNavigate }: Props) {
+  const lang = useLang()
   const firstDow = new Date(year, month, 1).getDay()
   const daysInMo = new Date(year, month + 1, 0).getDate()
   const cells    = [...Array(firstDow).fill(null), ...Array.from({ length: daysInMo }, (_, i) => i + 1)]
@@ -21,13 +23,13 @@ export default function MiniCalendar({ year, month, selected, today, eventDates,
       <div className="flex items-center justify-between mb-2">
         <button onClick={() => onNavigate(new Date(year, month - 1, 1))}
           className="text-[11px] px-1 rounded hover:opacity-60" style={{ color: 'var(--color-muted)' }}>‹</button>
-        <p className="text-[10px] font-semibold">{MONTH_FULL[month]} {year}</p>
+        <p className="text-[10px] font-semibold">{lang === 'ko' ? `${year}년 ${month + 1}월` : `${MONTH_FULL[month]} ${year}`}</p>
         <button onClick={() => onNavigate(new Date(year, month + 1, 1))}
           className="text-[11px] px-1 rounded hover:opacity-60" style={{ color: 'var(--color-muted)' }}>›</button>
       </div>
 
       <div className="grid grid-cols-7 mb-0.5">
-        {['S','M','T','W','T','F','S'].map((d, i) => (
+        {(lang === 'ko' ? ['일','월','화','수','목','금','토'] : ['S','M','T','W','T','F','S']).map((d, i) => (
           <div key={i} className="text-center text-[8px] font-semibold py-0.5" style={{ color: 'var(--color-muted)' }}>{d}</div>
         ))}
       </div>

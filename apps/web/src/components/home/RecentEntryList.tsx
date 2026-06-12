@@ -1,16 +1,20 @@
-import Badge from '../common/Badge'
-import { TONES } from '../../theme/tones'
-import { formatRelTime } from '../../utils/formatDate'
-import { useHomeStore } from '../../stores/useHomeStore'
+import Badge from '@/components/common/Badge'
+import { TONES } from '@/theme/tones'
+import { formatRelTime } from '@/utils/formatDate'
+import { useTranslation } from 'react-i18next'
+import { useLang } from '@/i18n'
+import { useHomeStore } from '@/stores/useHomeStore'
 import { CATEGORY_CONFIG } from './categoryConfig'
 
 export default function RecentEntryList() {
   const entries = useHomeStore(s => s.entries)
+  const { t } = useTranslation()
+  const lang = useLang()
 
   return (
     <>
       <p className="text-[10px] font-medium" style={{ color: 'var(--color-muted)' }}>
-        최근 기록 ({entries.length})
+        {t('home.recent', { n: entries.length })}
       </p>
 
       {entries.slice(0, 20).map(entry => {
@@ -30,10 +34,10 @@ export default function RecentEntryList() {
             <div className="flex-1 min-w-0">
               <p className="text-[11px] font-medium truncate">{entry.text}</p>
               <p className="text-[9px]" style={{ color: 'var(--color-muted)' }}>
-                {formatRelTime(entry.createdAt)}
+                {formatRelTime(entry.createdAt, lang)}
               </p>
             </div>
-            <Badge variant={cfg.tone}>{entry.category}</Badge>
+            <Badge variant={cfg.tone}>{t(`category.${entry.category}`)}</Badge>
           </div>
         )
       })}

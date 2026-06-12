@@ -1,11 +1,20 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import i18n from '@/i18n'
 
 export type TimeFormat = '12h' | '24h'
+
+export type ThemeMode = 'system' | 'light' | 'dark' | 'purple' | 'blue'
+
+export type AppLanguage = 'ko' | 'en'
 
 interface SettingsState {
   timeFormat: TimeFormat
   setTimeFormat: (fmt: TimeFormat) => void
+  theme: ThemeMode
+  setTheme: (theme: ThemeMode) => void
+  language: AppLanguage
+  setLanguage: (language: AppLanguage) => void
 }
 
 export const useSettingsStore = create<SettingsState>()(
@@ -13,10 +22,28 @@ export const useSettingsStore = create<SettingsState>()(
     (set) => ({
       timeFormat: '24h',
       setTimeFormat: (fmt) => set({ timeFormat: fmt }),
+      theme: 'system',
+      setTheme: (theme) => set({ theme }),
+      language: 'ko',
+      setLanguage: (language) => {
+        i18n.changeLanguage(language)
+        set({ language })
+      },
     }),
-    { name: 'smartnote_settings' }
+    {
+      name: 'smartnote_settings',
+      onRehydrateStorage: () => (state) => {
+        if (state?.language) i18n.changeLanguage(state.language)
+      },
+    }
   )
 )
+
+/** theme 설정을 실제 data-theme 값으로 변환 ('system'은 OS 설정 추종) */
+export function resolveTheme(theme: ThemeMode, prefersDark: boolean): Exclude<ThemeMode, 'system'> {
+  if (theme === 'system') return prefersDark ? 'dark' : 'light'
+  return theme
+}
 
 export function formatClock(hour: number, minute: number, fmt: TimeFormat): string {
   if (fmt === '24h') {

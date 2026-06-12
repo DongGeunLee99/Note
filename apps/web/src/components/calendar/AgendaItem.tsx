@@ -1,6 +1,6 @@
 import { IconBell, IconTrash } from '@tabler/icons-react'
 import type { RbcEvent } from './types'
-import { useSettingsStore } from '../../stores/useSettingsStore'
+import { useSettingsStore } from '@/stores/useSettingsStore'
 import { fmtTime } from './calendarUtils'
 
 interface Props {
