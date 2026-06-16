@@ -19,7 +19,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 핵심 차별점:
 - 메모 저장 시 Llama AI가 자동으로 날짜/시간을 감지해 알람을 제안
-- 알람을 그룹으로 묶어 ON/OFF 한 번에 관리 (예: 직장 그룹 비출근일 자동 OFF)
+- 알람을 그룹으로 묶어 ON/OFF 한 번에 관리
 - 홈 화면 자연어 입력 → Llama가 일정/알람/메모/나중에/언젠가로 자동 분류
 
 ---
@@ -41,6 +41,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | 자연어 시간 파싱 | chrono-node |
 | 캘린더 UI | react-big-calendar + date-fns |
 | 차트 | Recharts |
+| 다국어(i18n) | i18next + react-i18next (한/영) |
+| 테마 | `data-theme` 5종 (system/light/dark/purple/blue) |
 
 ---
 
@@ -65,7 +67,6 @@ smartnote/
     ├── onLaterWrite.ts       ← 나중에 항목 CRUD 시 Cloud Task 관리
     ├── triggerLater.ts       ← Cloud Task 호출 시 나중에 알림 발송
     ├── memoAI.ts             ← 메모 저장 트리거 → Llama 처리
-    ├── workDayScheduler.ts   ← 자정 출근일 확인 + 그룹 자동 ON/OFF
     └── trashCleaner.ts       ← 30일 초과 휴지통 자동 삭제
 ```
 
@@ -91,7 +92,6 @@ users/{uid}
   ├── memos/{memoId}          aiSummary, aiProcessed, detectedAlarms[], location
   ├── later/{laterId}         notifyAt, isCompleted, snoozedCount
   ├── someday/{somedayId}     category(여행|배움|구매|기타), aiCategory, isFavorite
-  ├── workDays/{YYYY-MM-DD}   isWorkDay (알람 그룹 자동 OFF 연동)
   └── devices/{deviceId}      platform(web|electron|mobile), isActive, fcmToken
 ```
 
@@ -212,10 +212,16 @@ git reset --soft HEAD~1      # 마지막 커밋 취소 (변경 유지)
 ## 작업 운영 파일
 
 `.claude/` 루트의 진행 상황·로그 파일 (위 설계 문서와 구분):
-- `task.md` — 큰 기능 단위 목록 (Phase별). 상태 `[ ]` 미시작 · `[~]` 진행 중 · `[x]` 완료
-- `todo.md` — Step별 세부 태스크 체크리스트 (task.md의 하위 분해)
+- `task.md` — 큰 기능 단위 목록 **인덱스**. 실제 항목은 아키텍처 seam별로 `tasks/` 하위에 분리. 상태 `[ ]` 미시작 · `[~]` 진행 중 · `[x]` 완료
+- `todo.md` — Step별 세부 태스크 **인덱스**. 실제 체크리스트는 `todos/` 하위에 분리
 - `log.md` — 작업 내역 (무엇을 했는지 서술, 최신순 위)
 - `log_code.md` — 실제 코드 변경 기록 (before → after, 최신순 위)
+
+`.claude/tasks/` · `.claude/todos/` 폴더 (영역별 분리, 공통 백엔드 + 플랫폼별 프론트):
+- `backend.md` — functions/ + Firestore + FCM/기기 라우팅 (3플랫폼 공통)
+- `web.md` — apps/web 프론트엔드
+- `electron.md` — Phase 3 데스크탑 (착수 전)
+- `mobile.md` — Phase 4 모바일 (착수 전)
 
 `.claude/rules/` 폴더에 분리된 규칙 문서 보관:
 - `행동지침.md` — 작업 기본 원칙 1~6 (CLAUDE.md 「행동 지침」에서 `@import`)

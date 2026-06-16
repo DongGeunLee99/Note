@@ -140,26 +140,18 @@ flowchart TD
     E13 -->|취소| E16
   end
 
-  subgraph SF["Flow F: 알람 그룹 ON/OFF & 조건부 자동 OFF"]
+  subgraph SF["Flow F: 알람 그룹 ON/OFF (수동 토글)"]
     F0(["알람 탭"])
     F1["그룹 토글 버튼 클릭"]
     F2["Firestore 즉시 업데이트 - isEnabled 변경"]
     F3{"isEnabled 상태"}
     F4["그룹 + 알람 카드 dimmed 처리"]
     F5["그룹 + 알람 카드 정상 표시"]
-    F6(["자정 Cloud Scheduler - 매일 00:00"])
-    F7["workDays 조회 - 오늘 출근 여부"]
-    F8{"비출근일?"}
-    F9["직장 그룹 isEnabled = false 자동 설정"]
-    F10["변경 없음"]
     F11(["알람 탭 반영 완료"])
 
     F0 --> F1 --> F2 --> F3
     F3 -->|OFF| F4 --> F11
     F3 -->|ON| F5 --> F11
-    F6 --> F7 --> F8
-    F8 -->|예| F9 --> F11
-    F8 -->|아니오| F10 --> F11
   end
 
   subgraph SG["Flow G: 나중에 알려줘"]
@@ -254,10 +246,8 @@ flowchart TD
   style E15 fill:#FCEBEB,stroke:#A32D2D,color:#791F1F
 
   style F0 fill:#E6F1FB,stroke:#185FA5,color:#0C447C
-  style F6 fill:#FAEEDA,stroke:#854F0B,color:#633806
   style F11 fill:#EAF3DE,stroke:#3B6D11,color:#27500A
   style F3 fill:#FAEEDA,stroke:#854F0B,color:#633806
-  style F8 fill:#FAEEDA,stroke:#854F0B,color:#633806
   style F4 fill:#F1EFE8,stroke:#5F5E5A,color:#444441
   style F9 fill:#FCEBEB,stroke:#A32D2D,color:#791F1F
 

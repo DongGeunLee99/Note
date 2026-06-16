@@ -168,22 +168,6 @@ flowchart TD
     H8 --> H9 --> H10
   end
 
-  subgraph SI["Flow I: 캘린더 출근일 설정"]
-    I1(["캘린더 탭"])
-    I2["날짜 클릭"]
-    I3["출근/비출근 토글 클릭"]
-    I4["Firestore workDays 저장"]
-    I5["캘린더 셀 색상 즉시 갱신"]
-    I6{"비출근일로 변경?"}
-    I7["직장 그룹 자동 OFF 예약 - 자정"]
-    I8["변경 없음"]
-    I9(["캘린더 탭"])
-
-    I1 --> I2 --> I3 --> I4 --> I5 --> I6
-    I6 -->|예| I7 --> I9
-    I6 -->|아니오| I8 --> I9
-  end
-
   style A1 fill:#E6F1FB,stroke:#185FA5,color:#0C447C
   style A8 fill:#EAF3DE,stroke:#3B6D11,color:#27500A
 
@@ -218,7 +202,3 @@ flowchart TD
   style H10 fill:#EAF3DE,stroke:#3B6D11,color:#27500A
   style H7 fill:#FCEBEB,stroke:#A32D2D,color:#791F1F
   style H9 fill:#FCEBEB,stroke:#A32D2D,color:#791F1F
-
-  style I1 fill:#E6F1FB,stroke:#185FA5,color:#0C447C
-  style I9 fill:#EAF3DE,stroke:#3B6D11,color:#27500A
-  style I7 fill:#FAEEDA,stroke:#854F0B,color:#633806

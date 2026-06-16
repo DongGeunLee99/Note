@@ -233,7 +233,6 @@
     "title": "대시보드",
     "statWeekRecords": "이번 주 기록",
     "statActiveAlarms": "활성 알람",
-    "statWorkDays": "이번 달 출근일",
     "statPendingTasks": "미완료 할일",
     "weeklyTitle": "주간 입력 활동량",
     "weeklySubtitle": "최근 7일 기록 수",
@@ -245,11 +244,6 @@
     "alarmTimeSubtitle": "시간대별 알람 수",
     "alarmSeries": "알람",
     "timeSlots": ["새벽", "오전", "오후", "저녁"],
-    "workTitle": "이번 달 출근일",
-    "workSubtitle": "{{month}}월 기준 · 총 {{total}}일",
-    "workDay": "출근일",
-    "nonWorkDay": "비출근일",
-    "workRate": "출근율 {{pct}}%",
     "catTask": "할일"
   },
   "time": {

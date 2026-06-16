@@ -150,28 +150,21 @@
 
 ## 3. 캘린더 컴포넌트
 
-### `<CalendarView />`
-월간 캘린더 전체 뷰
+> ⚠️ **실제 구현은 `react-big-calendar` 기반으로 아래와 같이 분리됨.** 상태는 `useCalendarStore`(Zustand)에서 직접 구독하므로 대부분 props가 없습니다(`CalendarPage`는 뷰 분기 + 모달만 담당). 초기 단일 `<CalendarView />` 명세는 폐기됨.
 
-| Props | Type | 설명 |
-|---|---|---|
-| `year` | `number` | 현재 연도 |
-| `month` | `number` | 현재 월 (0~11) |
-| `workDays` | `WorkDay[]` | 출근일 배열 |
-| `events` | `CalendarEvent[]` | 알람+메모 연동 일정 |
-| `onDaySelect` | `(date: Date) => void` | 날짜 탭 핸들러 |
-| `onMonthChange` | `(dir: 'prev' \| 'next') => void` | 월 이동 |
+| 컴포넌트 | 역할 |
+|---|---|
+| `CalendarToolbar` | 월/주/일 전환 + 이전/오늘/다음 |
+| `MonthView` | 월 뷰 (드래그 선택) |
+| `WeekView` | 주 뷰 (드래그 선택, 시간 격자) |
+| `DayView` | 일 뷰 (AM/PM 분할) |
+| `MiniCalendar` | 우측 패널 미니 달력 |
+| `AgendaItem` | 어젠다 이벤트 행 (알람 아이콘 포함) |
+| `NewEventModal` | 이벤트 추가 (Title/Color/Start/End/Alarm) |
+| `DateTimePicker` | 날짜+시간 선택 드롭다운 |
+| `CalendarRightPanel` | 우측 패널 (미니달력 + 어젠다) |
 
----
-
-### `<WorkDayToggle />`
-날짜 상세에서 출근/비출근 설정
-
-| Props | Type | 설명 |
-|---|---|---|
-| `date` | `Date` | 대상 날짜 |
-| `isWorkDay` | `boolean` | 현재 출근 여부 |
-| `onToggle` | `(date: Date, isWork: boolean) => void` | 토글 핸들러 |
+> 출근일(WorkDayToggle) 기능은 **폐기됨** — 캘린더는 일정/알람만 다룸.
 
 ---
 
@@ -252,6 +245,20 @@ ON/OFF 토글 스위치 (공용)
 | 주간 입력 활동량 | `LineChart` | 최근 7일 일별 기록 수 |
 | 카테고리 분포 | `PieChart` (donut) | 카테고리별 기록 수 + 중앙 총합 텍스트 |
 | 알람 시간대 분포 | `BarChart` | 새벽/오전/오후/저녁 4구간 알람 수 |
-| 이번 달 출근일 | `PieChart` (donut) + 진행 바 | 출근일/비출근일 비율 + 출근율 % |
 
 > Phase 1은 목업 데이터 사용. Phase 2에서 Firestore 실시간 데이터로 교체 예정.
+> 출근일 차트는 출근일 기능 폐기로 제거됨 (현재 스탯 3 + 차트 3).
+
+---
+
+## 7. 실제 구현 컴포넌트 (명세 외 — ✅ 빌드됨)
+
+> 위 1~6은 초기 설계 명세. 아래는 실제 코드에 존재하나 명세에 없던 컴포넌트(2026-06-16 대조).
+
+- **공통(`components/common/`)**: `PageHeader`, `EmptyState`, `PillButton`, `StatCards`, `SectionLabel`, `Divider`, `ConfirmModal`, `ResizableRightPanel`, `ContextMenu`, `Badge`, `Spinner`
+- **홈(`components/home/`)**: `QuickInput`, `HomeRightPanel`, `RecentEntryList`, `TodayTimeline`, `UpcomingDeadlines`, `categoryConfig`
+- **알람**: `AlarmGroupModal`, `AlarmModal`
+- **레이아웃**: `AppLayout`, `Sidebar`(`components/layout/`)
+- **캘린더**: 위 3절 표 참조
+
+> 명세에 있었으나 **미구현**: `<AlarmSuggestBadge />`(메모 알람 제안은 `MemoCard` 내부에 인라인).

@@ -28,6 +28,8 @@
 | 화면 레이아웃 | 플랫폼별 독립 | 각 `apps/` 내부 |
 | 알람 발생 로직 | 플랫폼별 독립 | 각 `apps/` 내부 |
 
+> ⚠️ **위 표는 목표 구조입니다.** 현재(Phase 1) 실제 공유 범위는 `packages/shared`의 **타입 + `firebase/config` + auth 훅(`useAuth`/`useKakaoAuth`)** 뿐입니다. services·utils·tokens·CRUD 훅은 아직 `apps/web` 안에 위치하며(예: `apps/web/src/services/llamaService.ts`, `apps/web/src/utils/`, `apps/web/src/theme/tones.ts`), Phase 2에서 공유 패키지로 끌어올릴 예정입니다.
+
 ---
 
 ## 2. 폴더 구조
@@ -139,7 +141,6 @@ smartnote/
 │       ├── onLaterWrite.ts       ← 나중에 항목 CRUD 시 Cloud Task 관리
 │       ├── triggerLater.ts       ← Cloud Task 호출 시 나중에 알림 발송
 │       ├── memoAI.ts             ← 메모 저장 시 Llama 처리 트리거
-│       ├── workDayScheduler.ts   ← 자정 출근일 확인 + 그룹 자동 ON/OFF
 │       └── trashCleaner.ts       ← 30일 초과 휴지통 자동 영구 삭제
 │
 └── docs/                         ← 설계 문서
@@ -231,6 +232,14 @@ export const colors = {
 export const spacing = { xs:4, sm:8, md:12, lg:16, xl:24 };
 export const radius  = { sm:6, md:8, lg:12, full:9999 };
 ```
+
+### 테마 (웹 구현)
+
+웹은 `<html data-theme>` 속성 기반 5종 테마를 지원: `system` / `light` / `dark` / `purple` / `blue`.
+- `system`이면 OS 다크모드(`prefers-color-scheme`)를 실시간 추종 (`App.tsx`)
+- 테마별 CSS 변수는 `apps/web/src/index.css`의 `[data-theme="..."]` 블록에서 오버라이드
+- 선택값은 `useSettingsStore`(localStorage)에 persist
+- 디자인 토큰(위 `colors`)은 `packages/shared/tokens` 목표이나, 현재 웹은 `apps/web/src/theme/tones.ts` + CSS 변수로 운영
 
 ---
 

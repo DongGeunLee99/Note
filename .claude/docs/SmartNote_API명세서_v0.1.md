@@ -16,6 +16,17 @@ Cloud Functions `onCall` 방식은 Firebase SDK가 자동으로 토큰을 처리
 
 ---
 
+## 구현 상태 (2026-06-16)
+
+| Function | 상태 |
+|---|---|
+| `kakaoLogin` | ✅ 구현 (`functions/src/kakaoAuth.ts`) |
+| 그 외 전부 (`onAlarmWrite`, `triggerAlarm`, `memoAIProcess`, `memoAIReprocess`, `classifyInput`, `onLaterWrite`, `triggerLater`, `trashCleaner`, `registerFCMToken`) | ⏳ Phase 2 설계 — 미구현 |
+
+> `workDayScheduler`(출근일 기반 조건부 그룹 자동 OFF)는 **출근일 기능 폐기로 명세에서 제거됨**. 알람 그룹은 수동 토글만 지원.
+
+---
+
 ## 1. 인증 (Auth)
 
 ### 1-1. 카카오 로그인
@@ -103,23 +114,6 @@ Called by: Google Cloud Tasks
 | `alarm/not-found` | 알람을 찾을 수 없음 | 삭제된 알람 |
 | `alarm/group-disabled` | 그룹이 비활성 상태 | 그룹 OFF |
 | `alarm/no-active-device` | 활성 기기 없음 | 모든 기기 오프라인 |
-
----
-
-### 2-3. 조건부 그룹 자동 OFF (자동 실행)
-
-매일 자정 실행. 비출근일 시 직장 그룹 자동 OFF.
-
-```
-Function : workDayScheduler
-Type     : onSchedule
-Schedule : every day 00:00
-```
-
-**처리 흐름**
-1. 모든 사용자의 오늘 날짜 `workDays` 조회
-2. `isWorkDay = false` 이면 직장 그룹 `isEnabled = false`
-3. `isWorkDay = true` 이면 직장 그룹 `isEnabled = true` 복구
 
 ---
 

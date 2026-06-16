@@ -13,7 +13,6 @@ users/{uid}
   ├── memos/{memoId}
   ├── later/{laterId}
   ├── someday/{somedayId}
-  ├── workDays/{date}
   └── devices/{deviceId}
 ```
 
@@ -29,10 +28,13 @@ users/{uid}
 | `kakaoId` | string | `"123456"` | 카카오 사용자 ID |
 | `nickname` | string | `"홍길동"` | 카카오 닉네임 |
 | `profileImage` | string | `"https://..."` | 카카오 프로필 이미지 URL |
-| `settings.defaultSound` | string | `"default"` | 마지막 사용 알람 소리 |
-| `settings.defaultVibration` | boolean | `true` | 마지막 사용 진동 여부 |
-| `settings.rightPanelWidth` | number | `192` | 우측 패널 너비 (px). 웹/Electron 간 동기화. 미설정 시 기본값 192 |
 | `settings.timeFormat` | string | `"24h"` | 시간 표시 형식. `"24h"` (07:30) \| `"12h"` (7:30 AM). 기본값 `"24h"` |
+| `settings.theme` | string | `"system"` | 테마. `system` \| `light` \| `dark` \| `purple` \| `blue`. 기본값 `system` |
+| `settings.language` | string | `"ko"` | 표시 언어. `ko` \| `en`. 기본값 `ko` |
+| `settings.defaultSound` | string | `"default"` | (계획) 마지막 사용 알람 소리 — Phase 2 |
+| `settings.defaultVibration` | boolean | `true` | (계획) 마지막 사용 진동 여부 — Phase 2 |
+
+> **현재 구현 상태:** settings는 Phase 1에서 **localStorage**(`useSettingsStore` persist)에 저장됨 — `timeFormat`·`theme`·`language`만 실사용. Firestore `users/{uid}.settings` 동기화는 Phase 2. `rightPanelWidth`는 별도 localStorage 키로 관리(이 문서 범위 밖).
 | `createdAt` | timestamp | - | 계정 생성 시각 (로컬) |
 | `updatedAt` | timestamp | - | 마지막 업데이트 시각 (로컬) |
 
@@ -133,20 +135,7 @@ users/{uid}
 
 ---
 
-## 7. users/{uid}/workDays/{date}
-
-`date` = `YYYY-MM-DD` 형식 (문서 ID)
-
-| 필드 | 타입 | 예시 | 설명 |
-|---|---|---|---|
-| `date` | string | `"2026-05-27"` | 날짜 (문서 ID와 동일) |
-| `isWorkDay` | boolean | `true` | 출근 여부 |
-| `note` | string | `"재택"` | 비고 (재택, 반차 등) |
-| `updatedAt` | timestamp | - | 수정 시각 (로컬) |
-
----
-
-## 8. users/{uid}/devices/{deviceId}
+## 7. users/{uid}/devices/{deviceId}
 
 `deviceId` = 기기별 고유 ID (UUID 생성)
 

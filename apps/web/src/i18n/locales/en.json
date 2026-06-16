@@ -233,7 +233,6 @@
     "title": "Dashboard",
     "statWeekRecords": "Records This Week",
     "statActiveAlarms": "Active Alarms",
-    "statWorkDays": "Work Days This Month",
     "statPendingTasks": "Pending Tasks",
     "weeklyTitle": "Weekly Activity",
     "weeklySubtitle": "Records in the last 7 days",
@@ -245,11 +244,6 @@
     "alarmTimeSubtitle": "Alarms by time of day",
     "alarmSeries": "Alarms",
     "timeSlots": ["Night", "Morning", "Afternoon", "Evening"],
-    "workTitle": "Work Days This Month",
-    "workSubtitle": "Month {{month}} · {{total}} days total",
-    "workDay": "Work days",
-    "nonWorkDay": "Off days",
-    "workRate": "Attendance {{pct}}%",
     "catTask": "Task"
   },
   "time": {

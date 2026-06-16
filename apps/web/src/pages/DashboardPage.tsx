@@ -32,18 +32,9 @@ const ALARM_TIME_DATA = [
   { time: '저녁', range: '18–24시', count: 5 },
 ]
 
-const WORK_DAYS    = 22
-const NON_WORK_DAYS = 8
-const TOTAL_DAYS   = 30
-const WORK_MONTH_DATA = [
-  { name: '출근일',   value: WORK_DAYS,     color: '#185FA5' },
-  { name: '비출근일', value: NON_WORK_DAYS, color: '#e5e7eb' },
-]
-
 const STATS = [
   { value: 30, label: '이번 주 기록',    color: '#185FA5' },
   { value: 12, label: '활성 알람',       color: '#D97706' },
-  { value: 22, label: '이번 달 출근일',  color: '#16A34A' },
   { value: 5,  label: '미완료 할일',     color: '#7C3AED' },
 ]
 
@@ -185,63 +176,6 @@ export default function DashboardPage() {
                 <Bar dataKey="count" name="알람" fill="#185FA5" radius={[4, 4, 0, 0]} maxBarSize={40} />
               </BarChart>
             </ResponsiveContainer>
-          </ChartCard>
-
-          {/* 4. 이번 달 출근일 */}
-          <ChartCard title="이번 달 출근일" subtitle={`${today.getMonth() + 1}월 기준 · 총 ${TOTAL_DAYS}일`}>
-            <div className="flex items-center gap-4">
-              <div className="relative flex-shrink-0" style={{ width: 140, height: 140 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={WORK_MONTH_DATA}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={42}
-                      outerRadius={60}
-                      dataKey="value"
-                      strokeWidth={0}
-                      startAngle={90}
-                      endAngle={-270}
-                    >
-                      {WORK_MONTH_DATA.map((entry, i) => (
-                        <Cell key={i} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip content={<ChartTooltip />} />
-                  </PieChart>
-                </ResponsiveContainer>
-                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                  <span className="text-[18px] font-semibold" style={{ color: '#185FA5' }}>{WORK_DAYS}</span>
-                  <span className="text-[8px]" style={{ color: '#69696a' }}>출근일</span>
-                </div>
-              </div>
-              <div className="flex flex-col gap-3 flex-1">
-                {[
-                  { label: '출근일',   value: WORK_DAYS,     color: '#185FA5', bg: '#E6F1FB' },
-                  { label: '비출근일', value: NON_WORK_DAYS, color: '#6B7280', bg: '#f3f4f6' },
-                ].map(item => (
-                  <div key={item.label}>
-                    <div className="flex items-center justify-between text-[10px] mb-1">
-                      <span style={{ color: '#69696a' }}>{item.label}</span>
-                      <span className="font-medium" style={{ color: item.color }}>{item.value}일</span>
-                    </div>
-                    <div className="h-1.5 rounded-full overflow-hidden" style={{ background: '#f3f4f6' }}>
-                      <div
-                        className="h-full rounded-full transition-all"
-                        style={{
-                          width: `${(item.value / TOTAL_DAYS) * 100}%`,
-                          background: item.color,
-                        }}
-                      />
-                    </div>
-                  </div>
-                ))}
-                <p className="text-[9px]" style={{ color: '#69696a' }}>
-                  출근율 {Math.round((WORK_DAYS / TOTAL_DAYS) * 100)}%
-                </p>
-              </div>
-            </div>
           </ChartCard>
 
         </div>

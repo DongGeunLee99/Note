@@ -13,7 +13,7 @@ export const INITIAL_GROUPS: LocalAlarmGroup[] = [
 
 export const INITIAL_ALARMS: LocalAlarm[] = [
   { alarmId: 'a1', groupId: 'g1', label: '기상', hour: 7, minute: 30, repeatDays: [1, 2, 3, 4, 5], isEnabled: true, sourceMemoId: null },
-  { alarmId: 'a2', groupId: 'g1', label: '출근 준비', hour: 9, minute: 0, repeatDays: [1, 2, 3, 4, 5], isEnabled: true, sourceMemoId: null },
+  { alarmId: 'a2', groupId: 'g1', label: '모닝 루틴', hour: 9, minute: 0, repeatDays: [1, 2, 3, 4, 5], isEnabled: true, sourceMemoId: null },
   { alarmId: 'a3', groupId: 'g1', label: '퇴근', hour: 18, minute: 30, repeatDays: [1, 2, 3, 4, 5], isEnabled: false, sourceMemoId: null },
   { alarmId: 'a4', groupId: 'g2', label: '취침 준비', hour: 22, minute: 30, repeatDays: [0, 1, 2, 3, 4, 5, 6], isEnabled: true, sourceMemoId: null },
 ]

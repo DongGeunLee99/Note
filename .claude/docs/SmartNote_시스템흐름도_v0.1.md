@@ -30,7 +30,6 @@ users/{uid}
 ├── memos/{memoId}          ← 원문, AI 정리, 위치, 알람 감지 결과
 ├── later/{laterId}         ← 나중에 알려줘, 알림 시각
 ├── someday/{somedayId}     ← 언젠가 리스트, 카테고리
-├── workDays/{YYYY-MM-DD}   ← 출근 여부
 └── devices/{deviceId}      ← 플랫폼, isActive, FCM 토큰
 ```
 

@@ -1,5 +1,8 @@
 # SmartNote 작업 태스크 v0.2
 
+> ⚠️ **은퇴(설계 스냅샷, 미유지).** 실제 진행 상태는 `.claude/tasks/`·`.claude/todos/`(backend·web·electron·mobile)를 보세요.
+> 아래는 초기 설계 시점 기준이라 이후 변경(출근일 기능 폐기, Cloud Tasks 전환, Zustand·i18n 도입, task 재편)은 반영돼 있지 않습니다. 보존용으로만 둡니다.
+
 > 인증: 카카오 로그인 | AI: Llama | 휴지통 추가
 > 총 72개 태스크 / 4 Phase + MVP 이후
 
