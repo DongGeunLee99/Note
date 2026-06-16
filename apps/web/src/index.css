@@ -107,3 +107,35 @@ textarea,
 .hover-danger:hover {
   background: var(--color-danger-subtle);
 }
+
+/* ── 전역 스크롤바: 막대(thumb)만 (A-1 자리 고정, 테마 추종) ───────── */
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-2) transparent;
+}
+/* WebKit (Chrome/Edge/Electron/Safari) */
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-track { background: transparent; }            /* 트랙 숨김 */
+*::-webkit-scrollbar-corner { background: transparent; }           /* 코너 숨김 */
+/* 화살표(버튼) 제거 — Fluent 스크롤바 미적용 환경에서 적용됨 */
+*::-webkit-scrollbar-button,
+*::-webkit-scrollbar-button:single-button,
+*::-webkit-scrollbar-button:start:decrement,
+*::-webkit-scrollbar-button:end:increment,
+*::-webkit-scrollbar-button:vertical:start:decrement,
+*::-webkit-scrollbar-button:vertical:end:increment,
+*::-webkit-scrollbar-button:horizontal:start:decrement,
+*::-webkit-scrollbar-button:horizontal:end:increment { display: none; width: 0; height: 0; }
+/* 드래그 핸들 */
+*::-webkit-scrollbar-thumb {
+  background: var(--color-border-2);
+  border-radius: 9999px;
+  border: 2px solid transparent;        /* 패딩처럼 → 더 얇게 */
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--color-muted);
+  background-clip: padding-box;
+  border: 2px solid transparent;
+}
