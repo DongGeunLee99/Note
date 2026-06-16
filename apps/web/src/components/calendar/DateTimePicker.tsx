@@ -30,14 +30,14 @@ export default function DateTimePicker({ value, onChange }: Props) {
 
   return (
     <div className="flex items-center gap-1 flex-wrap justify-end">
+      <select value={y} onChange={e => upd('year', +e.target.value)} className={sel} style={bdr}>
+        {[0, 1, 2].map(i => { const yr = now.getFullYear() + i; return <option key={yr} value={yr}>{yr}</option> })}
+      </select>
       <select value={mo} onChange={e => upd('month', +e.target.value)} className={sel} style={bdr}>
         {MONTH_SHORT.map((m, i) => <option key={i} value={i}>{lang === 'ko' ? `${i + 1}월` : m}</option>)}
       </select>
       <select value={dy} onChange={e => upd('day', +e.target.value)} className={sel} style={bdr}>
-        {Array.from({ length: maxDay }, (_, i) => i + 1).map(n => <option key={n} value={n}>{n}</option>)}
-      </select>
-      <select value={y} onChange={e => upd('year', +e.target.value)} className={sel} style={bdr}>
-        {[0, 1, 2].map(i => { const yr = now.getFullYear() + i; return <option key={yr} value={yr}>{yr}</option> })}
+        {Array.from({ length: maxDay }, (_, i) => i + 1).map(n => <option key={n} value={n}>{lang === 'ko' ? `${n}일` : n}</option>)}
       </select>
       <span className="text-[10px]" style={{ color: 'var(--color-muted)' }}>{t('calendar.at')}</span>
       <select value={h} onChange={e => upd('hour', +e.target.value)} className={sel} style={bdr}>

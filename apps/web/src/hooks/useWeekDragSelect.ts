@@ -12,9 +12,10 @@ export interface WeekSel {
  * - 컬럼 rect는 mousedown 시 1회만 캐싱 (mousemove마다 DOM 조회 방지)
  * - 선택 갱신은 requestAnimationFrame으로 스로틀
  */
-export function useWeekDragSelect(weekDates: Date[]) {
+export function useWeekDragSelect(weekDates: Date[], onSelect?: (sel: WeekSel) => void) {
   const containerRef  = useRef<HTMLDivElement>(null)
   const isMultiDayRef = useRef(false)
+  const draggedRef    = useRef(false)
   const dragStartRef  = useRef<{ colIdx: number; minutes: number } | null>(null)
   const colRectsRef   = useRef<DOMRect[]>([])
   const rafRef        = useRef(0)
@@ -60,6 +61,7 @@ export function useWeekDragSelect(weekDates: Date[]) {
       prev.startMin === sMin && prev.endMin === eMin
     ) return
 
+    draggedRef.current = true
     setWeekSel({
       startDay: new Date(sDay.getFullYear(), sDay.getMonth(), sDay.getDate()),
       endDay:   new Date(eDay.getFullYear(), eDay.getMonth(), eDay.getDate()),
@@ -74,7 +76,9 @@ export function useWeekDragSelect(weekDates: Date[]) {
     colRectsRef.current = Array.from(c.querySelectorAll<HTMLElement>('.rbc-day-slot'))
       .map(el => el.getBoundingClientRect())
     isMultiDayRef.current = false
-    setWeekSel(null)
+    // 선택을 mousedown에서 즉시 지우지 않음 → 단순 클릭으로 기존 선택이 사라지지 않음.
+    // 실제 드래그가 시작되면 applyDrag에서 새 선택으로 교체됨.
+    draggedRef.current = false
     dragStartRef.current = getColAndTime(e.clientX, e.clientY)
   }
 
@@ -90,12 +94,18 @@ export function useWeekDragSelect(weekDates: Date[]) {
   }
 
   function onMouseUp() {
-    dragStartRef.current  = null
-    isMultiDayRef.current = false
     if (rafRef.current) {
       cancelAnimationFrame(rafRef.current)
       rafRef.current = 0
     }
+    // 실제 드래그가 있었으면 선택 범위를 store(selectedSlot)에 기록 → 모달이 그 기간을 받음
+    const sel = weekSelRef.current
+    if (draggedRef.current && sel && onSelect) {
+      onSelect(sel)
+    }
+    dragStartRef.current  = null
+    isMultiDayRef.current = false
+    draggedRef.current    = false
   }
 
   /** 다중일 드래그 중에는 rbc 기본 단일 선택을 취소 */

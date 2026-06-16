@@ -15,11 +15,17 @@ export default function WeekView() {
     setSelectedDate,
     setView,
     openCtxMenu,
+    setSelectedSlot,
+    setSelectedEventId,
+    setSelectedDays,
   } = useCalendarStore(useShallow(s => ({
     currentDate: s.currentDate, setCurrentDate: s.setCurrentDate,
     setSelectedDate: s.setSelectedDate,
     setView: s.setView,
     openCtxMenu: s.openCtxMenu,
+    setSelectedSlot: s.setSelectedSlot,
+    setSelectedEventId: s.setSelectedEventId,
+    setSelectedDays: s.setSelectedDays,
   })))
   const allEvents = useAllEvents()
   const lang = useLang()
@@ -31,7 +37,20 @@ export default function WeekView() {
     return Array.from({ length: 7 }, (_, i) => addDays(s, i))
   }, [currentDate])
 
-  const { containerRef, weekSel, onMouseDown, onMouseMove, onMouseUp, handleSelecting } = useWeekDragSelect(weekDates)
+  const { containerRef, weekSel, onMouseDown, onMouseMove, onMouseUp, handleSelecting } = useWeekDragSelect(
+    weekDates,
+    sel => {
+      // 선택에 걸친 날짜 목록 (B안: 날짜별 개별 일정 생성용)
+      const days: Date[] = []
+      for (let d = new Date(sel.startDay); d <= sel.endDay; d = addDays(d, 1)) days.push(new Date(d))
+      const atTime = (day: Date, min: number) => {
+        const x = new Date(day); x.setHours(Math.floor(min / 60), min % 60, 0, 0); return x
+      }
+      // 모달엔 첫 날의 시간대를 보여주고, 저장 시 각 날짜에 동일 시간대로 생성
+      setSelectedSlot({ start: atTime(days[0], sel.startMin), end: atTime(days[0], sel.endMin) })
+      setSelectedDays(days)
+    },
+  )
 
   const eventPropGetter = useCallback((event: RbcEvent) => getEventProps(event), [])
 
@@ -72,7 +91,7 @@ export default function WeekView() {
           setCurrentDate(date)
           if (action === 'TODAY') setSelectedDate(today)
         }}
-        onSelectEvent={(event: RbcEvent) => setSelectedDate(event.start)}
+        onSelectEvent={(event: RbcEvent) => { setSelectedDate(event.start); setSelectedEventId(event.id) }}
         onSelecting={handleSelecting}
         selectable
         eventPropGetter={eventPropGetter}

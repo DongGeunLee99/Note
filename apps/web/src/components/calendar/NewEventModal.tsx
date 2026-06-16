@@ -10,13 +10,16 @@ interface Props {
   isOpen: boolean
   initialStart: Date
   initialEnd: Date
+  /** 주간 다중일 드래그 시 선택된 날짜 수 (>1이면 각 날짜에 생성) */
+  multiDayCount?: number
   onClose: () => void
   onSave: (event: Omit<CalendarEventData, 'id'>) => void
 }
 
-export default function NewEventModal({ isOpen, initialStart, initialEnd, onClose, onSave }: Props) {
+export default function NewEventModal({ isOpen, initialStart, initialEnd, multiDayCount = 1, onClose, onSave }: Props) {
   const { t } = useTranslation()
   const [title,        setTitle]        = useState('')
+  const [description,  setDescription]  = useState('')
   const [start,        setStart]        = useState<Date>(initialStart)
   const [end,          setEnd]          = useState<Date>(initialEnd)
   const [color,        setColor]        = useState(EVENT_COLORS[0])
@@ -26,6 +29,7 @@ export default function NewEventModal({ isOpen, initialStart, initialEnd, onClos
   useEffect(() => {
     if (isOpen) {
       setTitle('')
+      setDescription('')
       setStart(initialStart)
       setEnd(initialEnd)
       setColor(EVENT_COLORS[0])
@@ -36,7 +40,7 @@ export default function NewEventModal({ isOpen, initialStart, initialEnd, onClos
 
   function handleSave() {
     if (!title.trim()) return
-    onSave({ title: title.trim(), start, end, color, hasAlarm, alarmMinutesBefore: alarmMinutes })
+    onSave({ title: title.trim(), description: description.trim(), start, end, color, hasAlarm, alarmMinutesBefore: alarmMinutes })
   }
 
   function handleStartChange(d: Date) {
@@ -52,6 +56,7 @@ export default function NewEventModal({ isOpen, initialStart, initialEnd, onClos
       isOpen={isOpen}
       onClose={onClose}
       title={t('calendar.modalTitle')}
+      widthClass="w-[360px]"
       footer={
         <>
           <button onClick={onClose} className="text-[10px] px-3 py-1.5 rounded-lg border"
@@ -63,12 +68,25 @@ export default function NewEventModal({ isOpen, initialStart, initialEnd, onClos
       }
     >
       <div className="flex flex-col">
+        {multiDayCount > 1 && (
+          <div className="mb-2 px-2 py-1.5 rounded-lg text-[10px]" style={{ background: 'var(--color-primary-subtle)', color: 'var(--color-primary)' }}>
+            {t('calendar.multiDayNote', { n: multiDayCount })}
+          </div>
+        )}
         <div className={row} style={bdr}>
           <span style={{ color: 'var(--color-muted)' }}>{t('calendar.fieldTitle')}</span>
           <input type="text" value={title} onChange={e => setTitle(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleSave()}
             placeholder={t('calendar.eventNamePlaceholder')} maxLength={40} autoFocus
             className="text-right text-[11px] outline-none bg-transparent w-44" />
+        </div>
+
+        <div className="flex flex-col gap-1 py-2 border-b text-[11px]" style={bdr}>
+          <span style={{ color: 'var(--color-muted)' }}>{t('calendar.fieldDescription')}</span>
+          <textarea value={description} onChange={e => setDescription(e.target.value)}
+            placeholder={t('calendar.descPlaceholder')} rows={3} maxLength={500}
+            className="text-[11px] leading-relaxed outline-none resize-none bg-transparent"
+            style={{ color: 'var(--color-text)' }} />
         </div>
 
         <div className={row} style={bdr}>

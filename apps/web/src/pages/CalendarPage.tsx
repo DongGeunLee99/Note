@@ -23,12 +23,14 @@ export default function CalendarPage() {
     ctxMenu, closeCtxMenu, handleCtxNewEvent,
     eventModal, modalStart, modalEnd, closeEventModal, saveEvent,
     currentDate,
+    selectedDays, setSelectedDays,
   } = useCalendarStore(useShallow(s => ({
     view: s.view,
     ctxMenu: s.ctxMenu, closeCtxMenu: s.closeCtxMenu, handleCtxNewEvent: s.handleCtxNewEvent,
     eventModal: s.eventModal, modalStart: s.modalStart, modalEnd: s.modalEnd,
     closeEventModal: s.closeEventModal, saveEvent: s.saveEvent,
     currentDate: s.currentDate,
+    selectedDays: s.selectedDays, setSelectedDays: s.setSelectedDays,
   })))
   const allEvents = useAllEvents()
 
@@ -39,8 +41,20 @@ export default function CalendarPage() {
   )
 
   function handleSaveEvent(data: Omit<CalendarEventData, 'id'>) {
-    saveEvent(data)
-    toast(t('calendar.toastEventAdded'), 'success')
+    // 주간 다중일 드래그(B안): 선택한 각 날짜에 동일 시간대 일정 1개씩 생성
+    if (selectedDays && selectedDays.length > 1) {
+      selectedDays.forEach(day => {
+        const start = new Date(day); start.setHours(data.start.getHours(), data.start.getMinutes(), 0, 0)
+        let end = new Date(day); end.setHours(data.end.getHours(), data.end.getMinutes(), 0, 0)
+        if (end <= start) end = new Date(start.getTime() + 3600000)
+        saveEvent({ ...data, start, end })
+      })
+      setSelectedDays(null)
+      toast(t('calendar.toastEventsAdded', { n: selectedDays.length }), 'success')
+    } else {
+      saveEvent(data)
+      toast(t('calendar.toastEventAdded'), 'success')
+    }
   }
 
   return (
@@ -70,6 +84,7 @@ export default function CalendarPage() {
         isOpen={eventModal}
         initialStart={modalStart}
         initialEnd={modalEnd}
+        multiDayCount={selectedDays?.length ?? 1}
         onClose={closeEventModal}
         onSave={handleSaveEvent}
       />

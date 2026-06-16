@@ -15,12 +15,14 @@ export default function MonthView() {
     setView,
     selectedSlot, setSelectedSlot,
     openCtxMenu,
+    setSelectedEventId,
   } = useCalendarStore(useShallow(s => ({
     selectedDate: s.selectedDate, setSelectedDate: s.setSelectedDate,
     currentDate: s.currentDate,   setCurrentDate: s.setCurrentDate,
     setView: s.setView,
     selectedSlot: s.selectedSlot, setSelectedSlot: s.setSelectedSlot,
     openCtxMenu: s.openCtxMenu,
+    setSelectedEventId: s.setSelectedEventId,
   })))
   const allEvents = useAllEvents()
   const lang = useLang()
@@ -57,7 +59,7 @@ export default function MonthView() {
     setSelectedSlot({ start, end })
   }, [currentDate, setSelectedDate, setCurrentDate, setSelectedSlot])
 
-  const handleSelectEvent = useCallback((event: RbcEvent) => setSelectedDate(event.start), [setSelectedDate])
+  const handleSelectEvent = useCallback((event: RbcEvent) => { setSelectedDate(event.start); setSelectedEventId(event.id) }, [setSelectedDate, setSelectedEventId])
 
   return (
     <div

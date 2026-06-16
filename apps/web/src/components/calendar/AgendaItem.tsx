@@ -6,14 +6,15 @@ import { fmtTime } from './calendarUtils'
 interface Props {
   event: RbcEvent
   onDelete?: () => void
+  onSelect?: () => void
 }
 
-export default function AgendaItem({ event, onDelete }: Props) {
+export default function AgendaItem({ event, onDelete, onSelect }: Props) {
   const timeFormat = useSettingsStore(s => s.timeFormat)
   return (
     <div className="flex items-stretch gap-1.5 mb-1 group">
       <div className="w-[3px] rounded-full flex-shrink-0 my-0.5" style={{ background: event.color }} />
-      <div className="flex-1 min-w-0 rounded-md px-2 py-1" style={{ background: `${event.color}18` }}>
+      <div onClick={onSelect} className="flex-1 min-w-0 rounded-md px-2 py-1 cursor-pointer" style={{ background: `${event.color}18` }}>
         <div className="flex items-center gap-1">
           <p className="text-[9px] font-medium" style={{ color: event.color }}>{fmtTime(event.start, timeFormat)}</p>
           {event.hasAlarm && <IconBell size={8} style={{ color: event.color, flexShrink: 0 }} />}

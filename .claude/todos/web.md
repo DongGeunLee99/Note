@@ -6,6 +6,54 @@
 
 ## 미완료
 
+### 메모 탭 개선 (큐 — "작업하자" 신호 시 일괄 실행)
+
+> 2026-06-16 적재. 모델 변경(`pinnedAt`, `aiSummaryEdited`, 되돌리기용 직전 본문) + 다중 컴포넌트 → **착수 시 행동지침 6번 계획서 먼저**.
+
+**A. 상세 패널 인라인 편집 (지시 1 + 4)**
+- [x] 우측 상세 패널: 읽기 → 인라인 편집 전환, 편집용 `MemoEditor` 모달 제거(파일 삭제)
+- [x] 신규 메모도 패널에서 작성 (write 버튼 → 빈 메모 패널 열기, 모달 미사용)
+- [x] 원문/AI 토글(`AiToggleButton`)을 카드 → 상세 패널로 이동
+- [x] AI 정리 텍스트 편집 가능 + 저장 (`updateAiSummary` 액션)
+- [x] AI 정리 사용자 수정 시 `aiSummaryEdited` 플래그 → 재분석이 덮어쓰지 않게
+- [x] 편집 모드 진입 시 패널 최소 폭 보장(편집 시 minWidth 240)
+
+**B. 카드 우클릭 컨텍스트 메뉴 (지시 3 + 5)**
+- [x] 카드 우클릭 → 메뉴(삭제 / 고정·해제), 카드의 휴지통 아이콘 제거
+- [x] 메모 고정: `pinnedAt` 추가, 목록 정렬 "고정(핀 시각순) → 일반(작성순)"
+- [x] 고정 최대 3개, 4번째 시도 시 차단 + 토스트
+- [x] 고정 메모 핀 아이콘 표시
+
+**C. 1-스텝 되돌리기 (지시 2 단계적 대안)**
+- [x] 저장 직전 본문 1개 보관 → "되돌리기"로 직전 상태 복원
+
+### 알람 모달 — 요일 프리셋 (큐)
+
+> 2026-06-16 적재. `AlarmModal.tsx` 단일 컴포넌트 + i18n 키. UI: **A안**(프리셋 줄 + 개별 7일 줄).
+
+- [x] 개별 7일 토글 위에 프리셋 줄 추가: `[평일] [주말] [매일]`
+- [x] 프리셋 = 세터 (평일=[1~5], 주말=[0,6], 매일=[0~6])
+- [x] 현재 `repeatDays`가 프리셋과 정확히 일치하면 해당 프리셋 하이라이트
+- [x] i18n 키 추가(ko/en): `alarm.repeatWeekday`·`repeatWeekend`·`repeatEveryday`
+
+### 캘린더 — 일정 내용(설명) 필드 + 우측 패널 표시 (큐)
+
+> 2026-06-16 적재. 모델 변경(`CalendarEventData.description` + `RbcEvent.description`) + 다중 파일 → 착수 시 계획서.
+
+- [x] `CalendarEventData`에 `description` 추가 + `RbcEvent`에도 추가, `useAllEvents`에서 전달
+- [x] `NewEventModal`에 내용 textarea 추가 (onSave에 description 포함)
+- [x] 우측 패널에 "선택 일정 상세" 영역 신설 — 일정 클릭(그리드+아젠다) 시 `selectedEventId` → 제목·시간·내용 표시
+- [x] i18n 키: `fieldDescription`·`descPlaceholder`·`noDescription`
+
+### 캘린더 — 주간 다중일 드래그 → 요일별 개별 일정 (큐)
+
+> 2026-06-16 적재. 사용자 결정: **B안**(여러 날 사각형 드래그 시 각 날짜에 같은 시간대 일정 N개 생성). 드래그→스토어→모달→저장 semantics 변경이라 착수 시 계획서.
+
+- [x] 드래그 선택의 "날짜 목록"(startDay~endDay)을 보존해 스토어로 전달 (`selectedDays`)
+- [x] `NewEventModal`: 다중일 선택 시 "N일에 각각 생성" 표시, 시간대는 공통 적용
+- [x] 저장 시 선택 일자마다 동일 시간대 일정 1개씩 생성 (`handleSaveEvent` 반복)
+- [x] 단일일 드래그는 기존대로 1개 (현재 동작 유지)
+
 ### Phase 1 잔여 (백엔드 연동 단계)
 - [ ] 웹 알람 발생 — Firestore 리스너로 알람 시간 감지, Web Audio API + 모달
 - [ ] Service Worker 등록 — PWA 백그라운드 알람 수신 준비
@@ -15,6 +63,7 @@
 - [ ] 메모 AI 정리 / 알람 제안 실제 연결
 - [ ] 나중에 / 언젠가 페이지 백엔드 연동
 - [ ] 기기 활성 상태(isActive) 보고
+- [ ] 메모 풀 버전 히스토리 — Firestore `versions` 서브컬렉션 (1-스텝 되돌리기의 확장)
 
 ### i18n 잔여 미적용 (사전 키 준비됨)
 - [ ] `DashboardPage` · `LoginPage` · `ConfirmModal` · `HomeRightPanel` 목업 문구 i18n 연결

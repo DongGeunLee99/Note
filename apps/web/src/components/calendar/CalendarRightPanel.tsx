@@ -1,28 +1,33 @@
 import { useMemo } from 'react'
 import { isSameDay } from 'date-fns'
 import { useShallow } from 'zustand/react/shallow'
-import { IconPlus } from '@tabler/icons-react'
+import { IconPlus, IconX, IconBell } from '@tabler/icons-react'
 import Badge from '@/components/common/Badge'
 import ResizableRightPanel from '@/components/common/ResizableRightPanel'
 import MiniCalendar from './MiniCalendar'
 import AgendaItem from './AgendaItem'
 import { useCalendarStore, useAllEvents } from '@/stores/useCalendarStore'
+import { useSettingsStore } from '@/stores/useSettingsStore'
 import { useTranslation } from 'react-i18next'
 import { useLang } from '@/i18n'
-import { DAY_SHORT, MONTH_SHORT, DAY_SHORT_KO, formatSectionDate, toDateKey } from './calendarUtils'
+import { DAY_SHORT, MONTH_SHORT, DAY_SHORT_KO, formatSectionDate, toDateKey, fmtTime } from './calendarUtils'
 
 export default function CalendarRightPanel() {
   const {
     currentDate, selectedDate, setSelectedDate, setCurrentDate,
     deleteEvent, openEventModal,
+    selectedEventId, setSelectedEventId,
   } = useCalendarStore(useShallow(s => ({
     currentDate: s.currentDate, selectedDate: s.selectedDate,
     setSelectedDate: s.setSelectedDate, setCurrentDate: s.setCurrentDate,
     deleteEvent: s.deleteEvent, openEventModal: s.openEventModal,
+    selectedEventId: s.selectedEventId, setSelectedEventId: s.setSelectedEventId,
   })))
   const allEvents = useAllEvents()
+  const timeFormat = useSettingsStore(s => s.timeFormat)
   const { t } = useTranslation()
   const lang = useLang()
+  const selectedEvent = allEvents.find(e => e.id === selectedEventId)
 
   const today    = useMemo(() => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), d.getDate()) }, [])
   const tomorrow = useMemo(() => new Date(today.getTime() + 86400000), [today])
@@ -103,6 +108,28 @@ export default function CalendarRightPanel() {
             <IconPlus size={11} /> {t('calendar.newEvent')}
           </button>
 
+          {/* 선택한 일정 상세 */}
+          {selectedEvent && (
+            <div className="rounded-lg border p-2.5 flex flex-col gap-1.5" style={{ borderColor: 'var(--color-border)' }}>
+              <div className="flex items-start justify-between gap-2">
+                <span className="flex items-center gap-1.5 min-w-0">
+                  <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: selectedEvent.color }} />
+                  <span className="text-[11px] font-medium truncate">{selectedEvent.title}</span>
+                </span>
+                <button onClick={() => setSelectedEventId(null)} className="flex-shrink-0 hover-tint rounded p-0.5">
+                  <IconX size={12} style={{ color: 'var(--color-muted)' }} />
+                </button>
+              </div>
+              <div className="flex items-center gap-1 text-[9px]" style={{ color: 'var(--color-muted)' }}>
+                <span>{fmtTime(selectedEvent.start, timeFormat)} – {fmtTime(selectedEvent.end, timeFormat)}</span>
+                {selectedEvent.hasAlarm && <IconBell size={9} style={{ color: selectedEvent.color }} />}
+              </div>
+              {selectedEvent.description
+                ? <p className="text-[10px] leading-relaxed whitespace-pre-wrap" style={{ color: 'var(--color-text)' }}>{selectedEvent.description}</p>
+                : <p className="text-[9px] italic" style={{ color: 'var(--color-muted)' }}>{t('calendar.noDescription')}</p>}
+            </div>
+          )}
+
           <div className="h-px" style={{ background: 'var(--color-border)' }} />
 
           {/* TODAY */}
@@ -112,7 +139,7 @@ export default function CalendarRightPanel() {
             </p>
             {agendaToday.length === 0
               ? <p className="text-[9px] italic" style={{ color: 'var(--color-muted)' }}>{t('calendar.noEvents')}</p>
-              : agendaToday.map(e => <AgendaItem key={e.id} event={e} onDelete={!e.isPreset ? () => deleteEvent(e.id) : undefined} />)
+              : agendaToday.map(e => <AgendaItem key={e.id} event={e} onSelect={() => setSelectedEventId(e.id)} onDelete={!e.isPreset ? () => deleteEvent(e.id) : undefined} />)
             }
           </div>
 
@@ -123,7 +150,7 @@ export default function CalendarRightPanel() {
             </p>
             {agendaTomorrow.length === 0
               ? <p className="text-[9px] italic" style={{ color: 'var(--color-muted)' }}>{t('calendar.noEvents')}</p>
-              : agendaTomorrow.map(e => <AgendaItem key={e.id} event={e} onDelete={!e.isPreset ? () => deleteEvent(e.id) : undefined} />)
+              : agendaTomorrow.map(e => <AgendaItem key={e.id} event={e} onSelect={() => setSelectedEventId(e.id)} onDelete={!e.isPreset ? () => deleteEvent(e.id) : undefined} />)
             }
           </div>
 
@@ -134,7 +161,7 @@ export default function CalendarRightPanel() {
               {agendaWeekGrouped.map(({ date, events }) => (
                 <div key={date.toDateString()} className="mb-2">
                   <p className="text-[9px] font-semibold mb-1" style={{ color: 'var(--color-muted)' }}>{formatSectionDate(date, lang)}</p>
-                  {events.map(e => <AgendaItem key={e.id} event={e} onDelete={!e.isPreset ? () => deleteEvent(e.id) : undefined} />)}
+                  {events.map(e => <AgendaItem key={e.id} event={e} onSelect={() => setSelectedEventId(e.id)} onDelete={!e.isPreset ? () => deleteEvent(e.id) : undefined} />)}
                 </div>
               ))}
             </div>

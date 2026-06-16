@@ -30,9 +30,10 @@ interface HalfDayColumnProps {
   timeFormat: TimeFormat
   sel: SelOverlay | null
   onHourContextMenu: (e: React.MouseEvent, hour: number) => void
+  onSelectEvent: (event: RbcEvent) => void
 }
 
-export function HalfDayColumn({ label, startHour, events, nowLine, timeFormat, sel, onHourContextMenu }: HalfDayColumnProps) {
+export function HalfDayColumn({ label, startHour, events, nowLine, timeFormat, sel, onHourContextMenu, onSelectEvent }: HalfDayColumnProps) {
   return (
     <div className="flex-1 min-w-0 flex flex-col">
       <div className="text-center text-[9px] font-bold uppercase tracking-widest py-1.5 border-b sticky top-0 z-10 flex-shrink-0"
@@ -74,7 +75,8 @@ export function HalfDayColumn({ label, startHour, events, nowLine, timeFormat, s
           const bottom = (event.end.getHours()   - startHour + event.end.getMinutes()   / 60) * HOUR_H
           const height = Math.max(bottom - top, 22)
           return (
-            <div key={event.id} className="absolute rounded-md px-2 py-1 overflow-hidden"
+            <div key={event.id} className="absolute rounded-md px-2 py-1 overflow-hidden cursor-pointer"
+              onClick={e => { e.stopPropagation(); onSelectEvent(event) }}
               style={{ top: top + 1, left: 46, right: 4, height: height - 2, background: event.color }}>
               <div className="flex items-center gap-1">
                 <p className="text-[9px] font-semibold text-white truncate leading-tight flex-1">{event.title}</p>
@@ -101,13 +103,16 @@ export function CustomDayView() {
   const timeFormat = useSettingsStore(s => s.timeFormat)
   const { t } = useTranslation()
   const lang = useLang()
-  const { selectedDate, setSelectedDate, setCurrentDate, view, setView, openCtxMenu, setSelectedSlot } = useCalendarStore(useShallow(s => ({
+  const { selectedDate, setSelectedDate, setCurrentDate, view, setView, openCtxMenu, setSelectedSlot, setSelectedEventId } = useCalendarStore(useShallow(s => ({
     selectedDate: s.selectedDate, setSelectedDate: s.setSelectedDate,
     setCurrentDate: s.setCurrentDate,
     view: s.view, setView: s.setView,
     openCtxMenu: s.openCtxMenu,
     setSelectedSlot: s.setSelectedSlot,
+    setSelectedEventId: s.setSelectedEventId,
   })))
+
+  const handleSelectEvent = (event: RbcEvent) => { setSelectedDate(event.start); setSelectedEventId(event.id) }
   const allEvents = useAllEvents()
 
   const { containerRef, daySel, onMouseDown, onMouseMove, onMouseUp, clearDaySel } = useDayDragSelect(sel => {
@@ -185,10 +190,10 @@ export function CustomDayView() {
         onMouseUp={onMouseUp}
       >
         <HalfDayColumn label={t('calendar.am')} startHour={0}  events={amEvents} nowLine={amNow} timeFormat={timeFormat}
-          sel={colSel(0)} onHourContextMenu={handleHourContextMenu} />
+          sel={colSel(0)} onHourContextMenu={handleHourContextMenu} onSelectEvent={handleSelectEvent} />
         <div className="w-px flex-shrink-0" style={{ background: 'var(--color-border)' }} />
         <HalfDayColumn label={t('calendar.pm')} startHour={12} events={pmEvents} nowLine={pmNow} timeFormat={timeFormat}
-          sel={colSel(720)} onHourContextMenu={handleHourContextMenu} />
+          sel={colSel(720)} onHourContextMenu={handleHourContextMenu} onSelectEvent={handleSelectEvent} />
       </div>
     </div>
   )

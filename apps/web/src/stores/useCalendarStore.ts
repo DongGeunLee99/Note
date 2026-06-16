@@ -15,11 +15,16 @@ interface CalendarState {
   modalStart: Date
   modalEnd: Date
   ctxMenu: { x: number; y: number; hour?: number } | null
+  selectedEventId: string | null
+  /** 주간 다중일 드래그로 선택된 날짜 목록 (B안: 날짜별 개별 일정 생성) */
+  selectedDays: Date[] | null
 
   setSelectedDate: (d: Date) => void
   setCurrentDate: (d: Date) => void
   setView: (v: CalView) => void
   setSelectedSlot: (slot: { start: Date; end: Date } | null) => void
+  setSelectedEventId: (id: string | null) => void
+  setSelectedDays: (days: Date[] | null) => void
   openEventModal: (start: Date, end: Date) => void
   closeEventModal: () => void
   saveEvent: (data: Omit<CalendarEventData, 'id'>) => void
@@ -39,11 +44,16 @@ export const useCalendarStore = create<CalendarState>()((set, get) => ({
   modalStart: new Date(),
   modalEnd: new Date(),
   ctxMenu: null,
+  selectedEventId: null,
+  selectedDays: null,
 
   setSelectedDate: (d) => set({ selectedDate: d }),
   setCurrentDate:  (d) => set({ currentDate: d }),
   setView:         (v) => set({ view: v }),
-  setSelectedSlot: (slot) => set({ selectedSlot: slot }),
+  // 슬롯을 새로 잡으면 다중일 선택은 초기화 (Week뷰는 직후 setSelectedDays로 다시 채움)
+  setSelectedSlot: (slot) => set({ selectedSlot: slot, selectedDays: null }),
+  setSelectedEventId: (id) => set({ selectedEventId: id }),
+  setSelectedDays: (days) => set({ selectedDays: days }),
 
   openEventModal: (start, end) => {
     let normalEnd = end
@@ -54,10 +64,13 @@ export const useCalendarStore = create<CalendarState>()((set, get) => ({
     set({ modalStart: start, modalEnd: safeEnd, eventModal: true, ctxMenu: null })
   },
 
-  closeEventModal: () => set({ eventModal: false, selectedSlot: null }),
+  closeEventModal: () => set({ eventModal: false, selectedSlot: null, selectedDays: null }),
 
   saveEvent: (data) => set(s => ({ events: [...s.events, { ...data, id: `ce${_nextId++}` }] })),
-  deleteEvent: (id) => set(s => ({ events: s.events.filter(e => e.id !== id) })),
+  deleteEvent: (id) => set(s => ({
+    events: s.events.filter(e => e.id !== id),
+    selectedEventId: s.selectedEventId === id ? null : s.selectedEventId,
+  })),
 
   openCtxMenu: (x, y, hour) => {
     const menuW = 160, menuH = 60
@@ -95,12 +108,12 @@ export function useAllEvents(): RbcEvent[] {
     const presets: RbcEvent[] = Object.entries(PRESET_EVENTS).flatMap(([day, evts]) =>
       evts.map((ev, i) => {
         const start = timeToDate(y, m, Number(day), ev.time)
-        return { id: `preset-${day}-${i}`, title: ev.title, start, end: new Date(start.getTime() + 30 * 60000), isPreset: true, color: ev.color, hasAlarm: true }
+        return { id: `preset-${day}-${i}`, title: ev.title, description: '', start, end: new Date(start.getTime() + 30 * 60000), isPreset: true, color: ev.color, hasAlarm: true }
       })
     )
     return [
       ...presets,
-      ...events.map(e => ({ id: e.id, title: e.title, start: e.start, end: e.end, isPreset: false, color: e.color, hasAlarm: e.hasAlarm })),
+      ...events.map(e => ({ id: e.id, title: e.title, description: e.description, start: e.start, end: e.end, isPreset: false, color: e.color, hasAlarm: e.hasAlarm })),
     ]
   }, [events, currentDate])
 }
