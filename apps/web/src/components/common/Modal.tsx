@@ -7,9 +7,11 @@ interface ModalProps {
   title: string
   children: React.ReactNode
   footer?: React.ReactNode
+  /** 본문 폭 Tailwind 클래스. 기본 w-72(288px) */
+  widthClass?: string
 }
 
-export default function Modal({ isOpen, onClose, title, children, footer }: ModalProps) {
+export default function Modal({ isOpen, onClose, title, children, footer, widthClass = 'w-72' }: ModalProps) {
   if (!isOpen) return null
 
   return createPortal(
@@ -19,7 +21,7 @@ export default function Modal({ isOpen, onClose, title, children, footer }: Moda
       onClick={onClose}
     >
       <div
-        className="w-72 rounded-xl shadow-lg border"
+        className={`${widthClass} rounded-xl shadow-lg border`}
         style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border-2)' }}
         onClick={e => e.stopPropagation()}
       >

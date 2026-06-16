@@ -5,19 +5,27 @@ import type { LocalMemo } from '@/types/localMemo'
 interface MemoListProps {
   memos: LocalMemo[]
   selectedId: string | null
-  aiModes: Record<string, 'original' | 'ai'>
   onSelect: (id: string) => void
-  onAiModeChange: (id: string, mode: 'original' | 'ai') => void
   onAlarmConfirm: (id: string) => void
   onAlarmDismiss: (id: string) => void
-  onDelete: (id: string) => void
+  onContextMenu: (e: React.MouseEvent, id: string) => void
 }
 
 export default function MemoList({
-  memos, selectedId, aiModes,
-  onSelect, onAiModeChange, onAlarmConfirm, onAlarmDismiss, onDelete,
+  memos, selectedId,
+  onSelect, onAlarmConfirm, onAlarmDismiss, onContextMenu,
 }: MemoListProps) {
   const { t } = useTranslation()
+
+  // 고정 메모를 핀 시각 내림차순으로 최상단, 나머지는 기존 순서 유지
+  const sorted = [...memos].sort((a, b) => {
+    const pa = a.pinnedAt ?? 0
+    const pb = b.pinnedAt ?? 0
+    if (pa && pb) return pb - pa
+    if (pa) return -1
+    if (pb) return 1
+    return 0
+  })
 
   if (memos.length === 0) {
     return (
@@ -33,17 +41,15 @@ export default function MemoList({
 
   return (
     <div className="flex flex-col gap-2">
-      {memos.map(memo => (
+      {sorted.map(memo => (
         <MemoCard
           key={memo.memoId}
           memo={memo}
           isSelected={memo.memoId === selectedId}
-          aiMode={aiModes[memo.memoId] ?? 'original'}
           onSelect={() => onSelect(memo.memoId)}
-          onAiModeChange={mode => onAiModeChange(memo.memoId, mode)}
           onAlarmConfirm={() => onAlarmConfirm(memo.memoId)}
           onAlarmDismiss={() => onAlarmDismiss(memo.memoId)}
-          onDelete={() => onDelete(memo.memoId)}
+          onContextMenu={e => onContextMenu(e, memo.memoId)}
         />
       ))}
     </div>

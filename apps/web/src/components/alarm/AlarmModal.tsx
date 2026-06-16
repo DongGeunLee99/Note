@@ -16,6 +16,15 @@ interface AlarmModalProps {
 const HOURS = Array.from({ length: 24 }, (_, i) => i)
 const MINUTES = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
 
+const REPEAT_PRESETS: { key: string; days: number[] }[] = [
+  { key: 'alarm.repeatWeekday',  days: [1, 2, 3, 4, 5] },
+  { key: 'alarm.repeatWeekend',  days: [0, 6] },
+  { key: 'alarm.repeatEveryday', days: [0, 1, 2, 3, 4, 5, 6] },
+]
+const sameDays = (a: number[], b: number[]) =>
+  a.length === b.length &&
+  [...a].sort((x, y) => x - y).join(',') === [...b].sort((x, y) => x - y).join(',')
+
 export default function AlarmModal({ isOpen, onClose, onSave, onDelete, groups, initial, defaultGroupId }: AlarmModalProps) {
   const { t } = useTranslation()
   const [label, setLabel] = useState('')
@@ -154,6 +163,25 @@ export default function AlarmModal({ isOpen, onClose, onSave, onDelete, groups, 
 
         <div className="pt-2">
           <p className="text-[10px] mb-2" style={{ color: 'var(--color-muted)' }}>{t('alarm.fieldRepeat')}</p>
+          <div className="flex gap-1.5 mb-2">
+            {REPEAT_PRESETS.map(p => {
+              const active = sameDays(repeatDays, p.days)
+              return (
+                <button
+                  key={p.key}
+                  onClick={() => setRepeatDays(p.days)}
+                  className="text-[9px] px-2 py-1 rounded-full border transition-colors"
+                  style={{
+                    background: active ? 'var(--color-primary)' : 'transparent',
+                    color: active ? '#fff' : 'var(--color-muted)',
+                    borderColor: active ? 'var(--color-primary)' : 'var(--color-border-2)',
+                  }}
+                >
+                  {t(p.key)}
+                </button>
+              )
+            })}
+          </div>
           <div className="flex gap-1.5">
             {(t('time.dayNames', { returnObjects: true }) as string[]).map((label, i) => (
               <button
