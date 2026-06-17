@@ -7,8 +7,7 @@
 ## 미완료
 
 ### 데이터 레이어 — 나머지 도메인 Firestore 연동 (알람 패턴 복제)
-- [ ] 메모 (`memos`)
-- [ ] 캘린더 (일정)
+- [ ] 캘린더 (일정) — ⚠️ shared 타입/컬렉션 미정의, 스키마 설계 먼저
 - [ ] 나중에 (`later`) / 언젠가 (`someday`)
 - [ ] 휴지통 (soft delete 목록 + 복원/영구삭제)
 
@@ -35,6 +34,15 @@
 ### Step 2. 카카오 인증 (백엔드)
 - [x] Cloud Function — 카카오 커스텀 토큰 발급 (`functions/src/kakaoAuth.ts`)
 - [x] 신규 사용자 초기화 — `users/{uid}` 문서 + 기타 그룹 자동 생성
+
+### 데이터 레이어 — 타입 통일(B안) + 메모 도메인 연동
+- [x] Local* 타입 폐기 → shared 타입 직접 사용(B안). 알람 재전환(매퍼 제거), 폼 입력 DTO
+- [x] `shared/types/memo.ts` — `pinnedAt`, `aiSummaryEdited` 추가
+- [x] `shared/services/memoService.ts` — subscribe/create(id 반환)/update(부분패치)/softDelete
+- [x] 웹 `useMemoStore` — mock 제거 → 구독 + `MemoView`(transient: aiLoading/alarmSuggestion/history). AI 시뮬 결과 Firestore 기록
+- [x] `AppLayout` 메모 구독 추가, `MemoPage/List/Card` shared 타입
+- [x] 검증: 메모 추가/AI정리/수정/직접수정/고정/삭제(soft) 에뮬레이터 실동작 확인
+- 참고: 한국어 알람 감지는 미동작(chrono-node에 ko 로케일 없음) → Phase 2 Llama로 해결 예정
 
 ### 데이터 레이어 — 알람 도메인 Firestore 연동 (mock 제거)
 - [x] `shared/services/firestoreHelpers.ts` — `userCol`, `activeQuery`(isDeleted==false)

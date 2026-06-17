@@ -3,17 +3,24 @@ import { Outlet } from 'react-router-dom'
 import Sidebar from './Sidebar'
 import { useAuthContext } from '@/contexts/AuthContext'
 import { useAlarmStore } from '@/stores/useAlarmStore'
+import { useMemoStore } from '@/stores/useMemoStore'
 
 export default function AppLayout() {
   const { user } = useAuthContext()
-  const subscribe = useAlarmStore(s => s.subscribe)
-  const unsubscribe = useAlarmStore(s => s.unsubscribe)
+  const subscribeAlarms = useAlarmStore(s => s.subscribe)
+  const unsubscribeAlarms = useAlarmStore(s => s.unsubscribe)
+  const subscribeMemos = useMemoStore(s => s.subscribe)
+  const unsubscribeMemos = useMemoStore(s => s.unsubscribe)
 
   useEffect(() => {
     if (!user) return
-    subscribe(user.uid)
-    return () => unsubscribe()
-  }, [user, subscribe, unsubscribe])
+    subscribeAlarms(user.uid)
+    subscribeMemos(user.uid)
+    return () => {
+      unsubscribeAlarms()
+      unsubscribeMemos()
+    }
+  }, [user, subscribeAlarms, unsubscribeAlarms, subscribeMemos, unsubscribeMemos])
 
   return (
     <div className="flex h-screen overflow-hidden" style={{ background: 'var(--color-surface-3)' }}>

@@ -1,51 +1,9 @@
 // Phase 1 로컬 목업 데이터 모음.
 // Phase 2에서 Firestore 연동 시 이 파일과 스토어의 초기값 참조만 제거하면 된다.
 
-import type { LocalMemo } from '@/types/localMemo'
 import type { LaterItem, SomedayItem, TrashItem, RecentEntry, TodayScheduleItem } from '@/types/localItems'
 
-// 알람 그룹/알람 mock은 Step 1에서 Firestore 연동으로 대체됨 (useAlarmStore가 실시간 구독)
-
-export const INITIAL_MEMOS: LocalMemo[] = [
-  {
-    memoId: 'm1',
-    title: '프로젝트 회의 메모',
-    body: 'UI 리뷰 결과 — 모바일 대응 필요. 다음 스프린트에 반영하기로. 담당자 미정.',
-    aiSummary: 'UI 리뷰 결론: 모바일 UI 개선을 다음 스프린트에 포함. (외 1개 항목)',
-    aiReady: true,
-    aiLoading: false,
-    location: { lat: 37.5, lng: 127.03, label: '강남구 역삼동' },
-    alarmSuggestion: null,
-    alarmConfirmed: false,
-    createdAt: new Date(Date.now() - 1000 * 60 * 90),
-  },
-  {
-    memoId: 'm2',
-    title: '',
-    body: '주말 장보기 목록\n우유, 계란, 두부, 양파, 감자, 소고기 (불고기용)',
-    aiSummary: null,
-    aiReady: false,
-    aiLoading: false,
-    location: { lat: null, lng: null, label: null },
-    alarmSuggestion: null,
-    alarmConfirmed: false,
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 26),
-  },
-  {
-    memoId: 'm3',
-    title: '블로그 아이디어',
-    body: 'React 성능 최적화 시리즈. useMemo / useCallback 실전 사례 위주로 작성하기. 내일 오전 10시에 초안 작성 시작.',
-    aiSummary: 'React 성능 최적화 블로그 시리즈 계획. useMemo/useCallback 중심으로 구성.',
-    aiReady: true,
-    aiLoading: false,
-    location: { lat: null, lng: null, label: null },
-    alarmSuggestion: (() => {
-      const d = new Date(); d.setDate(d.getDate() + 1); d.setHours(10, 0, 0, 0); return { datetime: d, label: '초안 작성 시작' }
-    })(),
-    alarmConfirmed: false,
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 72),
-  },
-]
+// 알람·메모 mock은 Firestore 연동으로 대체됨 (useAlarmStore / useMemoStore가 실시간 구독)
 
 export const INITIAL_LATER: LaterItem[] = [
   { id: 'l1', text: '병원 예약 다시 확인하기', notifyAt: '오늘 오후 3:00', isCompleted: false },

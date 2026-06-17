@@ -1,16 +1,41 @@
 import { create } from 'zustand'
-import type { LocalMemo, LocalMemoLocation } from '@/types/localMemo'
-import { INITIAL_MEMOS } from '@/mocks/mockData'
+import type { Memo, MemoLocation } from '@smartnote/shared/types'
+import {
+  subscribeMemos, createMemo, updateMemo, softDeleteMemo,
+} from '@smartnote/shared/services/memoService'
 import { detectAlarmSuggestion, generateAiSummary } from '@/services/llamaService'
-import { newLocalId } from '@/utils/id'
+import type { AlarmSuggestion } from '@/services/llamaService'
 
 export type PinResult = 'pinned' | 'unpinned' | 'limit' | 'none'
 export const MAX_PINNED = 3
 
+/** 영속 Memo + 화면 전용 임시 상태(Firestore에 저장 안 함) */
+export interface MemoView extends Memo {
+  aiLoading: boolean
+  alarmSuggestion: AlarmSuggestion | null
+  alarmConfirmed: boolean
+  history: { title: string; body: string; aiSummary: string | null } | null
+}
+
+/** Firestore 문서 → 뷰. 기존 뷰가 있으면 임시 상태 보존, 없으면(신규) 본문에서 알람 추출 */
+function toView(doc: Memo, existing?: MemoView): MemoView {
+  return {
+    ...doc,
+    aiLoading: existing?.aiLoading ?? false,
+    alarmSuggestion: existing ? existing.alarmSuggestion : detectAlarmSuggestion(doc.body),
+    alarmConfirmed: existing?.alarmConfirmed ?? false,
+    history: existing?.history ?? null,
+  }
+}
+
 interface MemoState {
-  memos: LocalMemo[]
+  uid: string | null
+  isLoading: boolean
+  memos: MemoView[]
+  subscribe: (uid: string) => void
+  unsubscribe: () => void
   /** editingId가 있으면 수정, 없으면 새로 생성하고 memoId 반환 */
-  saveMemo: (title: string, body: string, location: LocalMemoLocation, editingId?: string) => string | undefined
+  saveMemo: (title: string, body: string, location: MemoLocation, editingId?: string) => string | undefined
   deleteMemo: (memoId: string) => void
   confirmAlarm: (memoId: string) => void
   dismissAlarm: (memoId: string) => void
@@ -22,102 +47,110 @@ interface MemoState {
   undoMemo: (memoId: string) => void
 }
 
-export const useMemoStore = create<MemoState>()((set, get) => ({
-  memos: INITIAL_MEMOS,
+let unsubMemos: (() => void) | null = null
 
-  saveMemo: (title, body, location, editingId) => {
-    if (editingId) {
-      set(s => ({
-        memos: s.memos.map(m =>
-          m.memoId === editingId
-            ? {
-                ...m,
-                history: { title: m.title, body: m.body, aiSummary: m.aiSummary },
-                title, body, location,
-                alarmSuggestion: detectAlarmSuggestion(body),
-              }
-            : m
-        ),
-      }))
-      return undefined
-    }
+export const useMemoStore = create<MemoState>()((set, get) => {
+  // 특정 메모의 임시 상태만 갱신
+  const patchMemo = (id: string, patch: Partial<MemoView>) =>
+    set(s => ({ memos: s.memos.map(m => (m.memoId === id ? { ...m, ...patch } : m)) }))
 
-    const memoId = newLocalId('m')
-    const newMemo: LocalMemo = {
-      memoId,
-      title,
-      body,
-      aiSummary: null,
-      aiReady: false,
-      aiLoading: false,
-      location,
-      alarmSuggestion: detectAlarmSuggestion(body),
-      alarmConfirmed: false,
-      createdAt: new Date(),
-      pinnedAt: null,
-      aiSummaryEdited: false,
-      history: null,
-    }
-    set(s => ({ memos: [newMemo, ...s.memos] }))
-
-    // AI 처리 시뮬레이션 — Phase 2에서 Cloud Function 트리거로 대체
+  // AI 정리 시뮬레이션 — Phase 2에서 Cloud Function로 대체. 결과는 Firestore에 기록
+  const runAiSim = (id: string, body: string) => {
     setTimeout(() => {
-      set(s => ({ memos: s.memos.map(m => m.memoId === memoId ? { ...m, aiLoading: true } : m) }))
+      patchMemo(id, { aiLoading: true })
       setTimeout(() => {
-        set(s => ({
-          memos: s.memos.map(m =>
-            // 사용자가 직접 수정한 경우 자동 생성으로 덮어쓰지 않음
-            m.memoId === memoId && !m.aiSummaryEdited
-              ? { ...m, aiLoading: false, aiReady: true, aiSummary: generateAiSummary(body) }
-              : m
-          ),
-        }))
+        const uid = get().uid
+        const memo = get().memos.find(m => m.memoId === id)
+        // 사용자가 직접 수정한 경우 자동 생성으로 덮어쓰지 않음
+        if (uid && memo && !memo.aiSummaryEdited) {
+          updateMemo(uid, id, { aiSummary: generateAiSummary(body), aiProcessed: true, aiSummaryEdited: false })
+        }
+        patchMemo(id, { aiLoading: false })
       }, 2500)
     }, 1500)
+  }
 
-    return memoId
-  },
+  return {
+    uid: null,
+    isLoading: true,
+    memos: [],
 
-  deleteMemo: (memoId) => set(s => ({ memos: s.memos.filter(m => m.memoId !== memoId) })),
+    subscribe: (uid) => {
+      get().unsubscribe()
+      set({ uid, isLoading: true })
+      unsubMemos = subscribeMemos(uid, docs => {
+        set(s => ({
+          memos: docs.map(d => toView(d, s.memos.find(m => m.memoId === d.memoId))),
+          isLoading: false,
+        }))
+      })
+    },
 
-  confirmAlarm: (memoId) => set(s => ({
-    memos: s.memos.map(m => m.memoId === memoId ? { ...m, alarmConfirmed: true } : m),
-  })),
+    unsubscribe: () => {
+      unsubMemos?.()
+      unsubMemos = null
+      set({ uid: null, isLoading: true, memos: [] })
+    },
 
-  dismissAlarm: (memoId) => set(s => ({
-    memos: s.memos.map(m => m.memoId === memoId ? { ...m, alarmSuggestion: null } : m),
-  })),
+    saveMemo: (title, body, location, editingId) => {
+      const uid = get().uid
+      if (!uid) return undefined
+      if (editingId) {
+        const prev = get().memos.find(m => m.memoId === editingId)
+        if (prev) {
+          patchMemo(editingId, {
+            history: { title: prev.title, body: prev.body, aiSummary: prev.aiSummary },
+            alarmSuggestion: detectAlarmSuggestion(body),
+            alarmConfirmed: false,
+          })
+        }
+        updateMemo(uid, editingId, { title, body, location })
+        runAiSim(editingId, body)
+        return undefined
+      }
+      const id = createMemo(uid, { title, body, location })
+      runAiSim(id, body)
+      return id
+    },
 
-  togglePin: (memoId) => {
-    const m = get().memos.find(x => x.memoId === memoId)
-    if (!m) return 'none'
-    if (m.pinnedAt) {
-      set(s => ({ memos: s.memos.map(x => x.memoId === memoId ? { ...x, pinnedAt: null } : x) }))
-      return 'unpinned'
-    }
-    if (get().memos.filter(x => x.pinnedAt).length >= MAX_PINNED) return 'limit'
-    set(s => ({ memos: s.memos.map(x => x.memoId === memoId ? { ...x, pinnedAt: Date.now() } : x) }))
-    return 'pinned'
-  },
+    deleteMemo: (memoId) => {
+      const uid = get().uid
+      if (!uid) return
+      softDeleteMemo(uid, memoId)
+    },
 
-  updateAiSummary: (memoId, text) => set(s => ({
-    memos: s.memos.map(m =>
-      m.memoId === memoId
-        ? {
-            ...m,
-            history: { title: m.title, body: m.body, aiSummary: m.aiSummary },
-            aiSummary: text,
-            aiSummaryEdited: true,
-          }
-        : m
-    ),
-  })),
+    confirmAlarm: (memoId) => patchMemo(memoId, { alarmConfirmed: true }),
 
-  undoMemo: (memoId) => set(s => ({
-    memos: s.memos.map(m =>
-      m.memoId === memoId && m.history
-        ? { ...m, title: m.history.title, body: m.history.body, aiSummary: m.history.aiSummary, history: null }
-        : m
-    ),
-  })),
-}))
+    dismissAlarm: (memoId) => patchMemo(memoId, { alarmSuggestion: null }),
+
+    togglePin: (memoId) => {
+      const uid = get().uid
+      const m = get().memos.find(x => x.memoId === memoId)
+      if (!uid || !m) return 'none'
+      if (m.pinnedAt) {
+        updateMemo(uid, memoId, { pinnedAt: null })
+        return 'unpinned'
+      }
+      if (get().memos.filter(x => x.pinnedAt).length >= MAX_PINNED) return 'limit'
+      updateMemo(uid, memoId, { pinnedAt: Date.now() })
+      return 'pinned'
+    },
+
+    updateAiSummary: (memoId, text) => {
+      const uid = get().uid
+      const m = get().memos.find(x => x.memoId === memoId)
+      if (!uid || !m) return
+      patchMemo(memoId, { history: { title: m.title, body: m.body, aiSummary: m.aiSummary } })
+      updateMemo(uid, memoId, { aiSummary: text, aiSummaryEdited: true })
+    },
+
+    undoMemo: (memoId) => {
+      const uid = get().uid
+      const m = get().memos.find(x => x.memoId === memoId)
+      if (!uid || !m || !m.history) return
+      const h = m.history
+      updateMemo(uid, memoId, { title: h.title, body: h.body, aiSummary: h.aiSummary, aiSummaryEdited: false })
+      patchMemo(memoId, { history: null })
+    },
+  }
+})

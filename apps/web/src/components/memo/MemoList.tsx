@@ -1,9 +1,9 @@
 import MemoCard from './MemoCard'
 import { useTranslation } from 'react-i18next'
-import type { LocalMemo } from '@/types/localMemo'
+import type { MemoView } from '@/stores/useMemoStore'
 
 interface MemoListProps {
-  memos: LocalMemo[]
+  memos: MemoView[]
   selectedId: string | null
   onSelect: (id: string) => void
   onAlarmConfirm: (id: string) => void

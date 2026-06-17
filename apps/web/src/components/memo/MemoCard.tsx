@@ -3,10 +3,10 @@ import Spinner from '@/components/common/Spinner'
 import { useTranslation } from 'react-i18next'
 import { useLang } from '@/i18n'
 import { formatRelTime, formatSuggestionTime } from '@/utils/formatDate'
-import type { LocalMemo } from '@/types/localMemo'
+import type { MemoView } from '@/stores/useMemoStore'
 
 interface MemoCardProps {
-  memo: LocalMemo
+  memo: MemoView
   isSelected: boolean
   onSelect: () => void
   onAlarmConfirm: () => void
@@ -38,7 +38,7 @@ export default function MemoCard({
           {memo.pinnedAt && <IconPin size={11} style={{ color: 'var(--color-primary)', flexShrink: 0 }} />}
           {memo.title || memo.body.split('\n')[0].slice(0, 30)}
         </span>
-        <span className="text-[9px] flex-shrink-0" style={{ color: 'var(--color-muted)' }}>{formatRelTime(memo.createdAt, lang)}</span>
+        <span className="text-[9px] flex-shrink-0" style={{ color: 'var(--color-muted)' }}>{formatRelTime(memo.createdAt.toDate(), lang)}</span>
       </div>
 
       <p className="text-[10px] leading-relaxed mb-1.5" style={{ color: 'var(--color-muted)' }}>

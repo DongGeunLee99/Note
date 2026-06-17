@@ -8,14 +8,14 @@ import PageHeader from '@/components/common/PageHeader'
 import SectionLabel from '@/components/common/SectionLabel'
 import Divider from '@/components/common/Divider'
 import ResizableRightPanel from '@/components/common/ResizableRightPanel'
-import type { LocalMemoLocation } from '@/types/localMemo'
+import type { MemoLocation } from '@smartnote/shared/types'
 import { useToast } from '@/contexts/ToastContext'
 import { useTranslation } from 'react-i18next'
 import { useLang } from '@/i18n'
 import { useMemoStore } from '@/stores/useMemoStore'
 import { formatFullDate } from '@/utils/formatDate'
 
-const EMPTY_LOCATION: LocalMemoLocation = { lat: null, lng: null, label: null }
+const EMPTY_LOCATION: MemoLocation = { lat: null, lng: null, label: null }
 
 async function fetchReverseGeocode(lat: number, lng: number, fallback: string): Promise<string> {
   try {
@@ -38,7 +38,7 @@ export default function MemoPage() {
   const memos = useMemoStore(s => s.memos)
   const { saveMemo, deleteMemo, confirmAlarm, dismissAlarm, togglePin, undoMemo, updateAiSummary } = useMemoStore.getState()
 
-  const [selectedId, setSelectedId] = useState<string | null>('m1')
+  const [selectedId, setSelectedId] = useState<string | null>(null)
   const { menu, open: openMenu, close: closeMenu } = useContextMenu()
   const [menuMemoId, setMenuMemoId] = useState<string | null>(null)
 
@@ -47,7 +47,7 @@ export default function MemoPage() {
   const [editing, setEditing] = useState(false)
   const [draftTitle, setDraftTitle] = useState('')
   const [draftBody, setDraftBody] = useState('')
-  const [draftLocation, setDraftLocation] = useState<LocalMemoLocation>(EMPTY_LOCATION)
+  const [draftLocation, setDraftLocation] = useState<MemoLocation>(EMPTY_LOCATION)
   const [locationLoading, setLocationLoading] = useState(false)
 
   // 원문/AI 보기 + AI 정리 편집
@@ -256,7 +256,7 @@ export default function MemoPage() {
                 <div className="flex items-center gap-1">
                   <IconCalendar size={10} style={{ color: 'var(--color-muted)', flexShrink: 0 }} />
                   <span className="text-[9px]" style={{ color: 'var(--color-muted)' }}>
-                    {formatFullDate(selectedMemo.createdAt, lang)}
+                    {formatFullDate(selectedMemo.createdAt.toDate(), lang)}
                   </span>
                 </div>
 
@@ -267,10 +267,10 @@ export default function MemoPage() {
                   </div>
                 )}
 
-                {(selectedMemo.aiReady || selectedMemo.aiLoading) && (
+                {(selectedMemo.aiProcessed || selectedMemo.aiLoading) && (
                   <AiToggleButton
                     mode={panelAiMode}
-                    aiReady={selectedMemo.aiReady}
+                    aiReady={selectedMemo.aiProcessed}
                     loading={selectedMemo.aiLoading}
                     onModeChange={setPanelAiMode}
                   />
@@ -278,7 +278,7 @@ export default function MemoPage() {
 
                 <Divider />
 
-                {panelAiMode === 'ai' && selectedMemo.aiReady ? (
+                {panelAiMode === 'ai' && selectedMemo.aiProcessed ? (
                   /* AI 정리 — 편집 가능 */
                   <div className="flex flex-col gap-1">
                     <textarea
