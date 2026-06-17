@@ -6,6 +6,12 @@
 
 ## 미완료
 
+### 데이터 레이어 — 나머지 도메인 Firestore 연동 (알람 패턴 복제)
+- [ ] 메모 (`memos`)
+- [ ] 캘린더 (일정)
+- [ ] 나중에 (`later`) / 언젠가 (`someday`)
+- [ ] 휴지통 (soft delete 목록 + 복원/영구삭제)
+
 ### Phase 2 — AI + Cloud Tasks + 라우팅
 - [ ] Llama 호스팅 방식 확정 후 `llamaService` 구현 + `memoAI` Cloud Function
 - [ ] 홈 자연어 입력 AI 분류 백엔드
@@ -29,6 +35,16 @@
 ### Step 2. 카카오 인증 (백엔드)
 - [x] Cloud Function — 카카오 커스텀 토큰 발급 (`functions/src/kakaoAuth.ts`)
 - [x] 신규 사용자 초기화 — `users/{uid}` 문서 + 기타 그룹 자동 생성
+
+### 데이터 레이어 — 알람 도메인 Firestore 연동 (mock 제거)
+- [x] `shared/services/firestoreHelpers.ts` — `userCol`, `activeQuery`(isDeleted==false)
+- [x] `shared/services/alarmGroupService.ts` — subscribe/create/update/softDelete
+- [x] `shared/services/alarmService.ts` — subscribe/create/update/softDelete (기본값 채움)
+- [x] `shared/package.json` exports에 `./services/*` 추가
+- [x] 웹 `stores/alarmMappers.ts` — shared↔Local 변환(emoji↔icon), 그룹 정렬
+- [x] 웹 `useAlarmStore` mock 제거 → 실시간 구독 + mutation service 위임
+- [x] `AppLayout`에서 로그인 uid로 구독 시작/해제
+- [x] 검증: 알람/그룹 추가·수정·토글·삭제(soft delete) 에뮬레이터 실동작 확인
 
 ### Step 0. Firebase 에뮬레이터 셋업 + 카카오 로그인 실동작 검증
 - [x] `firebase.json` emulators 블록(auth 9099 / functions 5001 / firestore 8080 / ui 4000)

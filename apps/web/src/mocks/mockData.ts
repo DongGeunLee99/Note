@@ -1,22 +1,10 @@
 // Phase 1 로컬 목업 데이터 모음.
 // Phase 2에서 Firestore 연동 시 이 파일과 스토어의 초기값 참조만 제거하면 된다.
 
-import type { LocalAlarm, LocalAlarmGroup } from '@/types/localAlarm'
 import type { LocalMemo } from '@/types/localMemo'
 import type { LaterItem, SomedayItem, TrashItem, RecentEntry, TodayScheduleItem } from '@/types/localItems'
 
-export const INITIAL_GROUPS: LocalAlarmGroup[] = [
-  { groupId: 'g1', name: '직장', color: '#185FA5', emoji: '💼', isEnabled: true, isDefault: false },
-  { groupId: 'g2', name: '집', color: '#854F0B', emoji: '🏠', isEnabled: true, isDefault: false },
-  { groupId: 'g-default', name: '기타', color: '#444441', emoji: '⭐', isEnabled: true, isDefault: true },
-]
-
-export const INITIAL_ALARMS: LocalAlarm[] = [
-  { alarmId: 'a1', groupId: 'g1', label: '기상', hour: 7, minute: 30, repeatDays: [1, 2, 3, 4, 5], isEnabled: true, sourceMemoId: null },
-  { alarmId: 'a2', groupId: 'g1', label: '모닝 루틴', hour: 9, minute: 0, repeatDays: [1, 2, 3, 4, 5], isEnabled: true, sourceMemoId: null },
-  { alarmId: 'a3', groupId: 'g1', label: '퇴근', hour: 18, minute: 30, repeatDays: [1, 2, 3, 4, 5], isEnabled: false, sourceMemoId: null },
-  { alarmId: 'a4', groupId: 'g2', label: '취침 준비', hour: 22, minute: 30, repeatDays: [0, 1, 2, 3, 4, 5, 6], isEnabled: true, sourceMemoId: null },
-]
+// 알람 그룹/알람 mock은 Step 1에서 Firestore 연동으로 대체됨 (useAlarmStore가 실시간 구독)
 
 export const INITIAL_MEMOS: LocalMemo[] = [
   {

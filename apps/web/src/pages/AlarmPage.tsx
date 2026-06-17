@@ -8,6 +8,7 @@ import SectionLabel from '@/components/common/SectionLabel'
 import Divider from '@/components/common/Divider'
 import StatCards from '@/components/common/StatCards'
 import ResizableRightPanel from '@/components/common/ResizableRightPanel'
+import Spinner from '@/components/common/Spinner'
 import type { LocalAlarmGroup, LocalAlarm } from '@/types/localAlarm'
 import { useToast } from '@/contexts/ToastContext'
 import { useTranslation } from 'react-i18next'
@@ -21,6 +22,7 @@ export default function AlarmPage() {
   const { t } = useTranslation()
   const groups = useAlarmStore(s => s.groups)
   const alarms = useAlarmStore(s => s.alarms)
+  const isLoading = useAlarmStore(s => s.isLoading)
   const { toggleGroup, deleteGroup, saveGroup, toggleAlarm, deleteAlarm, saveAlarm, quickAddAlarm } = useAlarmStore.getState()
   const [groupModal, setGroupModal] = useState<GroupModalState>({ isOpen: false })
   const [alarmModal, setAlarmModal] = useState<AlarmModalState>({ isOpen: false })
@@ -56,6 +58,14 @@ export default function AlarmPage() {
     const group = groups.find(g => g.groupId === a.groupId)
     return a.isEnabled && group?.isEnabled
   }).length
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <Spinner size="lg" />
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col h-full">

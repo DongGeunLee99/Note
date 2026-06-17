@@ -1,65 +1,114 @@
 import { create } from 'zustand'
 import type { LocalAlarm, LocalAlarmGroup } from '@/types/localAlarm'
-import { INITIAL_GROUPS, INITIAL_ALARMS } from '@/mocks/mockData'
-import { newLocalId } from '@/utils/id'
+import {
+  subscribeGroups, createGroup, updateGroup, softDeleteGroup,
+} from '@smartnote/shared/services/alarmGroupService'
+import {
+  subscribeAlarms, createAlarm, updateAlarm, softDeleteAlarm,
+} from '@smartnote/shared/services/alarmService'
+import { toLocalGroup, toLocalAlarm, sortGroups } from './alarmMappers'
 
 interface AlarmState {
+  uid: string | null
+  isLoading: boolean
   groups: LocalAlarmGroup[]
   alarms: LocalAlarm[]
+  /** 로그인 uid로 Firestore 실시간 구독 시작 (중복 호출 시 기존 구독 해제 후 재구독) */
+  subscribe: (uid: string) => void
+  /** 구독 해제 + 상태 초기화 (로그아웃/언마운트) */
+  unsubscribe: () => void
   toggleGroup: (groupId: string) => void
   deleteGroup: (groupId: string) => void
-  /** targetId가 있으면 수정, 없으면 기본 그룹 앞에 추가 */
+  /** targetId가 있으면 수정, 없으면 새 그룹 생성 */
   saveGroup: (data: { name: string; color: string; emoji: string }, targetId?: string) => void
   toggleAlarm: (alarmId: string) => void
   deleteAlarm: (alarmId: string) => void
-  /** targetId가 있으면 수정, 없으면 추가 */
+  /** targetId가 있으면 수정, 없으면 생성 */
   saveAlarm: (data: Omit<LocalAlarm, 'alarmId' | 'sourceMemoId'>, targetId?: string) => void
   quickAddAlarm: (groupId: string, hour: number, minute: number, label: string) => void
 }
 
-export const useAlarmStore = create<AlarmState>()((set) => ({
-  groups: INITIAL_GROUPS,
-  alarms: INITIAL_ALARMS,
+// 구독 해제 함수는 상태 밖(모듈 스코프)에 보관
+let unsubGroups: (() => void) | null = null
+let unsubAlarms: (() => void) | null = null
 
-  toggleGroup: (groupId) => set(s => ({
-    groups: s.groups.map(g => g.groupId === groupId ? { ...g, isEnabled: !g.isEnabled } : g),
-  })),
+export const useAlarmStore = create<AlarmState>()((set, get) => ({
+  uid: null,
+  isLoading: true,
+  groups: [],
+  alarms: [],
 
-  deleteGroup: (groupId) => set(s => ({
-    groups: s.groups.filter(g => g.groupId !== groupId),
-    alarms: s.alarms.filter(a => a.groupId !== groupId),
-  })),
+  subscribe: (uid) => {
+    get().unsubscribe()
+    set({ uid, isLoading: true })
+    unsubGroups = subscribeGroups(uid, gs => {
+      set({ groups: sortGroups(gs).map(toLocalGroup), isLoading: false })
+    })
+    unsubAlarms = subscribeAlarms(uid, as => {
+      set({ alarms: as.map(toLocalAlarm) })
+    })
+  },
 
-  saveGroup: (data, targetId) => set(s => {
+  unsubscribe: () => {
+    unsubGroups?.()
+    unsubAlarms?.()
+    unsubGroups = null
+    unsubAlarms = null
+    set({ uid: null, isLoading: true, groups: [], alarms: [] })
+  },
+
+  toggleGroup: (groupId) => {
+    const { uid, groups } = get()
+    const group = groups.find(g => g.groupId === groupId)
+    if (!uid || !group) return
+    updateGroup(uid, groupId, { isEnabled: !group.isEnabled })
+  },
+
+  deleteGroup: (groupId) => {
+    const { uid, alarms } = get()
+    if (!uid) return
+    softDeleteGroup(uid, groupId)
+    // 그룹에 속한 알람도 함께 soft delete
+    alarms.filter(a => a.groupId === groupId).forEach(a => softDeleteAlarm(uid, a.alarmId))
+  },
+
+  saveGroup: (data, targetId) => {
+    const { uid, groups } = get()
+    if (!uid) return
     if (targetId) {
-      return { groups: s.groups.map(g => g.groupId === targetId ? { ...g, ...data } : g) }
+      updateGroup(uid, targetId, { name: data.name, color: data.color, icon: data.emoji })
+    } else {
+      const maxOrder = groups.filter(g => !g.isDefault).length
+      createGroup(uid, { name: data.name, color: data.color, icon: data.emoji, order: maxOrder })
     }
-    const newGroup: LocalAlarmGroup = { groupId: newLocalId('g'), ...data, isEnabled: true, isDefault: false }
-    const defaultIdx = s.groups.findIndex(g => g.isDefault)
-    if (defaultIdx === -1) return { groups: [...s.groups, newGroup] }
-    return { groups: [...s.groups.slice(0, defaultIdx), newGroup, ...s.groups.slice(defaultIdx)] }
-  }),
+  },
 
-  toggleAlarm: (alarmId) => set(s => ({
-    alarms: s.alarms.map(a => a.alarmId === alarmId ? { ...a, isEnabled: !a.isEnabled } : a),
-  })),
+  toggleAlarm: (alarmId) => {
+    const { uid, alarms } = get()
+    const alarm = alarms.find(a => a.alarmId === alarmId)
+    if (!uid || !alarm) return
+    updateAlarm(uid, alarmId, { isEnabled: !alarm.isEnabled })
+  },
 
-  deleteAlarm: (alarmId) => set(s => ({
-    alarms: s.alarms.filter(a => a.alarmId !== alarmId),
-  })),
+  deleteAlarm: (alarmId) => {
+    const { uid } = get()
+    if (!uid) return
+    softDeleteAlarm(uid, alarmId)
+  },
 
-  saveAlarm: (data, targetId) => set(s => {
+  saveAlarm: (data, targetId) => {
+    const { uid } = get()
+    if (!uid) return
     if (targetId) {
-      return { alarms: s.alarms.map(a => a.alarmId === targetId ? { ...a, ...data } : a) }
+      updateAlarm(uid, targetId, data)
+    } else {
+      createAlarm(uid, { ...data, sourceType: 'manual' })
     }
-    return { alarms: [...s.alarms, { alarmId: newLocalId('a'), ...data, sourceMemoId: null }] }
-  }),
+  },
 
-  quickAddAlarm: (groupId, hour, minute, label) => set(s => ({
-    alarms: [...s.alarms, {
-      alarmId: newLocalId('a'),
-      groupId, label, hour, minute,
-      repeatDays: [], isEnabled: true, sourceMemoId: null,
-    }],
-  })),
+  quickAddAlarm: (groupId, hour, minute, label) => {
+    const { uid } = get()
+    if (!uid) return
+    createAlarm(uid, { groupId, label, hour, minute, repeatDays: [], isEnabled: true, sourceType: 'quickAlarm' })
+  },
 }))
