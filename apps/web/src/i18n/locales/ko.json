@@ -131,6 +131,7 @@
     "pm": "오후",
     "newEvent": "일정 추가",
     "modalTitle": "일정 추가",
+    "modalEdit": "일정 수정",
     "fieldTitle": "제목",
     "eventNamePlaceholder": "일정 이름",
     "fieldDescription": "내용",
@@ -161,7 +162,8 @@
     "headerInfo": "이번 달 일정 있는 날 {{n}}일",
     "multiDayNote": "{{n}}일에 각각 생성됩니다",
     "toastEventsAdded": "{{n}}개 일정이 추가되었습니다",
-    "toastEventAdded": "일정이 추가되었습니다"
+    "toastEventAdded": "일정이 추가되었습니다",
+    "toastEventUpdated": "일정이 수정되었습니다"
   },
   "later": {
     "pageTitle": "나중에 알려줘",

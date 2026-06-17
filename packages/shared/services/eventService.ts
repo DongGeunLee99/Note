@@ -40,6 +40,19 @@ export function createEvent(uid: string, input: CreateEventInput) {
   })
 }
 
+export function updateEvent(uid: string, eventId: string, input: CreateEventInput) {
+  return updateDoc(doc(db, 'users', uid, COL, eventId), {
+    title: input.title,
+    description: input.description,
+    start: Timestamp.fromDate(input.start),
+    end: Timestamp.fromDate(input.end),
+    color: input.color,
+    hasAlarm: input.hasAlarm,
+    alarmMinutesBefore: input.alarmMinutesBefore,
+    updatedAt: Timestamp.now(),
+  })
+}
+
 export function softDeleteEvent(uid: string, eventId: string) {
   return updateDoc(doc(db, 'users', uid, COL, eventId), {
     isDeleted: true,

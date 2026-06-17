@@ -31,9 +31,10 @@ interface HalfDayColumnProps {
   sel: SelOverlay | null
   onHourContextMenu: (e: React.MouseEvent, hour: number) => void
   onSelectEvent: (event: RbcEvent) => void
+  onEventContextMenu: (e: React.MouseEvent, eventId: string) => void
 }
 
-export function HalfDayColumn({ label, startHour, events, nowLine, timeFormat, sel, onHourContextMenu, onSelectEvent }: HalfDayColumnProps) {
+export function HalfDayColumn({ label, startHour, events, nowLine, timeFormat, sel, onHourContextMenu, onSelectEvent, onEventContextMenu }: HalfDayColumnProps) {
   return (
     <div className="flex-1 min-w-0 flex flex-col">
       <div className="text-center text-[9px] font-bold uppercase tracking-widest py-1.5 border-b sticky top-0 z-10 flex-shrink-0"
@@ -77,6 +78,7 @@ export function HalfDayColumn({ label, startHour, events, nowLine, timeFormat, s
           return (
             <div key={event.id} className="absolute rounded-md px-2 py-1 overflow-hidden cursor-pointer"
               onClick={e => { e.stopPropagation(); onSelectEvent(event) }}
+              onContextMenu={e => { e.preventDefault(); e.stopPropagation(); onEventContextMenu(e, event.id) }}
               style={{ top: top + 1, left: 46, right: 4, height: height - 2, background: resolveEventColor(event.color) }}>
               <div className="flex items-center gap-1">
                 <p className="text-[9px] font-semibold text-white truncate leading-tight flex-1">{event.title}</p>
@@ -103,11 +105,12 @@ export function CustomDayView() {
   const timeFormat = useSettingsStore(s => s.timeFormat)
   const { t } = useTranslation()
   const lang = useLang()
-  const { selectedDate, setSelectedDate, setCurrentDate, view, setView, openCtxMenu, setSelectedSlot, setSelectedEventId } = useCalendarStore(useShallow(s => ({
+  const { selectedDate, setSelectedDate, setCurrentDate, view, setView, openCtxMenu, openEventCtxMenu, setSelectedSlot, setSelectedEventId } = useCalendarStore(useShallow(s => ({
     selectedDate: s.selectedDate, setSelectedDate: s.setSelectedDate,
     setCurrentDate: s.setCurrentDate,
     view: s.view, setView: s.setView,
     openCtxMenu: s.openCtxMenu,
+    openEventCtxMenu: s.openEventCtxMenu,
     setSelectedSlot: s.setSelectedSlot,
     setSelectedEventId: s.setSelectedEventId,
   })))
@@ -190,10 +193,12 @@ export function CustomDayView() {
         onMouseUp={onMouseUp}
       >
         <HalfDayColumn label={t('calendar.am')} startHour={0}  events={amEvents} nowLine={amNow} timeFormat={timeFormat}
-          sel={colSel(0)} onHourContextMenu={handleHourContextMenu} onSelectEvent={handleSelectEvent} />
+          sel={colSel(0)} onHourContextMenu={handleHourContextMenu} onSelectEvent={handleSelectEvent}
+          onEventContextMenu={(e, id) => openEventCtxMenu(e.clientX, e.clientY, id)} />
         <div className="w-px flex-shrink-0" style={{ background: 'var(--color-border)' }} />
         <HalfDayColumn label={t('calendar.pm')} startHour={12} events={pmEvents} nowLine={pmNow} timeFormat={timeFormat}
-          sel={colSel(720)} onHourContextMenu={handleHourContextMenu} onSelectEvent={handleSelectEvent} />
+          sel={colSel(720)} onHourContextMenu={handleHourContextMenu} onSelectEvent={handleSelectEvent}
+          onEventContextMenu={(e, id) => openEventCtxMenu(e.clientX, e.clientY, id)} />
       </div>
     </div>
   )

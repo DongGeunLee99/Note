@@ -15,14 +15,16 @@ import { formatSectionDate, toDateKey, fmtTime, resolveEventColor } from './cale
 export default function CalendarRightPanel() {
   const {
     currentDate, selectedDate, setSelectedDate, setCurrentDate,
-    deleteEvent, openEventModal,
+    openEventModal, openEventCtxMenu,
     selectedEventId, setSelectedEventId,
   } = useCalendarStore(useShallow(s => ({
     currentDate: s.currentDate, selectedDate: s.selectedDate,
     setSelectedDate: s.setSelectedDate, setCurrentDate: s.setCurrentDate,
-    deleteEvent: s.deleteEvent, openEventModal: s.openEventModal,
+    openEventModal: s.openEventModal, openEventCtxMenu: s.openEventCtxMenu,
     selectedEventId: s.selectedEventId, setSelectedEventId: s.setSelectedEventId,
   })))
+
+  const onEventCtx = (me: React.MouseEvent, id: string) => { me.preventDefault(); openEventCtxMenu(me.clientX, me.clientY, id) }
   const allEvents = useAllEvents()
   const timeFormat = useSettingsStore(s => s.timeFormat)
   const { t } = useTranslation()
@@ -108,7 +110,8 @@ export default function CalendarRightPanel() {
 
           {/* 선택한 일정 상세 */}
           {selectedEvent && (
-            <div className="rounded-lg border p-2.5 flex flex-col gap-1.5" style={{ borderColor: 'var(--color-border)' }}>
+            <div className="rounded-lg border p-2.5 flex flex-col gap-1.5" style={{ borderColor: 'var(--color-border)' }}
+              onContextMenu={me => onEventCtx(me, selectedEvent.id)}>
               <div className="flex items-start justify-between gap-2">
                 <span className="flex items-center gap-1.5 min-w-0">
                   <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: resolveEventColor(selectedEvent.color) }} />
@@ -137,7 +140,7 @@ export default function CalendarRightPanel() {
             </p>
             {agendaToday.length === 0
               ? <p className="text-[9px] italic" style={{ color: 'var(--color-muted)' }}>{t('calendar.noEvents')}</p>
-              : agendaToday.map(e => <AgendaItem key={e.id} event={e} onSelect={() => setSelectedEventId(e.id)} onDelete={!e.isPreset ? () => deleteEvent(e.id) : undefined} />)
+              : agendaToday.map(e => <AgendaItem key={e.id} event={e} onSelect={() => setSelectedEventId(e.id)} onContextMenu={me => onEventCtx(me, e.id)} />)
             }
           </div>
 
@@ -148,7 +151,7 @@ export default function CalendarRightPanel() {
             </p>
             {agendaTomorrow.length === 0
               ? <p className="text-[9px] italic" style={{ color: 'var(--color-muted)' }}>{t('calendar.noEvents')}</p>
-              : agendaTomorrow.map(e => <AgendaItem key={e.id} event={e} onSelect={() => setSelectedEventId(e.id)} onDelete={!e.isPreset ? () => deleteEvent(e.id) : undefined} />)
+              : agendaTomorrow.map(e => <AgendaItem key={e.id} event={e} onSelect={() => setSelectedEventId(e.id)} onContextMenu={me => onEventCtx(me, e.id)} />)
             }
           </div>
 
@@ -159,7 +162,7 @@ export default function CalendarRightPanel() {
               {agendaWeekGrouped.map(({ date, events }) => (
                 <div key={date.toDateString()} className="mb-2">
                   <p className="text-[9px] font-semibold mb-1" style={{ color: 'var(--color-muted)' }}>{formatSectionDate(date, lang)}</p>
-                  {events.map(e => <AgendaItem key={e.id} event={e} onSelect={() => setSelectedEventId(e.id)} onDelete={!e.isPreset ? () => deleteEvent(e.id) : undefined} />)}
+                  {events.map(e => <AgendaItem key={e.id} event={e} onSelect={() => setSelectedEventId(e.id)} onContextMenu={me => onEventCtx(me, e.id)} />)}
                 </div>
               ))}
             </div>

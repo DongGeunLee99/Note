@@ -16,8 +16,12 @@
 - [x] 캘린더(EVENT_COLORS/resolveEventColor/eventTintBg — getEventProps·DayView·CalendarRightPanel·AgendaItem) + 알람 그룹(GROUP_THEME_COLOR/groupBg — AlarmGroupCard·Modal) **둘 다 적용**
 - [x] 놀람 방지: 테마색 선택 시 모달에 "테마 바꾸면 색도 바뀜" 안내 박스(✨+문구, i18n common.themeColorHint 한/영/일)
 
-**#4 일정 수정 기능**
-- [ ] 생성된 일정 클릭/메뉴 → 편집 모달(기존 NewEventModal 재사용, initial 값 채움), `updateEvent` 서비스 + store 연결 (현재 saveEvent는 생성 전용)
+**#4 일정 수정 기능 (Phase 1 완료)**
+- [x] `eventService.updateEvent` + store `editingId`/`openEditModal`, saveEvent가 편집 시 수정으로 라우팅
+- [x] NewEventModal 편집 모드(기존 값 prefill, 제목 "수정", 삭제 버튼)
+- [x] 일정 우클릭 메뉴(수정/삭제): store `openEventCtxMenu`+`ctxMenu.eventId`, CalendarPage 분기
+- [x] 적용 위치: **일간(Day) 달력 + 우측 패널**(상세/아젠다). hover 쓰레기통 버튼 제거(우클릭으로 대체)
+- [ ] **Phase 2**: 월/주 달력 일정 우클릭 — rbc 커스텀 event 컴포넌트(`components={{ event }}`) 필요. 현재 월/주는 빈 곳 우클릭(일정추가)만 동작
 
 **#5 우측 미니 캘린더 스와이프**
 - [ ] MiniCalendar에서 좌우 스와이프/드래그로 월 이동 (제스처: 직접 구현 vs 라이브러리 착수 시 검토)

@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import '../styles/calendar.css'
-import { IconPlus } from '@tabler/icons-react'
+import { IconPlus, IconPencil, IconTrash } from '@tabler/icons-react'
 import { useShallow } from 'zustand/react/shallow'
 import ContextMenu from '@/components/common/ContextMenu'
 import PageHeader from '@/components/common/PageHeader'
@@ -24,6 +24,7 @@ export default function CalendarPage() {
     eventModal, modalStart, modalEnd, closeEventModal, saveEvent,
     currentDate,
     selectedDays, setSelectedDays,
+    events, editingId, openEditModal, deleteEvent,
   } = useCalendarStore(useShallow(s => ({
     view: s.view,
     ctxMenu: s.ctxMenu, closeCtxMenu: s.closeCtxMenu, handleCtxNewEvent: s.handleCtxNewEvent,
@@ -31,8 +32,21 @@ export default function CalendarPage() {
     closeEventModal: s.closeEventModal, saveEvent: s.saveEvent,
     currentDate: s.currentDate,
     selectedDays: s.selectedDays, setSelectedDays: s.setSelectedDays,
+    events: s.events, editingId: s.editingId, openEditModal: s.openEditModal, deleteEvent: s.deleteEvent,
   })))
   const allEvents = useAllEvents()
+
+  // 편집 중인 일정의 prefill 값 (날짜 외 필드)
+  const editingEvent = editingId ? events.find(e => e.eventId === editingId) : null
+  const editInitial = editingEvent
+    ? {
+        title: editingEvent.title,
+        description: editingEvent.description,
+        color: editingEvent.color,
+        hasAlarm: editingEvent.hasAlarm,
+        alarmMinutesBefore: editingEvent.alarmMinutesBefore,
+      }
+    : null
 
   const y = currentDate.getFullYear(), m = currentDate.getMonth()
   const alarmDayCount = useMemo(() =>
@@ -41,6 +55,12 @@ export default function CalendarPage() {
   )
 
   function handleSaveEvent(data: Omit<CalendarEventData, 'id'>) {
+    if (editingId) {
+      saveEvent(data) // store가 editingId면 수정으로 처리
+      toast(t('calendar.toastEventUpdated'), 'success')
+      closeEventModal()
+      return
+    }
     // 주간 다중일 드래그(B안): 선택한 각 날짜에 동일 시간대 일정 1개씩 생성
     if (selectedDays && selectedDays.length > 1) {
       selectedDays.forEach(day => {
@@ -77,7 +97,13 @@ export default function CalendarPage() {
         <ContextMenu
           x={ctxMenu.x} y={ctxMenu.y}
           onClose={closeCtxMenu}
-          items={[{ label: t('calendar.newEvent'), icon: <IconPlus size={12} />, onClick: handleCtxNewEvent }]}
+          items={ctxMenu.eventId
+            ? [
+                { label: t('common.edit'), icon: <IconPencil size={12} />, onClick: () => openEditModal(ctxMenu.eventId!) },
+                { label: t('common.delete'), icon: <IconTrash size={12} />, danger: true, onClick: () => deleteEvent(ctxMenu.eventId!) },
+              ]
+            : [{ label: t('calendar.newEvent'), icon: <IconPlus size={12} />, onClick: handleCtxNewEvent }]
+          }
         />
       )}
 
@@ -86,8 +112,10 @@ export default function CalendarPage() {
         initialStart={modalStart}
         initialEnd={modalEnd}
         multiDayCount={selectedDays?.length ?? 1}
+        initial={editInitial}
         onClose={closeEventModal}
         onSave={handleSaveEvent}
+        onDelete={editingId ? () => { deleteEvent(editingId); closeEventModal() } : undefined}
       />
     </div>
   )

@@ -131,6 +131,7 @@
     "pm": "午後",
     "newEvent": "予定追加",
     "modalTitle": "予定追加",
+    "modalEdit": "予定を編集",
     "fieldTitle": "タイトル",
     "eventNamePlaceholder": "予定名",
     "fieldDescription": "内容",
@@ -161,7 +162,8 @@
     "headerInfo": "今月の予定のある日 {{n}}日",
     "multiDayNote": "{{n}}日にそれぞれ作成されます",
     "toastEventsAdded": "{{n}}件の予定を追加しました",
-    "toastEventAdded": "予定を追加しました"
+    "toastEventAdded": "予定を追加しました",
+    "toastEventUpdated": "予定を更新しました"
   },
   "later": {
     "pageTitle": "あとで知らせて",

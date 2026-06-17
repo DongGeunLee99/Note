@@ -13,11 +13,14 @@ interface Props {
   initialEnd: Date
   /** 주간 다중일 드래그 시 선택된 날짜 수 (>1이면 각 날짜에 생성) */
   multiDayCount?: number
+  /** 편집 모드: 기존 일정 값 (날짜 외 필드 prefill). 없으면 신규 작성 */
+  initial?: { title: string; description: string; color: string; hasAlarm: boolean; alarmMinutesBefore: number } | null
   onClose: () => void
   onSave: (event: Omit<CalendarEventData, 'id'>) => void
+  onDelete?: () => void
 }
 
-export default function NewEventModal({ isOpen, initialStart, initialEnd, multiDayCount = 1, onClose, onSave }: Props) {
+export default function NewEventModal({ isOpen, initialStart, initialEnd, multiDayCount = 1, initial, onClose, onSave, onDelete }: Props) {
   const { t } = useTranslation()
   const [title,        setTitle]        = useState('')
   const [description,  setDescription]  = useState('')
@@ -29,13 +32,13 @@ export default function NewEventModal({ isOpen, initialStart, initialEnd, multiD
 
   useEffect(() => {
     if (isOpen) {
-      setTitle('')
-      setDescription('')
+      setTitle(initial?.title ?? '')
+      setDescription(initial?.description ?? '')
       setStart(initialStart)
       setEnd(initialEnd)
-      setColor(EVENT_COLORS[0])
-      setHasAlarm(false)
-      setAlarmMinutes(15)
+      setColor(initial?.color ?? EVENT_COLORS[0])
+      setHasAlarm(initial?.hasAlarm ?? false)
+      setAlarmMinutes(initial?.alarmMinutesBefore ?? 15)
     }
   }, [isOpen]) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -56,10 +59,14 @@ export default function NewEventModal({ isOpen, initialStart, initialEnd, multiD
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={t('calendar.modalTitle')}
+      title={initial ? t('calendar.modalEdit') : t('calendar.modalTitle')}
       widthClass="w-[360px]"
       footer={
         <>
+          {initial && onDelete && (
+            <button onClick={onDelete} className="text-[10px] px-3 py-1.5 rounded-lg border mr-auto"
+              style={{ borderColor: 'var(--color-danger-border)', color: 'var(--color-danger)' }}>{t('common.delete')}</button>
+          )}
           <button onClick={onClose} className="text-[10px] px-3 py-1.5 rounded-lg border"
             style={{ borderColor: 'var(--color-border-2)', color: 'var(--color-muted)' }}>{t('common.cancel')}</button>
           <button onClick={handleSave} disabled={!title.trim()}

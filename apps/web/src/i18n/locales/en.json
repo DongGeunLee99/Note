@@ -131,6 +131,7 @@
     "pm": "PM",
     "newEvent": "New Event",
     "modalTitle": "New Event",
+    "modalEdit": "Edit Event",
     "fieldTitle": "Title",
     "eventNamePlaceholder": "Event name",
     "fieldDescription": "Details",
@@ -161,7 +162,8 @@
     "headerInfo": "{{n}} days with events this month",
     "multiDayNote": "Creates an event on each of {{n}} days",
     "toastEventsAdded": "{{n}} events added",
-    "toastEventAdded": "Event added"
+    "toastEventAdded": "Event added",
+    "toastEventUpdated": "Event updated"
   },
   "later": {
     "pageTitle": "Remind Me Later",
