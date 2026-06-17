@@ -1,7 +1,7 @@
 import ToggleSwitch from '@/components/common/ToggleSwitch'
 import { useTranslation } from 'react-i18next'
 import type { AlarmGroup } from '@smartnote/shared/types'
-import { GROUP_COLORS, displayGroupIcon } from '@/types/localAlarm'
+import { groupBg, displayGroupIcon } from '@/types/localAlarm'
 
 interface AlarmGroupCardProps {
   group: AlarmGroup
@@ -13,7 +13,6 @@ interface AlarmGroupCardProps {
 
 export default function AlarmGroupCard({ group, alarmCount, onToggle, onEdit, onContextMenu }: AlarmGroupCardProps) {
   const { t } = useTranslation()
-  const colorDef = GROUP_COLORS.find(c => c.fg === group.color) ?? GROUP_COLORS[0]
 
   return (
     <div
@@ -24,7 +23,7 @@ export default function AlarmGroupCard({ group, alarmCount, onToggle, onEdit, on
     >
       <div
         className="w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0 text-sm leading-none"
-        style={{ background: colorDef.bg }}
+        style={{ background: groupBg(group.color) }}
       >
         {displayGroupIcon(group.icon)}
       </div>

@@ -3,7 +3,8 @@ import Modal from '@/components/common/Modal'
 import ToggleSwitch from '@/components/common/ToggleSwitch'
 import DateTimePicker from './DateTimePicker'
 import type { CalendarEventData } from './types'
-import { EVENT_COLORS, ALARM_BEFORE } from './calendarUtils'
+import { IconSparkles } from '@tabler/icons-react'
+import { EVENT_COLORS, ALARM_BEFORE, resolveEventColor } from './calendarUtils'
 import { useTranslation } from 'react-i18next'
 
 interface Props {
@@ -92,18 +93,32 @@ export default function NewEventModal({ isOpen, initialStart, initialEnd, multiD
         <div className={row} style={bdr}>
           <span style={{ color: 'var(--color-muted)' }}>{t('calendar.fieldColor')}</span>
           <div className="flex gap-1.5">
-            {EVENT_COLORS.map(c => (
-              <button key={c} onClick={() => setColor(c)}
-                className="w-4 h-4 rounded-full transition-transform"
-                style={{
-                  background:    c,
-                  outline:       color === c ? `2px solid ${c}` : undefined,
-                  outlineOffset: '2px',
-                  transform:     color === c ? 'scale(1.2)' : 'none',
-                }} />
-            ))}
+            {EVENT_COLORS.map(c => {
+              const isTheme = c === 'theme'
+              const display = resolveEventColor(c)
+              return (
+                <button key={c} onClick={() => setColor(c)}
+                  className="w-4 h-4 rounded-full transition-transform flex items-center justify-center"
+                  style={{
+                    background:    display,
+                    outline:       color === c ? `2px solid ${display}` : undefined,
+                    outlineOffset: '2px',
+                    transform:     color === c ? 'scale(1.2)' : 'none',
+                  }}>
+                  {isTheme && <IconSparkles size={9} color="#fff" />}
+                </button>
+              )
+            })}
           </div>
         </div>
+
+        {color === 'theme' && (
+          <div className="flex items-center gap-1.5 my-1.5 px-2 py-1.5 rounded-lg text-[9px]"
+            style={{ background: 'var(--color-primary-subtle)', color: 'var(--color-primary)' }}>
+            <IconSparkles size={11} style={{ flexShrink: 0 }} />
+            <span>{t('common.themeColorHint')}</span>
+          </div>
+        )}
 
         <div className={row} style={bdr}>
           <span style={{ color: 'var(--color-muted)' }}>{t('calendar.fieldStart')}</span>

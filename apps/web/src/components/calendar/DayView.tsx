@@ -9,7 +9,7 @@ import { useCalendarStore, useAllEvents } from '@/stores/useCalendarStore'
 import { useDayDragSelect } from '@/hooks/useDayDragSelect'
 import { useTranslation } from 'react-i18next'
 import { useLang } from '@/i18n'
-import { fmtTime, fmtHour, formatToolbarTitle } from './calendarUtils'
+import { fmtTime, fmtHour, formatToolbarTitle, resolveEventColor } from './calendarUtils'
 
 export const HOUR_H = 52
 
@@ -77,7 +77,7 @@ export function HalfDayColumn({ label, startHour, events, nowLine, timeFormat, s
           return (
             <div key={event.id} className="absolute rounded-md px-2 py-1 overflow-hidden cursor-pointer"
               onClick={e => { e.stopPropagation(); onSelectEvent(event) }}
-              style={{ top: top + 1, left: 46, right: 4, height: height - 2, background: event.color }}>
+              style={{ top: top + 1, left: 46, right: 4, height: height - 2, background: resolveEventColor(event.color) }}>
               <div className="flex items-center gap-1">
                 <p className="text-[9px] font-semibold text-white truncate leading-tight flex-1">{event.title}</p>
                 {event.hasAlarm && <IconBell size={8} style={{ color: '#fff', opacity: .8, flexShrink: 0 }} />}

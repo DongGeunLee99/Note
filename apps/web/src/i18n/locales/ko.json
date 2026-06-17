@@ -9,7 +9,8 @@
     "all": "전체",
     "status": "현황",
     "summary": "요약",
-    "count": "{{n}}개"
+    "count": "{{n}}개",
+    "themeColorHint": "테마색 · 테마를 바꾸면 이 색도 같이 바뀝니다"
   },
   "sidebar": {
     "menu": "메뉴",

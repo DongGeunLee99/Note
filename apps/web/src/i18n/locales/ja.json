@@ -9,7 +9,8 @@
     "all": "すべて",
     "status": "ステータス",
     "summary": "要約",
-    "count": "{{n}}件"
+    "count": "{{n}}件",
+    "themeColorHint": "テーマカラー · テーマを変えるとこの色も変わります"
   },
   "sidebar": {
     "menu": "メニュー",

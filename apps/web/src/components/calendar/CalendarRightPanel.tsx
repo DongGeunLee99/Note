@@ -10,7 +10,7 @@ import { useCalendarStore, useAllEvents } from '@/stores/useCalendarStore'
 import { useSettingsStore } from '@/stores/useSettingsStore'
 import { useTranslation } from 'react-i18next'
 import { useLang } from '@/i18n'
-import { formatSectionDate, toDateKey, fmtTime } from './calendarUtils'
+import { formatSectionDate, toDateKey, fmtTime, resolveEventColor } from './calendarUtils'
 
 export default function CalendarRightPanel() {
   const {
@@ -111,7 +111,7 @@ export default function CalendarRightPanel() {
             <div className="rounded-lg border p-2.5 flex flex-col gap-1.5" style={{ borderColor: 'var(--color-border)' }}>
               <div className="flex items-start justify-between gap-2">
                 <span className="flex items-center gap-1.5 min-w-0">
-                  <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: selectedEvent.color }} />
+                  <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: resolveEventColor(selectedEvent.color) }} />
                   <span className="text-[11px] font-medium truncate">{selectedEvent.title}</span>
                 </span>
                 <button onClick={() => setSelectedEventId(null)} className="flex-shrink-0 hover-tint rounded p-0.5">
@@ -120,7 +120,7 @@ export default function CalendarRightPanel() {
               </div>
               <div className="flex items-center gap-1 text-[9px]" style={{ color: 'var(--color-muted)' }}>
                 <span>{fmtTime(selectedEvent.start, timeFormat)} – {fmtTime(selectedEvent.end, timeFormat)}</span>
-                {selectedEvent.hasAlarm && <IconBell size={9} style={{ color: selectedEvent.color }} />}
+                {selectedEvent.hasAlarm && <IconBell size={9} style={{ color: resolveEventColor(selectedEvent.color) }} />}
               </div>
               {selectedEvent.description
                 ? <p className="text-[10px] leading-relaxed whitespace-pre-wrap" style={{ color: 'var(--color-text)' }}>{selectedEvent.description}</p>

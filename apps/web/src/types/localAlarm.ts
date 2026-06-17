@@ -18,6 +18,15 @@ export function displayGroupIcon(icon: string): string {
   return icon === 'default' ? '⭐' : icon
 }
 
+/** 그룹 색 표식. 저장값이 이 값이면 현재 테마색을 따라감(동적) */
+export const GROUP_THEME_COLOR = 'theme'
+
+/** 그룹 아이콘 배경색. 'theme'면 연한 테마색, 매칭 hex면 그 bg, 아니면 기본 */
+export function groupBg(color: string): string {
+  if (color === GROUP_THEME_COLOR) return 'var(--color-primary-subtle)'
+  return (GROUP_COLORS.find(c => c.fg === color) ?? GROUP_COLORS[0]).bg
+}
+
 export function formatTime(hour: number, minute: number, fmt: '12h' | '24h' = '24h'): string {
   if (fmt === '24h') {
     return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`

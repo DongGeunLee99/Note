@@ -9,7 +9,8 @@
     "all": "All",
     "status": "Status",
     "summary": "Summary",
-    "count": "{{n}}"
+    "count": "{{n}}",
+    "themeColorHint": "Theme color · changes with the app theme"
   },
   "sidebar": {
     "menu": "Menu",

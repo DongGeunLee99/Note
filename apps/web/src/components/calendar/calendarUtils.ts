@@ -22,15 +22,29 @@ export function getRbcMessages(lang: Language) {
   }
 }
 
+/** 색 표식. 저장값이 이 값이면 현재 테마색을 따라감(동적) */
+export const EVENT_THEME_COLOR = 'theme'
+
+/** 'theme'이면 현재 테마색 CSS 변수로, hex면 그대로 */
+export function resolveEventColor(color: string): string {
+  return color === EVENT_THEME_COLOR ? 'var(--color-primary)' : color
+}
+
+/** 일정 색의 연한 배경(틴트). hex면 알파 추가, theme면 연한 테마색 */
+export function eventTintBg(color: string): string {
+  return color === EVENT_THEME_COLOR ? 'var(--color-primary-subtle)' : `${color}18`
+}
+
 export function getEventProps(event: RbcEvent) {
-  return { style: { backgroundColor: event.color, borderColor: event.color, fontSize: '9px' } }
+  const c = resolveEventColor(event.color)
+  return { style: { backgroundColor: c, borderColor: c, fontSize: '9px' } }
 }
 
 export const DAY_SHORT   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']
 export const MONTH_FULL  = ['January','February','March','April','May','June','July','August','September','October','November','December']
 export const MONTH_SHORT = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
-export const EVENT_COLORS = ['#185FA5','#3C3489','#854F0B','#27500A','#791F1F','#444441']
+export const EVENT_COLORS = [EVENT_THEME_COLOR, '#185FA5','#3C3489','#854F0B','#27500A','#791F1F','#444441']
 
 export const ALARM_BEFORE = [
   { value: 0,  label: 'At event time' },

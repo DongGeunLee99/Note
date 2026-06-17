@@ -10,12 +10,11 @@
 
 > 2026-06-17 적재. 기본 일정 Firestore 연동(반복 없음)은 완료된 상태에서의 후속.
 
-**색상 — 테마색 적용 (결정: B 동적 + C 기본값)**
-- [ ] 일정 색 미선택 시 **기본값 = 테마색**
-- [ ] 색 팔레트에 **테마색 선택지** 추가 — 기존 동그라미(O) 스와치 모양 그대로, 색만 현재 테마색 표시
-- [ ] **동적**: 테마 바꾸면 해당 일정 색도 같이 바뀜 → 고정 hex가 아니라 `'theme'` 표식을 저장하고, 렌더 시 `var(--color-primary)`로 해석
-- [ ] 구현 메모: `EVENT_COLORS`에 `'theme'` 센티넬, `getEventProps`/DayView 색 적용부에서 `'theme'`이면 `var(--color-primary)`, `CalendarEvent.color`에 `'theme'` 저장 허용, NewEventModal 기본 색 = `'theme'`
-- [ ] 범위: **캘린더 일정 우선**. 알람 그룹 색도 적용할지는 착수 시 결정
+**색상 — 테마색 적용 (완료, B 동적 + C 기본값 + 명시적 표시)**
+- [x] 미선택 시 기본값 = 테마색, 팔레트에 테마색 스와치(단색 + ✨ 아이콘으로 구별)
+- [x] 동적: `'theme'` 표식 저장 → 렌더 시 `var(--color-primary)`로 해석(테마 바꾸면 색 추종). 과거 hex 색은 그대로
+- [x] 캘린더(EVENT_COLORS/resolveEventColor/eventTintBg — getEventProps·DayView·CalendarRightPanel·AgendaItem) + 알람 그룹(GROUP_THEME_COLOR/groupBg — AlarmGroupCard·Modal) **둘 다 적용**
+- [x] 놀람 방지: 테마색 선택 시 모달에 "테마 바꾸면 색도 바뀜" 안내 박스(✨+문구, i18n common.themeColorHint 한/영/일)
 
 **#4 일정 수정 기능**
 - [ ] 생성된 일정 클릭/메뉴 → 편집 모달(기존 NewEventModal 재사용, initial 값 채움), `updateEvent` 서비스 + store 연결 (현재 saveEvent는 생성 전용)
