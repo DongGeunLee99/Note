@@ -7,7 +7,7 @@
     "edit": "編集",
     "restore": "復元",
     "all": "すべて",
-    "status": "状況",
+    "status": "ステータス",
     "summary": "要約",
     "count": "{{n}}件"
   },
@@ -40,7 +40,7 @@
     "todaySchedule": "今日の予定",
     "remaining": "残りの予定 {{n}}件",
     "now": "今",
-    "upcoming": "まもなく締切・あとで",
+    "upcoming": "もうすぐ・あとで",
     "todayRecord": "今日の記録",
     "nextAlarm": "次のアラーム",
     "byCategory": "カテゴリ別",
@@ -100,7 +100,7 @@
     "editorEdit": "メモ編集",
     "editorNew": "新規メモ",
     "titlePlaceholder": "タイトル（任意）",
-    "bodyPlaceholder": "内容を入力してください\n\n日付/時間が含まれるとアラームを自動で検出します",
+    "bodyPlaceholder": "内容を入力してください\n\n日時が含まれると、アラームとして自動で検出します",
     "locationTag": "位置タグ",
     "locationLoading": "位置を取得中…",
     "locationDenied": "位置情報の権限がありません",
@@ -256,7 +256,7 @@
     "alarmTimeTitle": "アラーム時間帯分布",
     "alarmTimeSubtitle": "時間帯別アラーム数",
     "alarmSeries": "アラーム",
-    "timeSlots": ["深夜", "午前", "午後", "夜"],
+    "timeSlots": ["明け方", "午前", "午後", "夜"],
     "catTask": "タスク"
   },
   "time": {
