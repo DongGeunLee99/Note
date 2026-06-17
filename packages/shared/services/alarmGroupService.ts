@@ -5,6 +5,9 @@ import { userCol, activeQuery } from './firestoreHelpers'
 
 const COL = 'alarmGroups'
 
+/** 그룹 추가/수정 폼이 다루는 필드 */
+export type GroupFormInput = { name: string; color: string; icon: string }
+
 /** 삭제되지 않은 알람 그룹 실시간 구독. 정렬은 호출부에서 처리 */
 export function subscribeGroups(uid: string, cb: (groups: AlarmGroup[]) => void): () => void {
   return onSnapshot(activeQuery(uid, COL), snap => {

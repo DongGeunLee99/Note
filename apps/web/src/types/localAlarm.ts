@@ -1,22 +1,4 @@
-export interface LocalAlarmGroup {
-  groupId: string
-  name: string
-  color: string
-  emoji: string
-  isEnabled: boolean
-  isDefault: boolean
-}
-
-export interface LocalAlarm {
-  alarmId: string
-  groupId: string
-  label: string
-  hour: number
-  minute: number
-  repeatDays: number[]
-  isEnabled: boolean
-  sourceMemoId: string | null
-}
+// 알람 UI 헬퍼·상수 모음. 데이터 타입은 @smartnote/shared/types의 Alarm/AlarmGroup 사용.
 
 export const GROUP_COLORS = [
   { bg: '#E6F1FB', fg: '#185FA5', name: '파랑' },
@@ -28,6 +10,11 @@ export const GROUP_COLORS = [
 ] as const
 
 export const GROUP_EMOJIS = ['💼', '🏠', '🏃', '🎯', '📚', '🌙', '✈️', '🎮', '🍳', '💊', '🐶', '⭐']
+
+/** 그룹 아이콘 표시용. 시드 '기타' 그룹의 icon('default')은 ⭐로 폴백 */
+export function displayGroupIcon(icon: string): string {
+  return icon === 'default' ? '⭐' : icon
+}
 
 export function formatTime(hour: number, minute: number, fmt: '12h' | '24h' = '24h'): string {
   if (fmt === '24h') {

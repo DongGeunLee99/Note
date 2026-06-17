@@ -1,15 +1,16 @@
 import { useState, useEffect } from 'react'
 import Modal from '@/components/common/Modal'
 import { useTranslation } from 'react-i18next'
-import type { LocalAlarmGroup } from '@/types/localAlarm'
-import { GROUP_COLORS, GROUP_EMOJIS } from '@/types/localAlarm'
+import type { AlarmGroup } from '@smartnote/shared/types'
+import type { GroupFormInput } from '@smartnote/shared/services/alarmGroupService'
+import { GROUP_COLORS, GROUP_EMOJIS, displayGroupIcon } from '@/types/localAlarm'
 
 interface AlarmGroupModalProps {
   isOpen: boolean
   onClose: () => void
-  onSave: (data: { name: string; color: string; emoji: string }) => void
+  onSave: (data: GroupFormInput) => void
   onDelete?: () => void
-  initial?: LocalAlarmGroup | null
+  initial?: AlarmGroup | null
 }
 
 export default function AlarmGroupModal({ isOpen, onClose, onSave, onDelete, initial }: AlarmGroupModalProps) {
@@ -22,13 +23,13 @@ export default function AlarmGroupModal({ isOpen, onClose, onSave, onDelete, ini
     if (isOpen) {
       setName(initial?.name ?? '')
       setColor(initial?.color ?? GROUP_COLORS[0].fg)
-      setEmoji(initial?.emoji ?? GROUP_EMOJIS[0])
+      setEmoji(initial ? displayGroupIcon(initial.icon) : GROUP_EMOJIS[0])
     }
   }, [isOpen, initial])
 
   function handleSave() {
     if (!name.trim()) return
-    onSave({ name: name.trim(), color, emoji })
+    onSave({ name: name.trim(), color, icon: emoji })
     onClose()
   }
 

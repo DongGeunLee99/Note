@@ -22,6 +22,9 @@ export interface CreateAlarmInput {
   sourceType: AlarmSourceType
 }
 
+/** 알람 추가/수정 폼이 다루는 필드 (서버 필드는 service가 채움) */
+export type AlarmFormInput = Omit<CreateAlarmInput, 'sourceType'>
+
 export function createAlarm(uid: string, input: CreateAlarmInput) {
   const now = Timestamp.now()
   return addDoc(userCol(uid, COL), {

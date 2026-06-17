@@ -1,14 +1,14 @@
 import { IconNote } from '@tabler/icons-react'
 import ToggleSwitch from '@/components/common/ToggleSwitch'
 import Badge from '@/components/common/Badge'
-import type { LocalAlarm } from '@/types/localAlarm'
+import type { Alarm } from '@smartnote/shared/types'
 import { formatTime, formatRepeat } from '@/types/localAlarm'
 import { useSettingsStore } from '@/stores/useSettingsStore'
 import { useTranslation } from 'react-i18next'
 import { useLang } from '@/i18n'
 
 interface AlarmCardProps {
-  alarm: LocalAlarm
+  alarm: Alarm
   groupEnabled: boolean
   onToggle: () => void
   onEdit: () => void

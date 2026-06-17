@@ -1,18 +1,26 @@
 import { create } from 'zustand'
-import type { LocalAlarm, LocalAlarmGroup } from '@/types/localAlarm'
+import type { AlarmGroup, Alarm } from '@smartnote/shared/types'
 import {
   subscribeGroups, createGroup, updateGroup, softDeleteGroup,
 } from '@smartnote/shared/services/alarmGroupService'
+import type { GroupFormInput } from '@smartnote/shared/services/alarmGroupService'
 import {
   subscribeAlarms, createAlarm, updateAlarm, softDeleteAlarm,
 } from '@smartnote/shared/services/alarmService'
-import { toLocalGroup, toLocalAlarm, sortGroups } from './alarmMappers'
+import type { AlarmFormInput } from '@smartnote/shared/services/alarmService'
+
+/** 비기본 그룹 먼저(order 오름차순), 기본('기타') 그룹은 항상 마지막 */
+function sortGroups(groups: AlarmGroup[]): AlarmGroup[] {
+  return [...groups].sort((a, b) =>
+    a.isDefault !== b.isDefault ? (a.isDefault ? 1 : -1) : a.order - b.order,
+  )
+}
 
 interface AlarmState {
   uid: string | null
   isLoading: boolean
-  groups: LocalAlarmGroup[]
-  alarms: LocalAlarm[]
+  groups: AlarmGroup[]
+  alarms: Alarm[]
   /** 로그인 uid로 Firestore 실시간 구독 시작 (중복 호출 시 기존 구독 해제 후 재구독) */
   subscribe: (uid: string) => void
   /** 구독 해제 + 상태 초기화 (로그아웃/언마운트) */
@@ -20,11 +28,11 @@ interface AlarmState {
   toggleGroup: (groupId: string) => void
   deleteGroup: (groupId: string) => void
   /** targetId가 있으면 수정, 없으면 새 그룹 생성 */
-  saveGroup: (data: { name: string; color: string; emoji: string }, targetId?: string) => void
+  saveGroup: (data: GroupFormInput, targetId?: string) => void
   toggleAlarm: (alarmId: string) => void
   deleteAlarm: (alarmId: string) => void
   /** targetId가 있으면 수정, 없으면 생성 */
-  saveAlarm: (data: Omit<LocalAlarm, 'alarmId' | 'sourceMemoId'>, targetId?: string) => void
+  saveAlarm: (data: AlarmFormInput, targetId?: string) => void
   quickAddAlarm: (groupId: string, hour: number, minute: number, label: string) => void
 }
 
@@ -42,10 +50,10 @@ export const useAlarmStore = create<AlarmState>()((set, get) => ({
     get().unsubscribe()
     set({ uid, isLoading: true })
     unsubGroups = subscribeGroups(uid, gs => {
-      set({ groups: sortGroups(gs).map(toLocalGroup), isLoading: false })
+      set({ groups: sortGroups(gs), isLoading: false })
     })
     unsubAlarms = subscribeAlarms(uid, as => {
-      set({ alarms: as.map(toLocalAlarm) })
+      set({ alarms: as })
     })
   },
 
@@ -76,10 +84,10 @@ export const useAlarmStore = create<AlarmState>()((set, get) => ({
     const { uid, groups } = get()
     if (!uid) return
     if (targetId) {
-      updateGroup(uid, targetId, { name: data.name, color: data.color, icon: data.emoji })
+      updateGroup(uid, targetId, data)
     } else {
-      const maxOrder = groups.filter(g => !g.isDefault).length
-      createGroup(uid, { name: data.name, color: data.color, icon: data.emoji, order: maxOrder })
+      const order = groups.filter(g => !g.isDefault).length
+      createGroup(uid, { ...data, order })
     }
   },
 

@@ -1,11 +1,11 @@
 import AlarmGroupCard from './AlarmGroupCard'
 import AlarmCard from './AlarmCard'
 import { useTranslation } from 'react-i18next'
-import type { LocalAlarmGroup, LocalAlarm } from '@/types/localAlarm'
+import type { AlarmGroup, Alarm } from '@smartnote/shared/types'
 
 interface AlarmGroupListProps {
-  groups: LocalAlarmGroup[]
-  alarms: LocalAlarm[]
+  groups: AlarmGroup[]
+  alarms: Alarm[]
   onToggleGroup: (groupId: string) => void
   onEditGroup: (groupId: string) => void
   onAddAlarm: (groupId: string) => void

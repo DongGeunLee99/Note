@@ -9,13 +9,15 @@ import Divider from '@/components/common/Divider'
 import StatCards from '@/components/common/StatCards'
 import ResizableRightPanel from '@/components/common/ResizableRightPanel'
 import Spinner from '@/components/common/Spinner'
-import type { LocalAlarmGroup, LocalAlarm } from '@/types/localAlarm'
+import type { AlarmGroup, Alarm } from '@smartnote/shared/types'
+import type { GroupFormInput } from '@smartnote/shared/services/alarmGroupService'
+import type { AlarmFormInput } from '@smartnote/shared/services/alarmService'
 import { useToast } from '@/contexts/ToastContext'
 import { useTranslation } from 'react-i18next'
 import { useAlarmStore } from '@/stores/useAlarmStore'
 
-type GroupModalState = { isOpen: false } | { isOpen: true; target: LocalAlarmGroup | null }
-type AlarmModalState = { isOpen: false } | { isOpen: true; target: LocalAlarm | null; defaultGroupId?: string }
+type GroupModalState = { isOpen: false } | { isOpen: true; target: AlarmGroup | null }
+type AlarmModalState = { isOpen: false } | { isOpen: true; target: Alarm | null; defaultGroupId?: string }
 
 export default function AlarmPage() {
   const toast = useToast()
@@ -32,7 +34,7 @@ export default function AlarmPage() {
     toast(t('alarm.toastGroupDeleted'), 'info')
   }
 
-  function handleSaveGroup(data: { name: string; color: string; emoji: string }) {
+  function handleSaveGroup(data: GroupFormInput) {
     const targetId = groupModal.isOpen && groupModal.target ? groupModal.target.groupId : undefined
     saveGroup(data, targetId)
     toast(targetId ? t('alarm.toastGroupUpdated') : t('alarm.toastGroupAdded'), 'success')
@@ -43,7 +45,7 @@ export default function AlarmPage() {
     toast(t('alarm.toastAlarmDeleted'), 'info')
   }
 
-  function handleSaveAlarm(data: Omit<LocalAlarm, 'alarmId' | 'sourceMemoId'>) {
+  function handleSaveAlarm(data: AlarmFormInput) {
     const targetId = alarmModal.isOpen && alarmModal.target ? alarmModal.target.alarmId : undefined
     saveAlarm(data, targetId)
     toast(targetId ? t('alarm.toastAlarmUpdated') : t('alarm.toastAlarmAdded'), 'success')

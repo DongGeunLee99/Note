@@ -1,15 +1,17 @@
 import { useState, useEffect } from 'react'
 import Modal from '@/components/common/Modal'
 import { useTranslation } from 'react-i18next'
-import type { LocalAlarm, LocalAlarmGroup } from '@/types/localAlarm'
+import type { Alarm, AlarmGroup } from '@smartnote/shared/types'
+import type { AlarmFormInput } from '@smartnote/shared/services/alarmService'
+import { displayGroupIcon } from '@/types/localAlarm'
 
 interface AlarmModalProps {
   isOpen: boolean
   onClose: () => void
-  onSave: (data: Omit<LocalAlarm, 'alarmId' | 'sourceMemoId'>) => void
+  onSave: (data: AlarmFormInput) => void
   onDelete?: () => void
-  groups: LocalAlarmGroup[]
-  initial?: LocalAlarm | null
+  groups: AlarmGroup[]
+  initial?: Alarm | null
   defaultGroupId?: string
 }
 
@@ -145,7 +147,7 @@ export default function AlarmModal({ isOpen, onClose, onSave, onDelete, groups, 
                 style={{ borderColor: 'var(--color-border-2)' }}
               >
                 {groups.map(g => (
-                  <option key={g.groupId} value={g.groupId}>{g.emoji} {g.name}</option>
+                  <option key={g.groupId} value={g.groupId}>{displayGroupIcon(g.icon)} {g.name}</option>
                 ))}
               </select>
             ),

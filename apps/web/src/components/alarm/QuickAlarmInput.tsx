@@ -2,10 +2,10 @@ import { useState } from 'react'
 import { parse } from 'chrono-node'
 import { useSettingsStore } from '@/stores/useSettingsStore'
 import { useTranslation } from 'react-i18next'
-import { formatTime } from '@/types/localAlarm'
+import { formatTime, displayGroupIcon } from '@/types/localAlarm'
 import { IconBolt, IconX, IconCheck } from '@tabler/icons-react'
 import Spinner from '@/components/common/Spinner'
-import type { LocalAlarmGroup } from '@/types/localAlarm'
+import type { AlarmGroup } from '@smartnote/shared/types'
 
 interface ParsedResult {
   hour: number
@@ -14,7 +14,7 @@ interface ParsedResult {
 }
 
 interface QuickAlarmInputProps {
-  groups: LocalAlarmGroup[]
+  groups: AlarmGroup[]
   onAdd: (groupId: string, hour: number, minute: number, label: string) => void
 }
 
@@ -107,7 +107,7 @@ export default function QuickAlarmInput({ groups, onAdd }: QuickAlarmInputProps)
             style={{ borderColor: 'var(--color-border-2)', background: 'white' }}
           >
             {groups.map(g => (
-              <option key={g.groupId} value={g.groupId}>{g.emoji} {g.name}</option>
+              <option key={g.groupId} value={g.groupId}>{displayGroupIcon(g.icon)} {g.name}</option>
             ))}
           </select>
 
