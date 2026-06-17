@@ -1,6 +1,12 @@
 import { isSameDay } from 'date-fns'
-import { useLang } from '@/i18n'
-import { DAY_SHORT, MONTH_FULL, MONTH_SHORT, toDateKey } from './calendarUtils'
+import { useLang, type Language } from '@/i18n'
+import { MONTH_FULL, toDateKey } from './calendarUtils'
+
+const MINI_WEEKDAYS: Record<Language, string[]> = {
+  ko: ['일', '월', '화', '수', '목', '금', '토'],
+  ja: ['日', '月', '火', '水', '木', '金', '土'],
+  en: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
+}
 
 interface Props {
   year: number
@@ -17,19 +23,24 @@ export default function MiniCalendar({ year, month, selected, today, eventDates,
   const firstDow = new Date(year, month, 1).getDay()
   const daysInMo = new Date(year, month + 1, 0).getDate()
   const cells    = [...Array(firstDow).fill(null), ...Array.from({ length: daysInMo }, (_, i) => i + 1)]
+  const monthTitle: Record<Language, string> = {
+    ko: `${year}년 ${month + 1}월`,
+    ja: `${year}年${month + 1}月`,
+    en: `${MONTH_FULL[month]} ${year}`,
+  }
 
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
         <button onClick={() => onNavigate(new Date(year, month - 1, 1))}
           className="text-[11px] px-1 rounded hover:opacity-60" style={{ color: 'var(--color-muted)' }}>‹</button>
-        <p className="text-[10px] font-semibold">{lang === 'ko' ? `${year}년 ${month + 1}월` : `${MONTH_FULL[month]} ${year}`}</p>
+        <p className="text-[10px] font-semibold">{monthTitle[lang]}</p>
         <button onClick={() => onNavigate(new Date(year, month + 1, 1))}
           className="text-[11px] px-1 rounded hover:opacity-60" style={{ color: 'var(--color-muted)' }}>›</button>
       </div>
 
       <div className="grid grid-cols-7 mb-0.5">
-        {(lang === 'ko' ? ['일','월','화','수','목','금','토'] : ['S','M','T','W','T','F','S']).map((d, i) => (
+        {MINI_WEEKDAYS[lang].map((d, i) => (
           <div key={i} className="text-center text-[8px] font-semibold py-0.5" style={{ color: 'var(--color-muted)' }}>{d}</div>
         ))}
       </div>
@@ -63,5 +74,3 @@ export default function MiniCalendar({ year, month, selected, today, eventDates,
     </div>
   )
 }
-
-export { DAY_SHORT, MONTH_SHORT }

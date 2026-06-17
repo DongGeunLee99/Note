@@ -1,6 +1,17 @@
 import { useTranslation } from 'react-i18next'
-import { useLang } from '@/i18n'
+import { useLang, type Language } from '@/i18n'
 import { MONTH_SHORT, HOURS, MINUTES, getDaysInMonth } from './calendarUtils'
+
+const MONTH_LABEL: Record<Language, (i: number) => string> = {
+  ko: i => `${i + 1}월`,
+  ja: i => `${i + 1}月`,
+  en: i => MONTH_SHORT[i],
+}
+const DAY_LABEL: Record<Language, (n: number) => string> = {
+  ko: n => `${n}일`,
+  ja: n => `${n}日`,
+  en: n => String(n),
+}
 
 interface Props {
   value: Date
@@ -34,10 +45,10 @@ export default function DateTimePicker({ value, onChange }: Props) {
         {[0, 1, 2].map(i => { const yr = now.getFullYear() + i; return <option key={yr} value={yr}>{yr}</option> })}
       </select>
       <select value={mo} onChange={e => upd('month', +e.target.value)} className={sel} style={bdr}>
-        {MONTH_SHORT.map((m, i) => <option key={i} value={i}>{lang === 'ko' ? `${i + 1}월` : m}</option>)}
+        {MONTH_SHORT.map((_, i) => <option key={i} value={i}>{MONTH_LABEL[lang](i)}</option>)}
       </select>
       <select value={dy} onChange={e => upd('day', +e.target.value)} className={sel} style={bdr}>
-        {Array.from({ length: maxDay }, (_, i) => i + 1).map(n => <option key={n} value={n}>{lang === 'ko' ? `${n}일` : n}</option>)}
+        {Array.from({ length: maxDay }, (_, i) => i + 1).map(n => <option key={n} value={n}>{DAY_LABEL[lang](n)}</option>)}
       </select>
       <span className="text-[10px]" style={{ color: 'var(--color-muted)' }}>{t('calendar.at')}</span>
       <select value={h} onChange={e => upd('hour', +e.target.value)} className={sel} style={bdr}>

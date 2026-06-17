@@ -10,7 +10,7 @@ import { useCalendarStore, useAllEvents } from '@/stores/useCalendarStore'
 import { useSettingsStore } from '@/stores/useSettingsStore'
 import { useTranslation } from 'react-i18next'
 import { useLang } from '@/i18n'
-import { DAY_SHORT, MONTH_SHORT, DAY_SHORT_KO, formatSectionDate, toDateKey, fmtTime } from './calendarUtils'
+import { formatSectionDate, toDateKey, fmtTime } from './calendarUtils'
 
 export default function CalendarRightPanel() {
   const {
@@ -94,9 +94,7 @@ export default function CalendarRightPanel() {
           {/* Selected date */}
           <div>
             <p className="text-[12px] font-semibold leading-tight">
-              {lang === 'ko'
-                ? `${selectedDate.getMonth() + 1}월 ${selectedDate.getDate()}일 (${DAY_SHORT_KO[selectedDate.getDay()]})`
-                : `${DAY_SHORT[selectedDate.getDay()]}, ${MONTH_SHORT[selectedDate.getMonth()]} ${selectedDate.getDate()}`}
+              {formatSectionDate(selectedDate, lang)}
             </p>
             <p className="text-[9px] mt-0.5" style={{ color: 'var(--color-muted)' }}>{selectedDate.getFullYear()}</p>
           </div>

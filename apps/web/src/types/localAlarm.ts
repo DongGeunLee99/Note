@@ -1,5 +1,7 @@
 // 알람 UI 헬퍼·상수 모음. 데이터 타입은 @smartnote/shared/types의 Alarm/AlarmGroup 사용.
 
+import type { Language } from '@/i18n'
+
 export const GROUP_COLORS = [
   { bg: '#E6F1FB', fg: '#185FA5', name: '파랑' },
   { bg: '#FAEEDA', fg: '#854F0B', name: '주황' },
@@ -25,10 +27,17 @@ export function formatTime(hour: number, minute: number, fmt: '12h' | '24h' = '2
   return `${h}:${String(minute).padStart(2, '0')} ${period}`
 }
 
-export function formatRepeat(days: number[], lang: 'ko' | 'en' = 'ko'): string {
-  const L = lang === 'ko'
-    ? { once: '한 번', daily: '매일', weekdays: '평일', weekends: '주말', names: ['일', '월', '화', '수', '목', '금', '토'] }
-    : { once: 'Once', daily: 'Daily', weekdays: 'Weekdays', weekends: 'Weekends', names: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] }
+interface RepeatLabels { once: string; daily: string; weekdays: string; weekends: string; names: string[] }
+
+// 언어 추가 시 이 맵을 채우면 됨 (tsc가 누락을 알려줌)
+const REPEAT_LABELS: Record<Language, RepeatLabels> = {
+  ko: { once: '한 번', daily: '매일', weekdays: '평일', weekends: '주말', names: ['일', '월', '화', '수', '목', '금', '토'] },
+  en: { once: 'Once', daily: 'Daily', weekdays: 'Weekdays', weekends: 'Weekends', names: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] },
+  ja: { once: '一度', daily: '毎日', weekdays: '平日', weekends: '週末', names: ['日', '月', '火', '水', '木', '金', '土'] },
+}
+
+export function formatRepeat(days: number[], lang: Language = 'ko'): string {
+  const L = REPEAT_LABELS[lang]
   if (days.length === 0) return L.once
   if (days.length === 7) return L.daily
   if (days.length === 5 && [1, 2, 3, 4, 5].every(d => days.includes(d))) return L.weekdays

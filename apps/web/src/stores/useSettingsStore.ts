@@ -1,12 +1,13 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import i18n from '@/i18n'
+import i18n, { type Language } from '@/i18n'
 
 export type TimeFormat = '12h' | '24h'
 
 export type ThemeMode = 'system' | 'light' | 'dark' | 'purple' | 'blue'
 
-export type AppLanguage = 'ko' | 'en'
+/** 앱 언어 = i18n의 Language 단일 출처 (언어 추가 시 i18n에서만 정의) */
+export type AppLanguage = Language
 
 interface SettingsState {
   timeFormat: TimeFormat

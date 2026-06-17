@@ -75,6 +75,13 @@
 
 ## 완료
 
+### i18n — 일본어(ja) 추가 + 확장 구조
+- [x] `ja.json` 전 키 번역, `i18n/index.ts` ja 등록 + `Language`에 `'ja'` + `LANGUAGES`/`LOCALE_TAG` 단일 출처
+- [x] `AppLanguage = Language`로 통일, 설정에 日本語 선택지
+- [x] 날짜/요일/캘린더의 `lang==='ko'?` 삼항을 전부 `Record<Language,…>` 맵으로 교체(언어 추가 시 tsc가 누락 알림)
+- [x] CalendarRightPanel 인라인 날짜 → `formatSectionDate` 재사용, MiniCalendar 죽은 재export 제거
+- 한계: react-big-calendar 내부 헤더는 date-fns ko 고정(언어 무관, 기존부터), 역지오코딩 Accept-Language ko 고정
+
 ### Step 1. 웹 세팅
 - [x] React + TypeScript 초기화 — `apps/web`에 Vite + React + TS + Tailwind 세팅
 

@@ -56,25 +56,36 @@ export function fmtTime(date: Date, fmt: TimeFormat) { return formatClockFromDat
 export function fmtHour(h: number, fmt: TimeFormat)  { return formatHourLabel(h, fmt) }
 
 export const DAY_SHORT_KO = ['일', '월', '화', '수', '목', '금', '토']
+export const DAY_SHORT_JA = ['日', '月', '火', '水', '木', '金', '土']
+
+// 언어별 날짜 포맷 빌더. 언어 추가 시 이 맵들을 채우면 됨(tsc가 누락을 알려줌)
+const SECTION_DATE: Record<Language, (d: Date) => string> = {
+  ko: d => `${d.getMonth() + 1}월 ${d.getDate()}일 (${DAY_SHORT_KO[d.getDay()]})`,
+  ja: d => `${d.getMonth() + 1}月${d.getDate()}日 (${DAY_SHORT_JA[d.getDay()]})`,
+  en: d => `${DAY_SHORT[d.getDay()]}, ${MONTH_SHORT[d.getMonth()]} ${d.getDate()}`,
+}
 
 export function formatSectionDate(date: Date, lang: Language = 'en') {
-  if (lang === 'ko') {
-    return `${date.getMonth() + 1}월 ${date.getDate()}일 (${DAY_SHORT_KO[date.getDay()]})`
-  }
-  return `${DAY_SHORT[date.getDay()]}, ${MONTH_SHORT[date.getMonth()]} ${date.getDate()}`
+  return SECTION_DATE[lang](date)
+}
+
+const TOOLBAR_MONTH: Record<Language, (d: Date) => string> = {
+  ko: d => `${d.getFullYear()}년 ${d.getMonth() + 1}월`,
+  ja: d => `${d.getFullYear()}年${d.getMonth() + 1}月`,
+  en: d => `${MONTH_FULL[d.getMonth()]} ${d.getFullYear()}`,
+}
+
+const TOOLBAR_DAY: Record<Language, (d: Date) => string> = {
+  ko: d => `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일 (${DAY_SHORT_KO[d.getDay()]})`,
+  ja: d => `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日 (${DAY_SHORT_JA[d.getDay()]})`,
+  en: d => `${DAY_SHORT[d.getDay()]}, ${MONTH_SHORT[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`,
 }
 
 /** 툴바 타이틀 공용 포맷 — Month/Week/Day 탭 통일 */
 export function formatToolbarTitle(date: Date, view: CalView, lang: Language = 'en'): string {
   // Week는 헤더에 날짜·요일이 이미 보이므로 Month와 동일한 "월 + 연도"만 표시
-  if (view === 'month' || view === 'week') {
-    if (lang === 'ko') return `${date.getFullYear()}년 ${date.getMonth() + 1}월`
-    return `${MONTH_FULL[date.getMonth()]} ${date.getFullYear()}`
-  }
-  if (lang === 'ko') {
-    return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 (${DAY_SHORT_KO[date.getDay()]})`
-  }
-  return `${DAY_SHORT[date.getDay()]}, ${MONTH_SHORT[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`
+  if (view === 'month' || view === 'week') return TOOLBAR_MONTH[lang](date)
+  return TOOLBAR_DAY[lang](date)
 }
 
 export function toDateKey(date: Date) {

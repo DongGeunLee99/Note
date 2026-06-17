@@ -53,6 +53,7 @@ export default function SettingsPage() {
   const languageOptions: { value: AppLanguage; label: string }[] = [
     { value: 'ko', label: '한국어' },
     { value: 'en', label: 'English' },
+    { value: 'ja', label: '日本語' },
   ]
 
   return (
