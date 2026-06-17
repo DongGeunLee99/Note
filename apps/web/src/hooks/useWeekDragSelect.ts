@@ -12,7 +12,12 @@ export interface WeekSel {
  * - 컬럼 rect는 mousedown 시 1회만 캐싱 (mousemove마다 DOM 조회 방지)
  * - 선택 갱신은 requestAnimationFrame으로 스로틀
  */
-export function useWeekDragSelect(weekDates: Date[], onSelect?: (sel: WeekSel) => void) {
+export function useWeekDragSelect(
+  weekDates: Date[],
+  onSelect?: (sel: WeekSel) => void,
+  /** 드래그 없는 좌클릭 시 호출. day = 클릭한 날짜(있으면) */
+  onClear?: (day?: Date) => void,
+) {
   const containerRef  = useRef<HTMLDivElement>(null)
   const isMultiDayRef = useRef(false)
   const draggedRef    = useRef(false)
@@ -76,8 +81,8 @@ export function useWeekDragSelect(weekDates: Date[], onSelect?: (sel: WeekSel) =
     colRectsRef.current = Array.from(c.querySelectorAll<HTMLElement>('.rbc-day-slot'))
       .map(el => el.getBoundingClientRect())
     isMultiDayRef.current = false
-    // 선택을 mousedown에서 즉시 지우지 않음 → 단순 클릭으로 기존 선택이 사라지지 않음.
-    // 실제 드래그가 시작되면 applyDrag에서 새 선택으로 교체됨.
+    // mousedown 시점엔 지우지 않음. 드래그면 applyDrag가 새 선택으로 교체,
+    // 단순 클릭(드래그 없음)이면 onMouseUp에서 기존 선택을 해제한다.
     draggedRef.current = false
     dragStartRef.current = getColAndTime(e.clientX, e.clientY)
   }
@@ -93,7 +98,7 @@ export function useWeekDragSelect(weekDates: Date[], onSelect?: (sel: WeekSel) =
     })
   }
 
-  function onMouseUp() {
+  function onMouseUp(e: React.MouseEvent) {
     if (rafRef.current) {
       cancelAnimationFrame(rafRef.current)
       rafRef.current = 0
@@ -102,6 +107,12 @@ export function useWeekDragSelect(weekDates: Date[], onSelect?: (sel: WeekSel) =
     const sel = weekSelRef.current
     if (draggedRef.current && sel && onSelect) {
       onSelect(sel)
+    } else if (!draggedRef.current && e.button === 0) {
+      // 좌클릭(드래그 아님): 기존 선택 해제 + 클릭한 날짜를 알림(우측 달력 동기화).
+      // 우클릭은 여기서 지우지 않음 → 일정추가 메뉴가 드래그 선택을 그대로 사용
+      if (weekSelRef.current) setWeekSel(null)
+      const at = getColAndTime(e.clientX, e.clientY)
+      onClear?.(at ? weekDates[at.colIdx] : undefined)
     }
     dragStartRef.current  = null
     isMultiDayRef.current = false

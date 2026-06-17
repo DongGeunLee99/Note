@@ -168,7 +168,9 @@
   font-size: 9px !important;
   padding: 1px 4px !important;
   border-radius: 4px !important;
-  background-color: var(--color-primary) !important;
+  /* 일정별 색은 eventPropGetter의 인라인 backgroundColor가 적용됨.
+     기본값만 제공하고 !important는 빼서 인라인 색이 우선되게 한다. */
+  background-color: var(--color-primary);
   border: none !important;
   color: #fff !important;
   min-height: 14px;

@@ -50,6 +50,12 @@ export default function WeekView() {
       setSelectedSlot({ start: atTime(days[0], sel.startMin), end: atTime(days[0], sel.endMin) })
       setSelectedDays(days)
     },
+    // 좌클릭 시: 드래그 선택 해제 + 우측 미니 달력을 클릭한 날짜로 이동
+    (day) => {
+      setSelectedSlot(null)
+      setSelectedDays(null)
+      if (day) setSelectedDate(day)
+    },
   )
 
   const eventPropGetter = useCallback((event: RbcEvent) => getEventProps(event), [])

@@ -55,6 +55,7 @@ export default function CalendarPage() {
       saveEvent(data)
       toast(t('calendar.toastEventAdded'), 'success')
     }
+    closeEventModal()
   }
 
   return (
