@@ -4,6 +4,7 @@ import {
   IconCalendar, IconTrash, IconSettings, IconLogout, IconLayoutDashboard,
 } from '@tabler/icons-react'
 import { useTranslation } from 'react-i18next'
+import { useAuthContext } from '@/contexts/AuthContext'
 
 type NavItem = { to: string; icon: React.ComponentType<{ size?: number; style?: React.CSSProperties }>; labelKey: 'home' | 'memo' | 'calendar' | 'alarm' | 'later' | 'someday' | 'dashboard' | 'trash'; count?: number }
 
@@ -11,7 +12,7 @@ type NavItem = { to: string; icon: React.ComponentType<{ size?: number; style?: 
 const MOCK_USER = { name: '홍길동', initial: '홍' }
 
 const NAV_ITEMS: NavItem[] = [
-  { to: '/', icon: IconHome, labelKey: 'home' },
+  { to: '/home', icon: IconHome, labelKey: 'home' },
   { to: '/memo', icon: IconNote, labelKey: 'memo' },
   { to: '/calendar', icon: IconCalendar, labelKey: 'calendar' },
   { to: '/alarm', icon: IconBell, labelKey: 'alarm', count: 12 },
@@ -24,6 +25,12 @@ const NAV_ITEMS: NavItem[] = [
 export default function Sidebar() {
   const navigate = useNavigate()
   const { t } = useTranslation()
+  const { logout } = useAuthContext()
+
+  async function handleLogout() {
+    await logout()
+    navigate('/login', { replace: true })
+  }
 
   return (
     <aside
@@ -31,7 +38,7 @@ export default function Sidebar() {
       style={{ background: 'var(--color-surface-2)', borderColor: 'var(--color-border)' }}
     >
       <NavLink
-        to="/"
+        to="/home"
         className="px-3 py-2.5 text-[12px] font-medium border-b hover:opacity-75 transition-opacity"
         style={{ borderColor: 'var(--color-border)' }}
       >
@@ -47,7 +54,7 @@ export default function Sidebar() {
           <NavLink
             key={to}
             to={to}
-            end={to === '/'}
+            end={to === '/home'}
             className={({ isActive }) =>
               `flex items-center gap-1.5 px-3 py-[6px] text-[11px] border-r-2 transition-colors ${
                 isActive
@@ -87,7 +94,7 @@ export default function Sidebar() {
             </div>
             <span className="flex-1 text-[11px] font-medium truncate">{MOCK_USER.name}</span>
             <button
-              onClick={() => navigate('/login')}
+              onClick={handleLogout}
               className="p-1 rounded hover-tint transition-colors flex-shrink-0"
               title={t('sidebar.logout')}
             >

@@ -1,10 +1,14 @@
 import { useState } from 'react'
+import { Navigate } from 'react-router-dom'
 import { useAuthContext } from '@/contexts/AuthContext'
 
 export default function LoginPage() {
-  const { login } = useAuthContext()
+  const { user, login } = useAuthContext()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // 이미 로그인된 상태면 홈으로 (로그인 성공 시에도 user 갱신 → 여기서 리다이렉트)
+  if (user) return <Navigate to="/home" replace />
 
   async function handleLogin() {
     setLoading(true)
