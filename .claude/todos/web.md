@@ -6,6 +6,23 @@
 
 ## 미완료
 
+### 캘린더 후속 (큐 — "작업하자" 신호 시 일괄 실행)
+
+> 2026-06-17 적재. 기본 일정 Firestore 연동(반복 없음)은 완료된 상태에서의 후속.
+
+**색상 — 테마색 적용 (결정: B 동적 + C 기본값)**
+- [ ] 일정 색 미선택 시 **기본값 = 테마색**
+- [ ] 색 팔레트에 **테마색 선택지** 추가 — 기존 동그라미(O) 스와치 모양 그대로, 색만 현재 테마색 표시
+- [ ] **동적**: 테마 바꾸면 해당 일정 색도 같이 바뀜 → 고정 hex가 아니라 `'theme'` 표식을 저장하고, 렌더 시 `var(--color-primary)`로 해석
+- [ ] 구현 메모: `EVENT_COLORS`에 `'theme'` 센티넬, `getEventProps`/DayView 색 적용부에서 `'theme'`이면 `var(--color-primary)`, `CalendarEvent.color`에 `'theme'` 저장 허용, NewEventModal 기본 색 = `'theme'`
+- [ ] 범위: **캘린더 일정 우선**. 알람 그룹 색도 적용할지는 착수 시 결정
+
+**#4 일정 수정 기능**
+- [ ] 생성된 일정 클릭/메뉴 → 편집 모달(기존 NewEventModal 재사용, initial 값 채움), `updateEvent` 서비스 + store 연결 (현재 saveEvent는 생성 전용)
+
+**#5 우측 미니 캘린더 스와이프**
+- [ ] MiniCalendar에서 좌우 스와이프/드래그로 월 이동 (제스처: 직접 구현 vs 라이브러리 착수 시 검토)
+
 ### 휴지통 탭 정리 — 알람/나중에 필터 (휴지통 알람 포함 결정 대기)
 - [ ] `TrashPage`의 filter 탭·우측 통계에 `alarm`/`later`가 있으나 현재 항상 0 (목업 잔재). `alarm`은 [backend.md](backend.md) TBD(휴지통 알람 포함 여부) 결정 후 정리, `later`는 Firestore migrate 시 자동으로 채워짐
 
