@@ -1,9 +1,9 @@
 // Phase 1 로컬 목업 데이터 모음.
 // Phase 2에서 Firestore 연동 시 이 파일과 스토어의 초기값 참조만 제거하면 된다.
 
-import type { LaterItem, SomedayItem, TrashItem, RecentEntry, TodayScheduleItem } from '@/types/localItems'
+import type { LaterItem, SomedayItem, RecentEntry, TodayScheduleItem } from '@/types/localItems'
 
-// 알람·메모 mock은 Firestore 연동으로 대체됨 (useAlarmStore / useMemoStore가 실시간 구독)
+// 알람·메모·휴지통 mock은 Firestore 연동으로 대체됨 (useAlarmStore / useMemoStore / useTrashStore가 실시간 구독)
 
 export const INITIAL_LATER: LaterItem[] = [
   { id: 'l1', text: '병원 예약 다시 확인하기', notifyAt: '오늘 오후 3:00', isCompleted: false },
@@ -16,14 +16,6 @@ export const INITIAL_SOMEDAY: SomedayItem[] = [
   { id: 's2', title: 'TypeScript 심화 강의 듣기', category: '배움', isFavorite: false },
   { id: 's3', title: '스탠딩 데스크 구입', category: '구매', isFavorite: true },
   { id: 's4', title: '주말 캠핑 계획', category: '여행', isFavorite: false },
-]
-
-export const INITIAL_TRASH: TrashItem[] = [
-  { id: 't1', type: 'memo',  title: '마케팅 아이디어 메모',   preview: 'SNS 캠페인 아이디어, 인플루언서 협업 방안 정리',  deletedAt: new Date(Date.now() - 1000 * 60 * 60 * 48) },
-  { id: 't2', type: 'memo',  title: '회의 노트 초안',         preview: '3/14 스프린트 회고 — 이슈 목록 및 액션 아이템', deletedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 16) },
-  { id: 't3', type: 'alarm', title: '헬스장 알람',            preview: '오전 6:30 · 평일',                               deletedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 27) },
-  { id: 't4', type: 'later', title: '도서관 책 반납 확인',    preview: '이번 주 금요일까지',                             deletedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3) },
-  { id: 't5', type: 'memo',  title: '임시 메모',              preview: '...',                                            deletedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 29) },
 ]
 
 export const INITIAL_HOME_ENTRIES: RecentEntry[] = [

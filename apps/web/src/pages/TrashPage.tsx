@@ -8,6 +8,7 @@ import Divider from '@/components/common/Divider'
 import PillButton from '@/components/common/PillButton'
 import EmptyState from '@/components/common/EmptyState'
 import ResizableRightPanel from '@/components/common/ResizableRightPanel'
+import Spinner from '@/components/common/Spinner'
 import { useToast } from '@/contexts/ToastContext'
 import { useTranslation } from 'react-i18next'
 import { useTrashStore } from '@/stores/useTrashStore'
@@ -26,6 +27,7 @@ export default function TrashPage() {
   const { t } = useTranslation()
   const typeLabels: Record<TrashType, string> = { memo: t('trash.typeMemo'), alarm: t('trash.typeAlarm'), later: t('trash.typeLater') }
   const items = useTrashStore(s => s.items)
+  const isLoading = useTrashStore(s => s.isLoading)
   const { restore, permanentDelete, emptyAll } = useTrashStore.getState()
   const [confirmDelete, setConfirmDelete] = useState<TrashItem | null>(null)
   const [confirmEmpty, setConfirmEmpty] = useState(false)
@@ -37,6 +39,14 @@ export default function TrashPage() {
   }, [items, filter])
 
   const expiringSoon = items.filter(i => daysLeft(i.deletedAt) <= 7).length
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <Spinner size="lg" />
+      </div>
+    )
+  }
 
   function handleRestore(item: TrashItem) {
     restore(item.id)

@@ -1,7 +1,7 @@
-import { doc, setDoc, updateDoc, onSnapshot, Timestamp } from 'firebase/firestore'
+import { doc, setDoc, updateDoc, deleteDoc, onSnapshot, Timestamp } from 'firebase/firestore'
 import type { Memo, MemoLocation } from '../types'
 import { db } from '../firebase/config'
-import { userCol, activeQuery } from './firestoreHelpers'
+import { userCol, activeQuery, deletedQuery } from './firestoreHelpers'
 
 const COL = 'memos'
 
@@ -54,4 +54,25 @@ export function softDeleteMemo(uid: string, memoId: string) {
     isDeleted: true,
     deletedAt: Timestamp.now(),
   })
+}
+
+/** 휴지통(soft delete된 메모) 실시간 구독 */
+export function subscribeDeletedMemos(uid: string, cb: (memos: Memo[]) => void): () => void {
+  return onSnapshot(deletedQuery(uid, COL), snap => {
+    cb(snap.docs.map(d => ({ memoId: d.id, ...(d.data() as Omit<Memo, 'memoId'>) })))
+  })
+}
+
+/** 휴지통에서 복원 */
+export function restoreMemo(uid: string, memoId: string) {
+  return updateDoc(doc(db, 'users', uid, COL, memoId), {
+    isDeleted: false,
+    deletedAt: null,
+    updatedAt: Timestamp.now(),
+  })
+}
+
+/** 영구 삭제 (문서 자체 제거 — 되돌릴 수 없음) */
+export function hardDeleteMemo(uid: string, memoId: string) {
+  return deleteDoc(doc(db, 'users', uid, COL, memoId))
 }

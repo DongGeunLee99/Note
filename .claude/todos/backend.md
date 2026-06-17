@@ -6,10 +6,13 @@
 
 ## 미완료
 
+### 미결 결정 (TBD) — 휴지통에 알람 포함 여부
+- [ ] 현재 설계: **알람은 휴지통 제외**(CLAUDE.md). 알람/그룹 삭제 시 `isDeleted:true`로 남지만 휴지통 UI엔 안 뜨고 복원 경로 없음 → 삭제된 알람 문서가 방치됨(아직 `trashCleaner` 없음)
+- [ ] 차후 결정: (A) 제외 유지 + UI 알람 탭 정리(→ web.md) / (B) 알람도 휴지통 포함(복원 시 그룹관계·시간 처리 고려)
+
 ### 데이터 레이어 — 나머지 도메인 Firestore 연동 (알람 패턴 복제)
 - [ ] 캘린더 (일정) — ⚠️ shared 타입/컬렉션 미정의, 스키마 설계 먼저
-- [ ] 나중에 (`later`) / 언젠가 (`someday`)
-- [ ] 휴지통 (soft delete 목록 + 복원/영구삭제)
+- [ ] 나중에 (`later`) / 언젠가 (`someday`) → 완료 시 휴지통에도 합류
 
 ### Phase 2 — AI + Cloud Tasks + 라우팅
 - [ ] Llama 호스팅 방식 확정 후 `llamaService` 구현 + `memoAI` Cloud Function
@@ -22,6 +25,14 @@
 ---
 
 ## 완료
+
+### 데이터 레이어 — 휴지통(메모) Firestore 연동
+- [x] `firestoreHelpers.deletedQuery`(isDeleted==true)
+- [x] `memoService` — subscribeDeletedMemos / restoreMemo / hardDeleteMemo(실제 deleteDoc)
+- [x] 웹 `useTrashStore` — 삭제된 메모 구독 + TrashItem 변환, restore/permanentDelete/emptyAll service 위임
+- [x] `AppLayout` 휴지통 구독 추가, `TrashPage` 첫 로딩 스피너
+- [x] 검증: 삭제→휴지통 표시 / 복원 / 영구삭제 / 비우기 / D-day 에뮬레이터 실동작 확인
+- 범위: 메모만. later/someday는 migrate 시 합류, 알람은 위 TBD
 
 ### Step 1. 인프라 / 데이터 세팅
 - [x] 모노레포 구조 세팅 — pnpm workspace + Turborepo

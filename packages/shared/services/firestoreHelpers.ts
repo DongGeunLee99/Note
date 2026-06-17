@@ -11,3 +11,8 @@ export function userCol(uid: string, name: string): CollectionReference {
 export function activeQuery(uid: string, name: string): Query {
   return query(userCol(uid, name), where('isDeleted', '==', false))
 }
+
+/** soft delete된 문서만(where isDeleted == true). 휴지통 조회용 */
+export function deletedQuery(uid: string, name: string): Query {
+  return query(userCol(uid, name), where('isDeleted', '==', true))
+}

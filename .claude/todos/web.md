@@ -6,6 +6,9 @@
 
 ## 미완료
 
+### 휴지통 탭 정리 — 알람/나중에 필터 (휴지통 알람 포함 결정 대기)
+- [ ] `TrashPage`의 filter 탭·우측 통계에 `alarm`/`later`가 있으나 현재 항상 0 (목업 잔재). `alarm`은 [backend.md](backend.md) TBD(휴지통 알람 포함 여부) 결정 후 정리, `later`는 Firestore migrate 시 자동으로 채워짐
+
 ### 메모 탭 개선 (큐 — "작업하자" 신호 시 일괄 실행)
 
 > 2026-06-16 적재. 모델 변경(`pinnedAt`, `aiSummaryEdited`, 되돌리기용 직전 본문) + 다중 컴포넌트 → **착수 시 행동지침 6번 계획서 먼저**.
