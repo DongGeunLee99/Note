@@ -53,8 +53,8 @@
   },
   "alarm": {
     "pageTitle": "Alarms",
-    "addGroup": "+ New Group",
-    "addAlarm": "+ New Alarm",
+    "addGroup": "New Group",
+    "addAlarm": "New Alarm",
     "quickAlarm": "Quick Alarm",
     "activeGroups": "Active Groups",
     "activeAlarms": "Active Alarms",

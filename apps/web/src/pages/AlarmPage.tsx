@@ -9,6 +9,9 @@ import Divider from '@/components/common/Divider'
 import StatCards from '@/components/common/StatCards'
 import ResizableRightPanel from '@/components/common/ResizableRightPanel'
 import Spinner from '@/components/common/Spinner'
+import ContextMenu, { useContextMenu } from '@/components/common/ContextMenu'
+import type { ContextMenuItem } from '@/components/common/ContextMenu'
+import { IconPlus, IconPencil, IconTrash } from '@tabler/icons-react'
 import type { AlarmGroup, Alarm } from '@smartnote/shared/types'
 import type { GroupFormInput } from '@smartnote/shared/services/alarmGroupService'
 import type { AlarmFormInput } from '@smartnote/shared/services/alarmService'
@@ -28,6 +31,10 @@ export default function AlarmPage() {
   const { toggleGroup, deleteGroup, saveGroup, toggleAlarm, deleteAlarm, saveAlarm, quickAddAlarm } = useAlarmStore.getState()
   const [groupModal, setGroupModal] = useState<GroupModalState>({ isOpen: false })
   const [alarmModal, setAlarmModal] = useState<AlarmModalState>({ isOpen: false })
+  const { menu, open: openMenu, close: closeMenu } = useContextMenu()
+  const [menuTarget, setMenuTarget] = useState<
+    { kind: 'empty' } | { kind: 'group'; groupId: string } | { kind: 'alarm'; alarmId: string }
+  >({ kind: 'empty' })
 
   function handleDeleteGroup(groupId: string) {
     deleteGroup(groupId)
@@ -56,6 +63,45 @@ export default function AlarmPage() {
     toast(t('alarm.toastQuickAdded', { label }), 'success')
   }
 
+  function openCtxGroup(e: React.MouseEvent, groupId: string) {
+    e.stopPropagation()
+    setMenuTarget({ kind: 'group', groupId })
+    openMenu(e)
+  }
+
+  function openCtxAlarm(e: React.MouseEvent, alarmId: string) {
+    e.stopPropagation()
+    setMenuTarget({ kind: 'alarm', alarmId })
+    openMenu(e)
+  }
+
+  function buildMenuItems(): ContextMenuItem[] {
+    if (menuTarget.kind === 'group') {
+      const group = groups.find(g => g.groupId === menuTarget.groupId)
+      if (!group) return []
+      const items: ContextMenuItem[] = [
+        { label: t('alarm.addAlarm'), icon: <IconPlus size={12} />, onClick: () => setAlarmModal({ isOpen: true, target: null, defaultGroupId: group.groupId }) },
+        { label: t('common.edit'), icon: <IconPencil size={12} />, onClick: () => setGroupModal({ isOpen: true, target: group }) },
+      ]
+      if (!group.isDefault) {
+        items.push({ label: t('common.delete'), icon: <IconTrash size={12} />, danger: true, onClick: () => handleDeleteGroup(group.groupId) })
+      }
+      return items
+    }
+    if (menuTarget.kind === 'alarm') {
+      const alarm = alarms.find(a => a.alarmId === menuTarget.alarmId)
+      if (!alarm) return []
+      return [
+        { label: t('common.edit'), icon: <IconPencil size={12} />, onClick: () => setAlarmModal({ isOpen: true, target: alarm }) },
+        { label: t('common.delete'), icon: <IconTrash size={12} />, danger: true, onClick: () => handleDeleteAlarm(alarm.alarmId) },
+      ]
+    }
+    return [
+      { label: t('alarm.addGroup'), icon: <IconPlus size={12} />, onClick: () => setGroupModal({ isOpen: true, target: null }) },
+      { label: t('alarm.addAlarm'), icon: <IconPlus size={12} />, onClick: () => setAlarmModal({ isOpen: true, target: null }) },
+    ]
+  }
+
   const totalActive = alarms.filter(a => {
     const group = groups.find(g => g.groupId === a.groupId)
     return a.isEnabled && group?.isEnabled
@@ -77,14 +123,14 @@ export default function AlarmPage() {
           className="text-[10px] px-2.5 py-1.5 rounded-lg border"
           style={{ color: 'var(--color-primary)', borderColor: 'var(--color-primary)' }}
         >
-          {t('alarm.addGroup')}
+          + {t('alarm.addGroup')}
         </button>
         <button
           onClick={() => setAlarmModal({ isOpen: true, target: null })}
           className="text-[10px] px-2.5 py-1.5 rounded-lg text-white"
           style={{ background: 'var(--color-primary)' }}
         >
-          {t('alarm.addAlarm')}
+          + {t('alarm.addAlarm')}
         </button>
       </PageHeader>
 
@@ -92,6 +138,7 @@ export default function AlarmPage() {
         <div
           className="flex-1 p-3 overflow-auto border-r"
           style={{ borderColor: 'var(--color-border)' }}
+          onContextMenu={e => { setMenuTarget({ kind: 'empty' }); openMenu(e) }}
         >
           <AlarmGroupList
             groups={groups}
@@ -101,6 +148,8 @@ export default function AlarmPage() {
             onAddAlarm={gId => setAlarmModal({ isOpen: true, target: null, defaultGroupId: gId })}
             onToggleAlarm={toggleAlarm}
             onEditAlarm={id => setAlarmModal({ isOpen: true, target: alarms.find(a => a.alarmId === id) ?? null })}
+            onContextMenuGroup={openCtxGroup}
+            onContextMenuAlarm={openCtxAlarm}
           />
         </div>
 
@@ -145,6 +194,10 @@ export default function AlarmPage() {
         initial={alarmModal.isOpen ? alarmModal.target : null}
         defaultGroupId={alarmModal.isOpen ? alarmModal.defaultGroupId : undefined}
       />
+
+      {menu && (
+        <ContextMenu x={menu.x} y={menu.y} onClose={closeMenu} items={buildMenuItems()} />
+      )}
     </div>
   )
 }

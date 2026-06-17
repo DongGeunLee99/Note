@@ -11,6 +11,8 @@ interface AlarmGroupListProps {
   onAddAlarm: (groupId: string) => void
   onToggleAlarm: (alarmId: string) => void
   onEditAlarm: (alarmId: string) => void
+  onContextMenuGroup: (e: React.MouseEvent, groupId: string) => void
+  onContextMenuAlarm: (e: React.MouseEvent, alarmId: string) => void
 }
 
 export default function AlarmGroupList({
@@ -21,6 +23,8 @@ export default function AlarmGroupList({
   onAddAlarm,
   onToggleAlarm,
   onEditAlarm,
+  onContextMenuGroup,
+  onContextMenuAlarm,
 }: AlarmGroupListProps) {
   const { t } = useTranslation()
 
@@ -51,6 +55,7 @@ export default function AlarmGroupList({
               alarmCount={groupAlarms.length}
               onToggle={() => onToggleGroup(group.groupId)}
               onEdit={() => onEditGroup(group.groupId)}
+              onContextMenu={e => onContextMenuGroup(e, group.groupId)}
             />
 
             <div className="mt-0.5">
@@ -61,6 +66,7 @@ export default function AlarmGroupList({
                   groupEnabled={group.isEnabled}
                   onToggle={() => onToggleAlarm(alarm.alarmId)}
                   onEdit={() => onEditAlarm(alarm.alarmId)}
+                  onContextMenu={e => onContextMenuAlarm(e, alarm.alarmId)}
                 />
               ))}
               <button
@@ -68,7 +74,7 @@ export default function AlarmGroupList({
                 className="pl-8 pr-2 py-1 text-[10px] hover:opacity-70 transition-opacity"
                 style={{ color: 'var(--color-primary)' }}
               >
-                {t('alarm.addAlarm')}
+                + {t('alarm.addAlarm')}
               </button>
             </div>
           </div>

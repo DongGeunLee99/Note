@@ -8,15 +8,17 @@ interface AlarmGroupCardProps {
   alarmCount: number
   onToggle: () => void
   onEdit: () => void
+  onContextMenu?: (e: React.MouseEvent) => void
 }
 
-export default function AlarmGroupCard({ group, alarmCount, onToggle, onEdit }: AlarmGroupCardProps) {
+export default function AlarmGroupCard({ group, alarmCount, onToggle, onEdit, onContextMenu }: AlarmGroupCardProps) {
   const { t } = useTranslation()
   const colorDef = GROUP_COLORS.find(c => c.fg === group.color) ?? GROUP_COLORS[0]
 
   return (
     <div
       onClick={onEdit}
+      onContextMenu={onContextMenu}
       className="flex items-center gap-2 px-2.5 py-2 rounded-lg cursor-pointer transition-colors hover-tint"
       style={{ background: 'var(--color-surface-2)' }}
     >

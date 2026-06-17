@@ -53,8 +53,8 @@
   },
   "alarm": {
     "pageTitle": "알람",
-    "addGroup": "+ 그룹 추가",
-    "addAlarm": "+ 알람 추가",
+    "addGroup": "그룹 추가",
+    "addAlarm": "알람 추가",
     "quickAlarm": "빠른 알람",
     "activeGroups": "활성 그룹",
     "activeAlarms": "활성 알람",

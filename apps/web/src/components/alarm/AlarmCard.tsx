@@ -12,9 +12,10 @@ interface AlarmCardProps {
   groupEnabled: boolean
   onToggle: () => void
   onEdit: () => void
+  onContextMenu?: (e: React.MouseEvent) => void
 }
 
-export default function AlarmCard({ alarm, groupEnabled, onToggle, onEdit }: AlarmCardProps) {
+export default function AlarmCard({ alarm, groupEnabled, onToggle, onEdit, onContextMenu }: AlarmCardProps) {
   const { timeFormat } = useSettingsStore()
   const { t } = useTranslation()
   const lang = useLang()
@@ -23,6 +24,7 @@ export default function AlarmCard({ alarm, groupEnabled, onToggle, onEdit }: Ala
   return (
     <div
       onClick={onEdit}
+      onContextMenu={onContextMenu}
       className={`flex items-center gap-2 pl-8 pr-2 py-1.5 rounded-lg cursor-pointer transition-colors hover-tint ${isEffectivelyOff ? 'opacity-35' : ''}`}
     >
       <div className="flex-1 min-w-0">
