@@ -16,7 +16,7 @@ interface KakaoUser {
   }
 }
 
-export const kakaoLogin = onCall<KakaoLoginRequest>(async (request) => {
+export const kakaoLogin = onCall<KakaoLoginRequest>({ cors: true }, async (request) => {
   const { accessToken } = request.data
 
   if (!accessToken) {

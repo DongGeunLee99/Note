@@ -6,10 +6,6 @@
 
 ## 미완료
 
-### 카카오 로그인 CORS 수정
-- [ ] `functions/src/kakaoAuth.ts` `onCall` 옵션에 `cors: true` 추가 → `firebase deploy --only functions` 재배포
-- [ ] (권장) 로컬 개발용 Firebase 에뮬레이터 + `connectFunctionsEmulator` (DEV 환경 한정)
-
 ### Phase 2 — AI + Cloud Tasks + 라우팅
 - [ ] Llama 호스팅 방식 확정 후 `llamaService` 구현 + `memoAI` Cloud Function
 - [ ] 홈 자연어 입력 AI 분류 백엔드
@@ -33,3 +29,10 @@
 ### Step 2. 카카오 인증 (백엔드)
 - [x] Cloud Function — 카카오 커스텀 토큰 발급 (`functions/src/kakaoAuth.ts`)
 - [x] 신규 사용자 초기화 — `users/{uid}` 문서 + 기타 그룹 자동 생성
+
+### Step 0. Firebase 에뮬레이터 셋업 + 카카오 로그인 실동작 검증
+- [x] `firebase.json` emulators 블록(auth 9099 / functions 5001 / firestore 8080 / ui 4000)
+- [x] `config.ts` — `functions` export + DEV 환경 에뮬레이터 연결(connectAuth/Firestore/FunctionsEmulator)
+- [x] `kakaoAuth.ts` — `onCall({ cors: true })`
+- [x] 에뮬레이터에서 카카오 로그인 실동작 검증 — Auth `kakao:{id}` + Firestore `users/{uid}` + `alarmGroups`(기타) 생성 확인
+- [ ] (배포용 후속) `firebase deploy --only functions` 로 cors 반영한 실제 재배포

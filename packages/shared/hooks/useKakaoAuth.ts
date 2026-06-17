@@ -1,6 +1,6 @@
 import { signInWithCustomToken, signOut } from 'firebase/auth'
-import { getFunctions, httpsCallable } from 'firebase/functions'
-import { auth } from '../firebase/config'
+import { httpsCallable } from 'firebase/functions'
+import { auth, functions } from '../firebase/config'
 
 interface KakaoLoginResponse {
   firebaseToken: string
@@ -18,7 +18,6 @@ export async function loginWithKakao(): Promise<void> {
   const accessToken = window.Kakao.Auth.getAccessToken()
   if (!accessToken) throw new Error('카카오 액세스 토큰을 받지 못했습니다.')
 
-  const functions = getFunctions()
   const kakaoLogin = httpsCallable<{ accessToken: string }, KakaoLoginResponse>(
     functions,
     'kakaoLogin'
