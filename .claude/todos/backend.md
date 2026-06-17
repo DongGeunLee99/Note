@@ -11,8 +11,8 @@
 - [ ] 차후 결정: (A) 제외 유지 + UI 알람 탭 정리(→ web.md) / (B) 알람도 휴지통 포함(복원 시 그룹관계·시간 처리 고려)
 
 ### 데이터 레이어 — 나머지 도메인 Firestore 연동 (알람 패턴 복제)
-- [ ] 캘린더 (일정) — ⚠️ shared 타입/컬렉션 미정의, 스키마 설계 먼저
 - [ ] 나중에 (`later`) / 언젠가 (`someday`) → 완료 시 휴지통에도 합류
+- [ ] 캘린더 후속: 일정 수정(edit), 삭제 일정의 휴지통 합류 여부(알람과 동일 TBD)
 
 ### Phase 2 — AI + Cloud Tasks + 라우팅
 - [ ] Llama 호스팅 방식 확정 후 `llamaService` 구현 + `memoAI` Cloud Function
@@ -25,6 +25,14 @@
 ---
 
 ## 완료
+
+### 데이터 레이어 — 캘린더(일정) 기본 Firestore 연동
+- [x] `shared/types/calendarEvent.ts` `CalendarEvent`(start/end Timestamp) 신규 + `users/{uid}/events` 컬렉션
+- [x] `eventService` — subscribeEvents / createEvent(Date→Timestamp) / softDeleteEvent
+- [x] `useCalendarStore` — 가짜 일정(PRESET) 제거, 저장/삭제 Firestore 연결, `useAllEvents` Timestamp→Date 변환
+- [x] `AppLayout` 일정 구독 추가
+- [x] 검증: 일정 생성/삭제(soft)/다중일/새로고침 유지 확인
+- 범위: 반복 일정 없음(기본 한 번짜리). 수정·휴지통 합류는 후속(미완료)
 
 ### 데이터 레이어 — 휴지통(메모) Firestore 연동
 - [x] `firestoreHelpers.deletedQuery`(isDeleted==true)

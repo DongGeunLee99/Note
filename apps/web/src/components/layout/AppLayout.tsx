@@ -5,6 +5,7 @@ import { useAuthContext } from '@/contexts/AuthContext'
 import { useAlarmStore } from '@/stores/useAlarmStore'
 import { useMemoStore } from '@/stores/useMemoStore'
 import { useTrashStore } from '@/stores/useTrashStore'
+import { useCalendarStore } from '@/stores/useCalendarStore'
 
 export default function AppLayout() {
   const { user } = useAuthContext()
@@ -14,18 +15,22 @@ export default function AppLayout() {
   const unsubscribeMemos = useMemoStore(s => s.unsubscribe)
   const subscribeTrash = useTrashStore(s => s.subscribe)
   const unsubscribeTrash = useTrashStore(s => s.unsubscribe)
+  const subscribeEvents = useCalendarStore(s => s.subscribe)
+  const unsubscribeEvents = useCalendarStore(s => s.unsubscribe)
 
   useEffect(() => {
     if (!user) return
     subscribeAlarms(user.uid)
     subscribeMemos(user.uid)
     subscribeTrash(user.uid)
+    subscribeEvents(user.uid)
     return () => {
       unsubscribeAlarms()
       unsubscribeMemos()
       unsubscribeTrash()
+      unsubscribeEvents()
     }
-  }, [user, subscribeAlarms, unsubscribeAlarms, subscribeMemos, unsubscribeMemos, subscribeTrash, unsubscribeTrash])
+  }, [user, subscribeAlarms, unsubscribeAlarms, subscribeMemos, unsubscribeMemos, subscribeTrash, unsubscribeTrash, subscribeEvents, unsubscribeEvents])
 
   return (
     <div className="flex h-screen overflow-hidden" style={{ background: 'var(--color-surface-3)' }}>

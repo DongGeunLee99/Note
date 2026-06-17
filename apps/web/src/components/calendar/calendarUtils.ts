@@ -44,14 +44,6 @@ export const ALARM_BEFORE = [
 export const HOURS   = Array.from({ length: 24 }, (_, i) => i)
 export const MINUTES = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
 
-export const PRESET_EVENTS: Record<number, { time: string; title: string; color: string }[]> = {
-  5:  [{ time: '10:00', title: '병원 예약',  color: '#854F0B' }],
-  10: [{ time: '07:30', title: '기상',       color: '#185FA5' }, { time: '09:00', title: '모닝 루틴', color: '#185FA5' }],
-  15: [{ time: '14:00', title: '팀 미팅',   color: '#3C3489' }],
-  22: [{ time: '07:30', title: '기상',       color: '#185FA5' }, { time: '18:30', title: '퇴근',    color: '#185FA5' }],
-  28: [{ time: '11:00', title: '치과 예약', color: '#854F0B' }],
-}
-
 export function fmtTime(date: Date, fmt: TimeFormat) { return formatClockFromDate(date, fmt) }
 export function fmtHour(h: number, fmt: TimeFormat)  { return formatHourLabel(h, fmt) }
 
@@ -94,9 +86,4 @@ export function toDateKey(date: Date) {
 
 export function getDaysInMonth(y: number, m: number) {
   return new Date(y, m + 1, 0).getDate()
-}
-
-export function timeToDate(y: number, m: number, d: number, time: string): Date {
-  const [h, min] = time.split(':').map(Number)
-  return new Date(y, m, d, h, min)
 }

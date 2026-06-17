@@ -1,12 +1,14 @@
 import { create } from 'zustand'
 import { useMemo } from 'react'
-import { PRESET_EVENTS, timeToDate } from '@/components/calendar/calendarUtils'
 import type { CalendarEventData, RbcEvent, CalView } from '@/components/calendar/types'
-
-let _nextId = 1
+import type { CalendarEvent } from '@smartnote/shared/types'
+import { subscribeEvents, createEvent, softDeleteEvent } from '@smartnote/shared/services/eventService'
 
 interface CalendarState {
-  events: CalendarEventData[]
+  uid: string | null
+  events: CalendarEvent[]
+  subscribe: (uid: string) => void
+  unsubscribe: () => void
   selectedDate: Date
   currentDate: Date
   view: CalView
@@ -34,7 +36,10 @@ interface CalendarState {
   handleCtxNewEvent: () => void
 }
 
+let unsubEvents: (() => void) | null = null
+
 export const useCalendarStore = create<CalendarState>()((set, get) => ({
+  uid: null,
   events: [],
   selectedDate: new Date(),
   currentDate: new Date(),
@@ -46,6 +51,18 @@ export const useCalendarStore = create<CalendarState>()((set, get) => ({
   ctxMenu: null,
   selectedEventId: null,
   selectedDays: null,
+
+  subscribe: (uid) => {
+    get().unsubscribe()
+    set({ uid })
+    unsubEvents = subscribeEvents(uid, events => set({ events }))
+  },
+
+  unsubscribe: () => {
+    unsubEvents?.()
+    unsubEvents = null
+    set({ uid: null, events: [] })
+  },
 
   setSelectedDate: (d) => set({ selectedDate: d }),
   setCurrentDate:  (d) => set({ currentDate: d }),
@@ -66,11 +83,17 @@ export const useCalendarStore = create<CalendarState>()((set, get) => ({
 
   closeEventModal: () => set({ eventModal: false, selectedSlot: null, selectedDays: null }),
 
-  saveEvent: (data) => set(s => ({ events: [...s.events, { ...data, id: `ce${_nextId++}` }] })),
-  deleteEvent: (id) => set(s => ({
-    events: s.events.filter(e => e.id !== id),
-    selectedEventId: s.selectedEventId === id ? null : s.selectedEventId,
-  })),
+  saveEvent: (data) => {
+    const uid = get().uid
+    if (!uid) return
+    createEvent(uid, data)
+  },
+  deleteEvent: (id) => {
+    const uid = get().uid
+    if (!uid) return
+    softDeleteEvent(uid, id)
+    set(s => ({ selectedEventId: s.selectedEventId === id ? null : s.selectedEventId }))
+  },
 
   openCtxMenu: (x, y, hour) => {
     const menuW = 160, menuH = 60
@@ -101,19 +124,18 @@ export const useCalendarStore = create<CalendarState>()((set, get) => ({
 }))
 
 export function useAllEvents(): RbcEvent[] {
-  const events      = useCalendarStore(s => s.events)
-  const currentDate = useCalendarStore(s => s.currentDate)
-  return useMemo(() => {
-    const y = currentDate.getFullYear(), m = currentDate.getMonth()
-    const presets: RbcEvent[] = Object.entries(PRESET_EVENTS).flatMap(([day, evts]) =>
-      evts.map((ev, i) => {
-        const start = timeToDate(y, m, Number(day), ev.time)
-        return { id: `preset-${day}-${i}`, title: ev.title, description: '', start, end: new Date(start.getTime() + 30 * 60000), isPreset: true, color: ev.color, hasAlarm: true }
-      })
-    )
-    return [
-      ...presets,
-      ...events.map(e => ({ id: e.id, title: e.title, description: e.description, start: e.start, end: e.end, isPreset: false, color: e.color, hasAlarm: e.hasAlarm })),
-    ]
-  }, [events, currentDate])
+  const events = useCalendarStore(s => s.events)
+  return useMemo(() =>
+    events.map(e => ({
+      id: e.eventId,
+      title: e.title,
+      description: e.description,
+      start: e.start.toDate(),
+      end: e.end.toDate(),
+      isPreset: false,
+      color: e.color,
+      hasAlarm: e.hasAlarm,
+    })),
+    [events],
+  )
 }
