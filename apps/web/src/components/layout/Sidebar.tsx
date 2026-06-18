@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import {
   IconHome, IconBell, IconNote, IconClock, IconStar,
@@ -5,27 +6,40 @@ import {
 } from '@tabler/icons-react'
 import { useTranslation } from 'react-i18next'
 import { useAuthContext } from '@/contexts/AuthContext'
+import { useAlarmStore } from '@/stores/useAlarmStore'
+import { useTrashStore } from '@/stores/useTrashStore'
 
-type NavItem = { to: string; icon: React.ComponentType<{ size?: number; style?: React.CSSProperties }>; labelKey: 'home' | 'memo' | 'calendar' | 'alarm' | 'later' | 'someday' | 'dashboard' | 'trash'; count?: number }
+type NavItem = { to: string; icon: React.ComponentType<{ size?: number; style?: React.CSSProperties }>; labelKey: 'home' | 'memo' | 'calendar' | 'alarm' | 'later' | 'someday' | 'dashboard' | 'trash' }
 
 const NAV_ITEMS: NavItem[] = [
   { to: '/home', icon: IconHome, labelKey: 'home' },
   { to: '/memo', icon: IconNote, labelKey: 'memo' },
   { to: '/calendar', icon: IconCalendar, labelKey: 'calendar' },
-  { to: '/alarm', icon: IconBell, labelKey: 'alarm', count: 12 },
-  { to: '/later', icon: IconClock, labelKey: 'later', count: 3 },
+  { to: '/alarm', icon: IconBell, labelKey: 'alarm' },
+  { to: '/later', icon: IconClock, labelKey: 'later' },
   { to: '/someday', icon: IconStar, labelKey: 'someday' },
   { to: '/dashboard', icon: IconLayoutDashboard, labelKey: 'dashboard' },
-  { to: '/trash', icon: IconTrash, labelKey: 'trash', count: 5 },
+  { to: '/trash', icon: IconTrash, labelKey: 'trash' },
 ]
 
 export default function Sidebar() {
   const navigate = useNavigate()
   const { t } = useTranslation()
   const { logout, profile } = useAuthContext()
+  const alarms = useAlarmStore(s => s.alarms)
+  const groups = useAlarmStore(s => s.groups)
+  const trashCount = useTrashStore(s => s.items.length)
 
   const name = profile?.nickname ?? ''
   const initial = name.charAt(0) || '·'
+
+  // 활성 알람 수 = 알람 ON + 소속 그룹 ON
+  const activeAlarmCount = useMemo(
+    () => alarms.filter(a => a.isEnabled && groups.find(g => g.groupId === a.groupId)?.isEnabled).length,
+    [alarms, groups],
+  )
+  // 메뉴별 뱃지 개수 (0이면 미표시). later는 Firestore 미연동이라 제외
+  const countByPath: Record<string, number> = { '/alarm': activeAlarmCount, '/trash': trashCount }
 
   async function handleLogout() {
     await logout()
@@ -50,7 +64,9 @@ export default function Sidebar() {
       </p>
 
       <nav className="flex flex-col flex-1">
-        {NAV_ITEMS.map(({ to, icon: Icon, labelKey, count }) => (
+        {NAV_ITEMS.map(({ to, icon: Icon, labelKey }) => {
+          const count = countByPath[to]
+          return (
           <NavLink
             key={to}
             to={to}
@@ -68,7 +84,7 @@ export default function Sidebar() {
           >
             <Icon size={15} />
             <span className="flex-1">{t(`sidebar.${labelKey}`)}</span>
-            {count !== undefined && (
+            {count > 0 && (
               <span
                 className="text-[9px] px-1.5 py-px rounded-full"
                 style={{ background: 'var(--color-primary-subtle)', color: 'var(--color-primary-emphasis)' }}
@@ -77,7 +93,8 @@ export default function Sidebar() {
               </span>
             )}
           </NavLink>
-        ))}
+          )
+        })}
 
         <div className="mt-auto border-t" style={{ borderColor: 'var(--color-border)' }}>
           <p className="px-3 pt-2 pb-0.5 text-[9px] uppercase tracking-wide" style={{ color: 'var(--color-muted)' }}>
