@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { Outlet } from 'react-router-dom'
 import Sidebar from './Sidebar'
+import AlarmScheduler from '@/components/alarm/AlarmScheduler'
 import { useAuthContext } from '@/contexts/AuthContext'
 import { useAlarmStore } from '@/stores/useAlarmStore'
 import { useMemoStore } from '@/stores/useMemoStore'
@@ -38,6 +39,7 @@ export default function AppLayout() {
       <main className="flex-1 flex flex-col overflow-hidden" style={{ background: 'var(--color-surface)' }}>
         <Outlet />
       </main>
+      <AlarmScheduler />
     </div>
   )
 }

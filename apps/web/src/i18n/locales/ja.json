@@ -89,7 +89,9 @@
     "quickParseError": "時間を認識できませんでした。もう一度入力してください。",
     "quickRecognized": "認識されたアラーム",
     "quickParseBtn": "時間を認識する",
-    "defaultLabel": "アラーム"
+    "defaultLabel": "アラーム",
+    "ringTitle": "アラーム",
+    "ringDismiss": "停止"
   },
   "memo": {
     "pageTitle": "メモ",

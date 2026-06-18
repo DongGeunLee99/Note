@@ -89,7 +89,9 @@
     "quickParseError": "Couldn't recognize a time. Try again.",
     "quickRecognized": "Recognized alarm",
     "quickParseBtn": "Detect Time",
-    "defaultLabel": "Alarm"
+    "defaultLabel": "Alarm",
+    "ringTitle": "Alarm",
+    "ringDismiss": "Dismiss"
   },
   "memo": {
     "pageTitle": "Memos",

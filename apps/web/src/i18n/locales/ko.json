@@ -89,7 +89,9 @@
     "quickParseError": "시간을 인식하지 못했어요. 다시 입력해보세요.",
     "quickRecognized": "인식된 알람",
     "quickParseBtn": "시간 인식하기",
-    "defaultLabel": "알람"
+    "defaultLabel": "알람",
+    "ringTitle": "알람",
+    "ringDismiss": "끄기"
   },
   "memo": {
     "pageTitle": "메모",

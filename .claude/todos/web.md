@@ -84,7 +84,8 @@
 - [x] 단일일 드래그는 기존대로 1개 (현재 동작 유지)
 
 ### Phase 1 잔여 (백엔드 연동 단계)
-- [ ] 웹 알람 발생 — Firestore 리스너로 알람 시간 감지, Web Audio API + 모달
+- [x] 웹 알람 발생(포그라운드) — `AlarmScheduler`(15s 티커) + `alarmFireUtils`(시·분/요일 판정, 일회성=발생후 끔) + `alarmSound`(Web Audio 비프) + `AlarmRingModal`(끄기) + OS알림(notificationService 재사용). 그룹 OFF면 미발생. AppLayout에 mount
+  - 한계(후속): 탭 닫힘/절전 시 미발생, 놓친 알람 소급 없음, 스누즈 없음 → Service Worker(백그라운드)에서 보완
 - [ ] Service Worker 등록 — PWA 백그라운드 알람 수신 준비
 
 ### Phase 2 — AI / 기능 백엔드 연동 (프론트 와이어링)
