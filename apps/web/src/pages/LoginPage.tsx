@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { Navigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useAuthContext } from '@/contexts/AuthContext'
 
 export default function LoginPage() {
+  const { t } = useTranslation()
   const { user, login } = useAuthContext()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -16,7 +18,7 @@ export default function LoginPage() {
     try {
       await login()
     } catch {
-      setError('로그인에 실패했습니다. 다시 시도해주세요.')
+      setError(t('login.failed'))
     } finally {
       setLoading(false)
     }
@@ -26,7 +28,7 @@ export default function LoginPage() {
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center gap-6">
       <div className="text-center">
         <h1 className="text-3xl font-bold text-gray-900">SmartNote</h1>
-        <p className="mt-2 text-gray-500">알람·메모·캘린더를 하나로</p>
+        <p className="mt-2 text-gray-500">{t('login.tagline')}</p>
       </div>
 
       <button
@@ -34,7 +36,7 @@ export default function LoginPage() {
         disabled={loading}
         className="flex items-center gap-3 bg-[#FEE500] hover:bg-[#F0D800] disabled:opacity-60 text-gray-900 font-medium px-6 py-3 rounded-xl transition-colors"
       >
-        {loading ? '로그인 중...' : '카카오로 시작하기'}
+        {loading ? t('login.loggingIn') : t('login.kakaoStart')}
       </button>
 
       {error && <p className="text-sm text-red-500">{error}</p>}

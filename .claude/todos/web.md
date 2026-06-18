@@ -95,7 +95,8 @@
 - [ ] 메모 풀 버전 히스토리 — Firestore `versions` 서브컬렉션 (1-스텝 되돌리기의 확장)
 
 ### i18n 잔여 미적용 (사전 키 준비됨)
-- [ ] `DashboardPage` · `LoginPage` · `ConfirmModal` · `HomeRightPanel` 목업 문구 i18n 연결
+- [x] `LoginPage` · `ConfirmModal` 실 UI 문구 i18n 연결 (login.* / common.cancel, ko·en·ja 키 존재 확인)
+- [ ] `DashboardPage` · `HomeRightPanel` — **목업/가짜 데이터**라 실데이터 연동(웹 알람 발생·대시보드 집계) 시점에 함께 처리
 
 ---
 

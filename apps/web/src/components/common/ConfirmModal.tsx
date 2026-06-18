@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import Modal from './Modal'
 
 interface ConfirmModalProps {
@@ -15,6 +16,7 @@ export default function ConfirmModal({
   isOpen, onClose, title, children,
   confirmLabel, onConfirm, confirmDisabled, danger,
 }: ConfirmModalProps) {
+  const { t } = useTranslation()
   return (
     <Modal
       isOpen={isOpen}
@@ -27,7 +29,7 @@ export default function ConfirmModal({
             className="text-[10px] px-3 py-1.5 rounded-lg border"
             style={{ borderColor: 'var(--color-border-2)', color: 'var(--color-muted)' }}
           >
-            취소
+            {t('common.cancel')}
           </button>
           <button
             onClick={onConfirm}
