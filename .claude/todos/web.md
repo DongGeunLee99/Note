@@ -21,7 +21,7 @@
 - [x] NewEventModal 편집 모드(기존 값 prefill, 제목 "수정", 삭제 버튼)
 - [x] 일정 우클릭 메뉴(수정/삭제): store `openEventCtxMenu`+`ctxMenu.eventId`, CalendarPage 분기
 - [x] 적용 위치: **일간(Day) 달력 + 우측 패널**(상세/아젠다). hover 쓰레기통 버튼 제거(우클릭으로 대체)
-- [ ] **Phase 2**: 월/주 달력 일정 우클릭 — rbc 커스텀 event 컴포넌트(`components={{ event }}`) 필요. 현재 월/주는 빈 곳 우클릭(일정추가)만 동작
+- [x] **Phase 2**: 월/주 달력 일정 우클릭 — rbc 커스텀 event 컴포넌트(`CalendarEventChip`, `components={{ event }}`)로 Month/Week 적용 (커밋 3a50c80)
 
 **월 이동 시 활성 날짜 보정 (완료)**
 - [x] 달을 넘기면 활성(선택) 날짜를 이동 방향 가장자리로 보정: 이전 달→마지막 날 / 다음 달→첫째 날
@@ -29,11 +29,12 @@
   - 본 캘린더(MonthView `onNavigate` PREV/NEXT) + 미니 캘린더(CalendarRightPanel `handleNavigateMonth`, 타깃 월 vs 현재 월 비교로 방향 판단) 둘 다 적용
   - '오늘' 버튼은 오늘 유지(기존 동작), Week/Day 뷰는 월 이동 아니므로 미적용
 
-**#5 우측 미니 캘린더 스와이프**
-- [ ] MiniCalendar에서 좌우 스와이프/드래그로 월 이동 (제스처: 직접 구현 vs 라이브러리 착수 시 검토)
+**#5 우측 미니 캘린더 스와이프 (완료)**
+- [x] MiniCalendar 좌우 드래그 카루셀로 월 이동(직접 구현, 3패널 + THRESHOLD 스냅, 슬라이드 중 선택 하이라이트 숨김) (커밋 3a50c80)
 
-### 휴지통 탭 정리 — 알람/나중에 필터 (휴지통 알람 포함 결정 대기)
-- [ ] `TrashPage`의 filter 탭·우측 통계에 `alarm`/`later`가 있으나 현재 항상 0 (목업 잔재). `alarm`은 [backend.md](backend.md) TBD(휴지통 알람 포함 여부) 결정 후 정리, `later`는 Firestore migrate 시 자동으로 채워짐
+### 휴지통 탭 정리 — 알람/나중에 필터 (완료)
+- [x] **결정: 알람 휴지통 제외 유지(A안, 2026-06-18).** `TrashPage` filter 탭·우측 통계에서 `alarm`·`later` 숨김 → 현재 동작하는 `memo`만 노출 (`['all','memo']` / `['memo']`)
+  - `TYPE_CONFIG`/`typeLabels`는 보존 — 나중에/언젠가 Firestore 연결 시 `later` 되살림. 알람은 영구 제외(방치 문서는 후속 `trashCleaner`가 청소)
 
 ### 메모 탭 개선 (큐 — "작업하자" 신호 시 일괄 실행)
 
@@ -86,12 +87,12 @@
 ### Phase 1 잔여 (백엔드 연동 단계)
 - [x] 웹 알람 발생(포그라운드) — `AlarmScheduler`(15s 티커) + `alarmFireUtils`(시·분/요일 판정, 일회성=발생후 끔) + `alarmSound`(Web Audio 비프) + `AlarmRingModal`(끄기) + OS알림(notificationService 재사용). 그룹 OFF면 미발생. AppLayout에 mount
   - 한계(후속): 탭 닫힘/절전 시 미발생, 놓친 알람 소급 없음, 스누즈 없음 → Service Worker(백그라운드)에서 보완
-- [ ] Service Worker 등록 — PWA 백그라운드 알람 수신 준비
+- [~] Service Worker(웹 백그라운드 알람) — **웹은 포그라운드만 담당하기로 결정(2026-06-18)**. "앱/탭 닫힘 시 울림"은 Electron(트레이 상주)·모바일(FCM)이 담당(설계상 알람 라우팅). 웹 SW는 추후 PWA 오프라인/설치 목적이 생기면 그때 별도 검토
 
 ### Phase 2 — AI / 기능 백엔드 연동 (프론트 와이어링)
 - [ ] 홈 자연어 입력 → AI 분류 결과 연결
 - [ ] 메모 AI 정리 / 알람 제안 실제 연결
-- [ ] 나중에 / 언젠가 페이지 백엔드 연동
+- [ ] 나중에 / 언젠가 페이지 백엔드 연동 — **MVP 이후로 보류(2026-06-18 결정)**
 - [ ] 기기 활성 상태(isActive) 보고
 - [ ] 메모 풀 버전 히스토리 — Firestore `versions` 서브컬렉션 (1-스텝 되돌리기의 확장)
 

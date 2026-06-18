@@ -89,7 +89,8 @@ export default function TrashPage() {
             className="flex items-center gap-1.5 px-3 py-2 border-b flex-shrink-0"
             style={{ borderColor: 'var(--color-border)' }}
           >
-            {(['all', 'memo', 'alarm', 'later'] as const).map(f => (
+            {/* 현재 휴지통 대상은 메모만. 알람은 설계상 제외, 나중에/언젠가는 Firestore 연결 시 복원 */}
+            {(['all', 'memo'] as const).map(f => (
               <PillButton key={f} active={filter === f} onClick={() => setFilter(f)}>
                 {f === 'all' ? t('common.all') : typeLabels[f]}
               </PillButton>
@@ -155,7 +156,7 @@ export default function TrashPage() {
         <ResizableRightPanel>
           <div className="p-3 flex flex-col gap-3 h-full overflow-auto">
             <SectionLabel>{t('common.status')}</SectionLabel>
-            {(['memo', 'alarm', 'later'] as TrashType[]).map(type => {
+            {(['memo'] as TrashType[]).map(type => {
               const count = items.filter(i => i.type === type).length
               return (
                 <div key={type} className="flex items-center justify-between text-[10px]">
