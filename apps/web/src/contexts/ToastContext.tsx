@@ -48,7 +48,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
           {toasts.map(t => (
             <div
               key={t.id}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg text-[11px] font-medium shadow-md"
+              className="flex items-center gap-2 px-3 py-2 rounded-lg text-[calc(11px*var(--fs))] font-medium shadow-md"
               style={{ background: COLORS[t.type].bg, color: COLORS[t.type].text }}
             >
               {ICONS[t.type]}

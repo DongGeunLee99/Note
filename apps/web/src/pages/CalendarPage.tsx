@@ -81,7 +81,7 @@ export default function CalendarPage() {
   return (
     <div className="flex flex-col h-full">
       <PageHeader title={t('sidebar.calendar')}>
-        <span className="text-[10px]" style={{ color: 'var(--color-muted)' }}>{t('calendar.headerInfo', { n: alarmDayCount })}</span>
+        <span className="text-[calc(10px*var(--fs))]" style={{ color: 'var(--color-muted)' }}>{t('calendar.headerInfo', { n: alarmDayCount })}</span>
       </PageHeader>
 
       <div className="flex flex-1 overflow-hidden">

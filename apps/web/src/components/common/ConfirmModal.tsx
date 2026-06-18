@@ -26,7 +26,7 @@ export default function ConfirmModal({
         <>
           <button
             onClick={onClose}
-            className="text-[10px] px-3 py-1.5 rounded-lg border"
+            className="text-[calc(10px*var(--fs))] px-3 py-1.5 rounded-lg border"
             style={{ borderColor: 'var(--color-border-2)', color: 'var(--color-muted)' }}
           >
             {t('common.cancel')}
@@ -34,7 +34,7 @@ export default function ConfirmModal({
           <button
             onClick={onConfirm}
             disabled={confirmDisabled}
-            className="text-[10px] px-3 py-1.5 rounded-lg text-white disabled:opacity-40"
+            className="text-[calc(10px*var(--fs))] px-3 py-1.5 rounded-lg text-white disabled:opacity-40"
             style={{ background: danger ? 'var(--color-danger)' : 'var(--color-primary)' }}
           >
             {confirmLabel}

@@ -239,7 +239,13 @@
     "themePurple": "パープル",
     "themeBlue": "ブルー",
     "language": "言語",
-    "languageDesc": "アプリ全体の表示言語"
+    "languageDesc": "アプリ全体の表示言語",
+    "fontSize": "文字サイズ",
+    "fontSizeDesc": "画面全体の文字・要素サイズ",
+    "fontSm": "小",
+    "fontMd": "標準",
+    "fontLg": "大",
+    "fontXl": "特大"
   },
   "login": {
     "tagline": "アラーム・メモ・カレンダーをひとつに",

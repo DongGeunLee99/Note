@@ -13,7 +13,7 @@ export default function RecentEntryList() {
 
   return (
     <>
-      <p className="text-[10px] font-medium" style={{ color: 'var(--color-muted)' }}>
+      <p className="text-[calc(10px*var(--fs))] font-medium" style={{ color: 'var(--color-muted)' }}>
         {t('home.recent', { n: entries.length })}
       </p>
 
@@ -32,8 +32,8 @@ export default function RecentEntryList() {
               {cfg.icon}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[11px] font-medium truncate">{entry.text}</p>
-              <p className="text-[9px]" style={{ color: 'var(--color-muted)' }}>
+              <p className="text-[calc(11px*var(--fs))] font-medium truncate">{entry.text}</p>
+              <p className="text-[calc(9px*var(--fs))]" style={{ color: 'var(--color-muted)' }}>
                 {formatRelTime(entry.createdAt, lang)}
               </p>
             </div>

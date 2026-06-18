@@ -53,7 +53,7 @@ export default function NewEventModal({ isOpen, initialStart, initialEnd, multiD
     if (end <= d) setEnd(new Date(d.getTime() + 3600000))
   }
 
-  const row = 'flex items-center justify-between py-2 border-b text-[11px]'
+  const row = 'flex items-center justify-between py-2 border-b text-[calc(11px*var(--fs))]'
   const bdr = { borderColor: 'var(--color-border)' }
 
   return (
@@ -65,20 +65,20 @@ export default function NewEventModal({ isOpen, initialStart, initialEnd, multiD
       footer={
         <>
           {initial && onDelete && (
-            <button onClick={onDelete} className="text-[10px] px-3 py-1.5 rounded-lg border mr-auto"
+            <button onClick={onDelete} className="text-[calc(10px*var(--fs))] px-3 py-1.5 rounded-lg border mr-auto"
               style={{ borderColor: 'var(--color-danger-border)', color: 'var(--color-danger)' }}>{t('common.delete')}</button>
           )}
-          <button onClick={onClose} className="text-[10px] px-3 py-1.5 rounded-lg border"
+          <button onClick={onClose} className="text-[calc(10px*var(--fs))] px-3 py-1.5 rounded-lg border"
             style={{ borderColor: 'var(--color-border-2)', color: 'var(--color-muted)' }}>{t('common.cancel')}</button>
           <button onClick={handleSave} disabled={!title.trim()}
-            className="text-[10px] px-3 py-1.5 rounded-lg text-white disabled:opacity-40"
+            className="text-[calc(10px*var(--fs))] px-3 py-1.5 rounded-lg text-white disabled:opacity-40"
             style={{ background: 'var(--color-primary)' }}>{t('common.save')}</button>
         </>
       }
     >
       <div className="flex flex-col">
         {multiDayCount > 1 && (
-          <div className="mb-2 px-2 py-1.5 rounded-lg text-[10px]" style={{ background: 'var(--color-primary-subtle)', color: 'var(--color-primary)' }}>
+          <div className="mb-2 px-2 py-1.5 rounded-lg text-[calc(10px*var(--fs))]" style={{ background: 'var(--color-primary-subtle)', color: 'var(--color-primary)' }}>
             {t('calendar.multiDayNote', { n: multiDayCount })}
           </div>
         )}
@@ -87,14 +87,14 @@ export default function NewEventModal({ isOpen, initialStart, initialEnd, multiD
           <input type="text" value={title} onChange={e => setTitle(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleSave()}
             placeholder={t('calendar.eventNamePlaceholder')} maxLength={40} autoFocus
-            className="text-right text-[11px] outline-none bg-transparent w-44" />
+            className="text-right text-[calc(11px*var(--fs))] outline-none bg-transparent w-44" />
         </div>
 
-        <div className="flex flex-col gap-1 py-2 border-b text-[11px]" style={bdr}>
+        <div className="flex flex-col gap-1 py-2 border-b text-[calc(11px*var(--fs))]" style={bdr}>
           <span style={{ color: 'var(--color-muted)' }}>{t('calendar.fieldDescription')}</span>
           <textarea value={description} onChange={e => setDescription(e.target.value)}
             placeholder={t('calendar.descPlaceholder')} rows={3} maxLength={500}
-            className="text-[11px] leading-relaxed outline-none resize-none bg-transparent"
+            className="text-[calc(11px*var(--fs))] leading-relaxed outline-none resize-none bg-transparent"
             style={{ color: 'var(--color-text)' }} />
         </div>
 
@@ -121,7 +121,7 @@ export default function NewEventModal({ isOpen, initialStart, initialEnd, multiD
         </div>
 
         {color === 'theme' && (
-          <div className="flex items-center gap-1.5 my-1.5 px-2 py-1.5 rounded-lg text-[9px]"
+          <div className="flex items-center gap-1.5 my-1.5 px-2 py-1.5 rounded-lg text-[calc(9px*var(--fs))]"
             style={{ background: 'var(--color-primary-subtle)', color: 'var(--color-primary)' }}>
             <IconSparkles size={11} style={{ flexShrink: 0 }} />
             <span>{t('common.themeColorHint')}</span>
@@ -144,10 +144,10 @@ export default function NewEventModal({ isOpen, initialStart, initialEnd, multiD
         </div>
 
         {hasAlarm && (
-          <div className="flex items-center justify-between py-2 text-[11px]">
+          <div className="flex items-center justify-between py-2 text-[calc(11px*var(--fs))]">
             <span style={{ color: 'var(--color-muted)' }}>{t('calendar.fieldNotify')}</span>
             <Select value={alarmMinutes} onChange={setAlarmMinutes}
-              className="text-[11px] border rounded px-2 py-0.5 outline-none"
+              className="text-[calc(11px*var(--fs))] border rounded px-2 py-0.5 outline-none"
               options={ALARM_BEFORE.map(o => ({ value: o.value, label: t(`calendar.alarmBefore.${o.value}`) }))} />
           </div>
         )}

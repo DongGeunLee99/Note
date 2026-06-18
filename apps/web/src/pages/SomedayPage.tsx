@@ -61,7 +61,7 @@ export default function SomedayPage() {
       <PageHeader title={t('someday.pageTitle')}>
         <button
           onClick={() => setModalOpen(true)}
-          className="text-[10px] px-2.5 py-1.5 rounded-lg text-white"
+          className="text-[calc(10px*var(--fs))] px-2.5 py-1.5 rounded-lg text-white"
           style={{ background: 'var(--color-primary)' }}
         >
           {t('someday.add')}
@@ -88,7 +88,7 @@ export default function SomedayPage() {
                   <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: tone.bg, color: tone.fg }}>
                     {CATEGORY_ICONS[item.category]}
                   </div>
-                  <span className="flex-1 text-[11px] font-medium">{item.title}</span>
+                  <span className="flex-1 text-[calc(11px*var(--fs))] font-medium">{item.title}</span>
                   <button onClick={() => toggleFavorite(item.id)} className="flex-shrink-0">
                     <IconStar size={13} style={{ color: FAVORITE_COLOR, fill: item.isFavorite ? FAVORITE_COLOR : 'none', flexShrink: 0 }} />
                   </button>
@@ -108,7 +108,7 @@ export default function SomedayPage() {
             {CATEGORIES.map(name => {
               const count = items.filter(i => i.category === name).length
               return (
-                <div key={name} className="flex items-center gap-2 text-[11px]">
+                <div key={name} className="flex items-center gap-2 text-[calc(11px*var(--fs))]">
                   <div className="w-2 h-2 rounded-full" style={{ background: TONES[CATEGORY_TONES[name]].fg }} />
                   <span className="flex-1">{t(`someday.categoryNames.${name}`)}</span>
                   <span style={{ color: 'var(--color-muted)' }}>{count}</span>
@@ -116,7 +116,7 @@ export default function SomedayPage() {
               )
             })}
             <Divider className="mt-1" />
-            <div className="flex items-center gap-2 text-[11px]">
+            <div className="flex items-center gap-2 text-[calc(11px*var(--fs))]">
               <IconStar size={11} style={{ color: FAVORITE_COLOR, fill: FAVORITE_COLOR }} />
               <span className="flex-1">{t('someday.favorite')}</span>
               <span style={{ color: 'var(--color-muted)' }}>{items.filter(i => i.isFavorite).length}</span>
@@ -145,13 +145,13 @@ export default function SomedayPage() {
         confirmDisabled={!title.trim()}
       >
         <div className="flex flex-col gap-3">
-          <div className="flex items-center justify-between py-2 border-b text-[11px]" style={{ borderColor: 'var(--color-border)' }}>
+          <div className="flex items-center justify-between py-2 border-b text-[calc(11px*var(--fs))]" style={{ borderColor: 'var(--color-border)' }}>
             <span style={{ color: 'var(--color-muted)' }}>{t('someday.fieldTitle')}</span>
-            <input type="text" value={title} onChange={e => setTitle(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleAdd()} placeholder={t('someday.titlePlaceholder')} autoFocus maxLength={40} className="text-right text-[11px] outline-none bg-transparent w-40" />
+            <input type="text" value={title} onChange={e => setTitle(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleAdd()} placeholder={t('someday.titlePlaceholder')} autoFocus maxLength={40} className="text-right text-[calc(11px*var(--fs))] outline-none bg-transparent w-40" />
           </div>
 
           <div>
-            <p className="text-[9px] uppercase tracking-wide mb-2" style={{ color: 'var(--color-muted)' }}>{t('someday.fieldCategory')}</p>
+            <p className="text-[calc(9px*var(--fs))] uppercase tracking-wide mb-2" style={{ color: 'var(--color-muted)' }}>{t('someday.fieldCategory')}</p>
             <div className="flex gap-1.5 flex-wrap">
               {CATEGORIES.map(cat => (
                 <PillButton key={cat} active={category === cat} onClick={() => setCategory(cat)}>
@@ -161,7 +161,7 @@ export default function SomedayPage() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between py-2 border-t text-[11px]" style={{ borderColor: 'var(--color-border)' }}>
+          <div className="flex items-center justify-between py-2 border-t text-[calc(11px*var(--fs))]" style={{ borderColor: 'var(--color-border)' }}>
             <span style={{ color: 'var(--color-muted)' }}>{t('someday.favorite')}</span>
             <button onClick={() => setIsFavorite(f => !f)}>
               <IconStar size={16} style={{ color: FAVORITE_COLOR, fill: isFavorite ? FAVORITE_COLOR : 'none' }} />

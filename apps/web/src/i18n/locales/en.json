@@ -239,7 +239,13 @@
     "themePurple": "Purple",
     "themeBlue": "Blue",
     "language": "Language",
-    "languageDesc": "Display language for the entire app"
+    "languageDesc": "Display language for the entire app",
+    "fontSize": "Font Size",
+    "fontSizeDesc": "Overall text & element size",
+    "fontSm": "Small",
+    "fontMd": "Default",
+    "fontLg": "Large",
+    "fontXl": "Extra Large"
   },
   "login": {
     "tagline": "Alarms, memos, and calendar in one",

@@ -40,7 +40,7 @@ export default function QuickInput() {
           onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSave() } }}
           placeholder={t('home.quickPlaceholder')}
           rows={2}
-          className="flex-1 text-[11px] outline-none bg-transparent resize-none leading-relaxed"
+          className="flex-1 text-[calc(11px*var(--fs))] outline-none bg-transparent resize-none leading-relaxed"
           style={{ color: 'var(--color-text)' }}
         />
       </div>
@@ -56,7 +56,7 @@ export default function QuickInput() {
         <button
           onClick={handleSave}
           disabled={!text.trim()}
-          className="text-[10px] px-2.5 py-1 rounded-lg text-white flex-shrink-0 disabled:opacity-40"
+          className="text-[calc(10px*var(--fs))] px-2.5 py-1 rounded-lg text-white flex-shrink-0 disabled:opacity-40"
           style={{ background: 'var(--color-primary)' }}
         >
           {t('common.save')}

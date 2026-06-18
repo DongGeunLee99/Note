@@ -103,15 +103,15 @@ export default function CalendarRightPanel() {
 
           {/* Selected date */}
           <div>
-            <p className="text-[12px] font-semibold leading-tight">
+            <p className="text-[calc(12px*var(--fs))] font-semibold leading-tight">
               {formatSectionDate(selectedDate, lang)}
             </p>
-            <p className="text-[9px] mt-0.5" style={{ color: 'var(--color-muted)' }}>{selectedDate.getFullYear()}</p>
+            <p className="text-[calc(9px*var(--fs))] mt-0.5" style={{ color: 'var(--color-muted)' }}>{selectedDate.getFullYear()}</p>
           </div>
 
           {/* New Event button */}
           <button onClick={handleNewEvent}
-            className="flex items-center justify-center gap-1 text-[10px] py-1.5 rounded-lg border transition-colors hover:opacity-80"
+            className="flex items-center justify-center gap-1 text-[calc(10px*var(--fs))] py-1.5 rounded-lg border transition-colors hover:opacity-80"
             style={{ borderColor: 'var(--color-primary)', color: 'var(--color-primary)' }}>
             <IconPlus size={11} /> {t('calendar.newEvent')}
           </button>
@@ -123,19 +123,19 @@ export default function CalendarRightPanel() {
               <div className="flex items-start justify-between gap-2">
                 <span className="flex items-center gap-1.5 min-w-0">
                   <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: resolveEventColor(selectedEvent.color) }} />
-                  <span className="text-[11px] font-medium truncate">{selectedEvent.title}</span>
+                  <span className="text-[calc(11px*var(--fs))] font-medium truncate">{selectedEvent.title}</span>
                 </span>
                 <button onClick={() => setSelectedEventId(null)} className="flex-shrink-0 hover-tint rounded p-0.5">
                   <IconX size={12} style={{ color: 'var(--color-muted)' }} />
                 </button>
               </div>
-              <div className="flex items-center gap-1 text-[9px]" style={{ color: 'var(--color-muted)' }}>
+              <div className="flex items-center gap-1 text-[calc(9px*var(--fs))]" style={{ color: 'var(--color-muted)' }}>
                 <span>{fmtTime(selectedEvent.start, timeFormat)} – {fmtTime(selectedEvent.end, timeFormat)}</span>
                 {selectedEvent.hasAlarm && <IconBell size={9} style={{ color: resolveEventColor(selectedEvent.color) }} />}
               </div>
               {selectedEvent.description
-                ? <p className="text-[10px] leading-relaxed whitespace-pre-wrap" style={{ color: 'var(--color-text)' }}>{selectedEvent.description}</p>
-                : <p className="text-[9px] italic" style={{ color: 'var(--color-muted)' }}>{t('calendar.noDescription')}</p>}
+                ? <p className="text-[calc(10px*var(--fs))] leading-relaxed whitespace-pre-wrap" style={{ color: 'var(--color-text)' }}>{selectedEvent.description}</p>
+                : <p className="text-[calc(9px*var(--fs))] italic" style={{ color: 'var(--color-muted)' }}>{t('calendar.noDescription')}</p>}
             </div>
           )}
 
@@ -143,22 +143,22 @@ export default function CalendarRightPanel() {
 
           {/* TODAY */}
           <div>
-            <p className="text-[9px] font-bold uppercase tracking-wider mb-1.5" style={{ color: 'var(--color-primary)' }}>
+            <p className="text-[calc(9px*var(--fs))] font-bold uppercase tracking-wider mb-1.5" style={{ color: 'var(--color-primary)' }}>
               {t('calendar.panelToday')} — {formatSectionDate(today, lang)}
             </p>
             {agendaToday.length === 0
-              ? <p className="text-[9px] italic" style={{ color: 'var(--color-muted)' }}>{t('calendar.noEvents')}</p>
+              ? <p className="text-[calc(9px*var(--fs))] italic" style={{ color: 'var(--color-muted)' }}>{t('calendar.noEvents')}</p>
               : agendaToday.map(e => <AgendaItem key={e.id} event={e} onSelect={() => setSelectedEventId(e.id)} onContextMenu={me => onEventCtx(me, e.id)} />)
             }
           </div>
 
           {/* TOMORROW */}
           <div>
-            <p className="text-[9px] font-bold uppercase tracking-wider mb-1.5" style={{ color: 'var(--color-muted)' }}>
+            <p className="text-[calc(9px*var(--fs))] font-bold uppercase tracking-wider mb-1.5" style={{ color: 'var(--color-muted)' }}>
               {t('calendar.panelTomorrow')} — {formatSectionDate(tomorrow, lang)}
             </p>
             {agendaTomorrow.length === 0
-              ? <p className="text-[9px] italic" style={{ color: 'var(--color-muted)' }}>{t('calendar.noEvents')}</p>
+              ? <p className="text-[calc(9px*var(--fs))] italic" style={{ color: 'var(--color-muted)' }}>{t('calendar.noEvents')}</p>
               : agendaTomorrow.map(e => <AgendaItem key={e.id} event={e} onSelect={() => setSelectedEventId(e.id)} onContextMenu={me => onEventCtx(me, e.id)} />)
             }
           </div>
@@ -166,10 +166,10 @@ export default function CalendarRightPanel() {
           {/* THIS WEEK */}
           {agendaWeekGrouped.length > 0 && (
             <div>
-              <p className="text-[9px] font-bold uppercase tracking-wider mb-1.5" style={{ color: 'var(--color-muted)' }}>{t('calendar.panelThisWeek')}</p>
+              <p className="text-[calc(9px*var(--fs))] font-bold uppercase tracking-wider mb-1.5" style={{ color: 'var(--color-muted)' }}>{t('calendar.panelThisWeek')}</p>
               {agendaWeekGrouped.map(({ date, events }) => (
                 <div key={date.toDateString()} className="mb-2">
-                  <p className="text-[9px] font-semibold mb-1" style={{ color: 'var(--color-muted)' }}>{formatSectionDate(date, lang)}</p>
+                  <p className="text-[calc(9px*var(--fs))] font-semibold mb-1" style={{ color: 'var(--color-muted)' }}>{formatSectionDate(date, lang)}</p>
                   {events.map(e => <AgendaItem key={e.id} event={e} onSelect={() => setSelectedEventId(e.id)} onContextMenu={me => onEventCtx(me, e.id)} />)}
                 </div>
               ))}
@@ -179,8 +179,8 @@ export default function CalendarRightPanel() {
           <div className="h-px" style={{ background: 'var(--color-border)' }} />
 
           {/* THIS MONTH */}
-          <p className="text-[9px] font-bold uppercase tracking-wider" style={{ color: 'var(--color-muted)' }}>{t('calendar.panelThisMonth')}</p>
-          <div className="flex items-center justify-between text-[10px]">
+          <p className="text-[calc(9px*var(--fs))] font-bold uppercase tracking-wider" style={{ color: 'var(--color-muted)' }}>{t('calendar.panelThisMonth')}</p>
+          <div className="flex items-center justify-between text-[calc(10px*var(--fs))]">
             <span style={{ color: 'var(--color-muted)' }}>{t('calendar.daysWithEvents')}</span>
             <Badge variant="violet">{alarmDayCount}</Badge>
           </div>

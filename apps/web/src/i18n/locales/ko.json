@@ -239,7 +239,13 @@
     "themePurple": "보라",
     "themeBlue": "파랑",
     "language": "언어",
-    "languageDesc": "앱 전체 표시 언어"
+    "languageDesc": "앱 전체 표시 언어",
+    "fontSize": "글자 크기",
+    "fontSizeDesc": "화면 전체 글자·요소 크기",
+    "fontSm": "작게",
+    "fontMd": "기본",
+    "fontLg": "크게",
+    "fontXl": "아주 크게"
   },
   "login": {
     "tagline": "알람·메모·캘린더를 하나로",

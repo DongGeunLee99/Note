@@ -69,13 +69,13 @@ export default function TrashPage() {
   return (
     <div className="flex flex-col h-full">
       <PageHeader title={t('trash.pageTitle')}>
-        <span className="text-[10px]" style={{ color: 'var(--color-muted)' }}>
+        <span className="text-[calc(10px*var(--fs))]" style={{ color: 'var(--color-muted)' }}>
           {t('trash.headerInfo', { n: items.length })}
         </span>
         {items.length > 0 && (
           <button
             onClick={() => setConfirmEmpty(true)}
-            className="text-[10px] px-2.5 py-1.5 rounded-lg border"
+            className="text-[calc(10px*var(--fs))] px-2.5 py-1.5 rounded-lg border"
             style={{ borderColor: 'var(--color-danger-subtle)', color: 'var(--color-danger)', background: 'var(--color-danger-subtle)' }}
           >
             {t('trash.emptyAll')}
@@ -118,11 +118,11 @@ export default function TrashPage() {
                         {cfg.icon}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-[11px] font-medium truncate">{item.title}</p>
-                        <p className="text-[9px] truncate" style={{ color: 'var(--color-muted)' }}>
+                        <p className="text-[calc(11px*var(--fs))] font-medium truncate">{item.title}</p>
+                        <p className="text-[calc(9px*var(--fs))] truncate" style={{ color: 'var(--color-muted)' }}>
                           {item.preview}
                         </p>
-                        <p className="text-[9px] mt-0.5" style={{ color: left <= 3 ? 'var(--color-danger)' : 'var(--color-muted)' }}>
+                        <p className="text-[calc(9px*var(--fs))] mt-0.5" style={{ color: left <= 3 ? 'var(--color-danger)' : 'var(--color-muted)' }}>
                           {t('trash.expireIn', { n: left })}
                         </p>
                       </div>
@@ -132,14 +132,14 @@ export default function TrashPage() {
                       <div className="flex gap-1 flex-shrink-0">
                         <button
                           onClick={() => handleRestore(item)}
-                          className="flex items-center gap-1 text-[9px] px-2 py-1 rounded border transition-colors hover-tint"
+                          className="flex items-center gap-1 text-[calc(9px*var(--fs))] px-2 py-1 rounded border transition-colors hover-tint"
                           style={{ borderColor: 'var(--color-border-2)', color: 'var(--color-muted)' }}
                         >
                           <IconRefresh size={10} /> {t('common.restore')}
                         </button>
                         <button
                           onClick={() => setConfirmDelete(item)}
-                          className="flex items-center gap-1 text-[9px] px-2 py-1 rounded border transition-colors"
+                          className="flex items-center gap-1 text-[calc(9px*var(--fs))] px-2 py-1 rounded border transition-colors"
                           style={{ borderColor: 'var(--color-danger-subtle)', color: 'var(--color-danger)', background: 'var(--color-danger-subtle)' }}
                         >
                           <IconTrash size={10} /> {t('common.delete')}
@@ -159,7 +159,7 @@ export default function TrashPage() {
             {(['memo'] as TrashType[]).map(type => {
               const count = items.filter(i => i.type === type).length
               return (
-                <div key={type} className="flex items-center justify-between text-[10px]">
+                <div key={type} className="flex items-center justify-between text-[calc(10px*var(--fs))]">
                   <span style={{ color: 'var(--color-muted)' }}>{typeLabels[type]}</span>
                   <Badge variant="gray">{t('common.count', { n: count })}</Badge>
                 </div>
@@ -168,7 +168,7 @@ export default function TrashPage() {
             <Divider />
             {expiringSoon > 0 && (
               <div
-                className="p-2 rounded-lg text-[10px]"
+                className="p-2 rounded-lg text-[calc(10px*var(--fs))]"
                 style={{ background: 'var(--color-danger-subtle)', color: 'var(--color-danger)' }}
               >
                 {t('trash.expiringSoon', { n: expiringSoon })}
@@ -186,7 +186,7 @@ export default function TrashPage() {
         onConfirm={handleEmptyAll}
         danger
       >
-        <p className="text-[11px]" style={{ color: 'var(--color-muted)' }}>
+        <p className="text-[calc(11px*var(--fs))]" style={{ color: 'var(--color-muted)' }}>
           {t('trash.emptyBody', { n: items.length })}<br />
           {t('trash.irreversible')}
         </p>
@@ -200,7 +200,7 @@ export default function TrashPage() {
         onConfirm={confirmPermanentDelete}
         danger
       >
-        <p className="text-[11px]" style={{ color: 'var(--color-muted)' }}>
+        <p className="text-[calc(11px*var(--fs))]" style={{ color: 'var(--color-muted)' }}>
           {t('trash.deleteBody', { title: confirmDelete?.title ?? '' })}{' '}
           {t('trash.irreversible')}
         </p>

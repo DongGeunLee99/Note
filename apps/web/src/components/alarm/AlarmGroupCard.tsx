@@ -28,9 +28,9 @@ export default function AlarmGroupCard({ group, alarmCount, onToggle, onEdit, on
         {displayGroupIcon(group.icon)}
       </div>
 
-      <span className="text-[11px] font-medium flex-1">{group.name}</span>
+      <span className="text-[calc(11px*var(--fs))] font-medium flex-1">{group.name}</span>
 
-      <span className="text-[9px]" style={{ color: 'var(--color-muted)' }}>
+      <span className="text-[calc(9px*var(--fs))]" style={{ color: 'var(--color-muted)' }}>
         {t('common.count', { n: alarmCount })}
       </span>
 

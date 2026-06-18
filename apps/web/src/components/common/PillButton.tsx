@@ -8,7 +8,7 @@ export default function PillButton({ active, onClick, children }: PillButtonProp
   return (
     <button
       onClick={onClick}
-      className="text-[9px] px-2.5 py-1 rounded-full border transition-colors"
+      className="text-[calc(9px*var(--fs))] px-2.5 py-1 rounded-full border transition-colors"
       style={
         active
           ? { background: 'var(--color-primary)', color: '#fff', borderColor: 'var(--color-primary)' }

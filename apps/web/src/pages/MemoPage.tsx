@@ -153,7 +153,7 @@ export default function MemoPage() {
     toast(t('memo.toastUndone'), 'info')
   }
 
-  const inputCls = 'text-[11px] outline-none bg-transparent border-b pb-1'
+  const inputCls = 'text-[calc(11px*var(--fs))] outline-none bg-transparent border-b pb-1'
   const btnBorder = { borderColor: 'var(--color-border-2)', color: 'var(--color-muted)' }
 
   return (
@@ -161,7 +161,7 @@ export default function MemoPage() {
       <PageHeader title={t('memo.pageTitle')}>
         <button
           onClick={startCreate}
-          className="text-[10px] px-2.5 py-1.5 rounded-lg text-white"
+          className="text-[calc(10px*var(--fs))] px-2.5 py-1.5 rounded-lg text-white"
           style={{ background: 'var(--color-primary)' }}
         >
           {t('memo.write')}
@@ -205,13 +205,13 @@ export default function MemoPage() {
                   placeholder={t('memo.bodyPlaceholder')}
                   rows={8}
                   autoFocus
-                  className="text-[11px] leading-relaxed outline-none resize-none bg-transparent"
+                  className="text-[calc(11px*var(--fs))] leading-relaxed outline-none resize-none bg-transparent"
                   style={{ color: 'var(--color-text)' }}
                 />
 
                 <div>
                   {draftLocation.label ? (
-                    <div className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg text-[10px]" style={{ background: 'var(--color-surface-2)' }}>
+                    <div className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg text-[calc(10px*var(--fs))]" style={{ background: 'var(--color-surface-2)' }}>
                       <IconMapPin size={11} style={{ color: 'var(--color-primary)' }} />
                       <span>{draftLocation.label}</span>
                       <button onClick={() => setDraftLocation(EMPTY_LOCATION)} className="ml-0.5">
@@ -222,7 +222,7 @@ export default function MemoPage() {
                     <button
                       onClick={handleGetLocation}
                       disabled={locationLoading}
-                      className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg text-[10px] border transition-colors disabled:opacity-50"
+                      className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg text-[calc(10px*var(--fs))] border transition-colors disabled:opacity-50"
                       style={btnBorder}
                     >
                       {locationLoading ? <Spinner size="sm" /> : <IconMapPin size={11} />}
@@ -232,13 +232,13 @@ export default function MemoPage() {
                 </div>
 
                 <div className="flex gap-1 mt-1">
-                  <button onClick={cancelEdit} className="flex-1 text-[10px] py-1 rounded-lg border" style={btnBorder}>
+                  <button onClick={cancelEdit} className="flex-1 text-[calc(10px*var(--fs))] py-1 rounded-lg border" style={btnBorder}>
                     {t('common.cancel')}
                   </button>
                   <button
                     onClick={saveDraft}
                     disabled={!draftBody.trim()}
-                    className="flex-1 text-[10px] py-1 rounded-lg text-white disabled:opacity-40"
+                    className="flex-1 text-[calc(10px*var(--fs))] py-1 rounded-lg text-white disabled:opacity-40"
                     style={{ background: 'var(--color-primary)' }}
                   >
                     {t('common.save')}
@@ -248,14 +248,14 @@ export default function MemoPage() {
             ) : selectedMemo ? (
               /* ── 보기 ── */
               <div className="flex flex-col gap-2">
-                <p className="text-[11px] font-medium leading-snug flex items-center gap-1">
+                <p className="text-[calc(11px*var(--fs))] font-medium leading-snug flex items-center gap-1">
                   {selectedMemo.pinnedAt && <IconPin size={11} style={{ color: 'var(--color-primary)', flexShrink: 0 }} />}
                   {selectedMemo.title || selectedMemo.body.split('\n')[0].slice(0, 30)}
                 </p>
 
                 <div className="flex items-center gap-1">
                   <IconCalendar size={10} style={{ color: 'var(--color-muted)', flexShrink: 0 }} />
-                  <span className="text-[9px]" style={{ color: 'var(--color-muted)' }}>
+                  <span className="text-[calc(9px*var(--fs))]" style={{ color: 'var(--color-muted)' }}>
                     {formatFullDate(selectedMemo.createdAt.toDate(), lang)}
                   </span>
                 </div>
@@ -263,7 +263,7 @@ export default function MemoPage() {
                 {selectedMemo.location.label && (
                   <div className="flex items-center gap-1">
                     <IconMapPin size={10} style={{ color: 'var(--color-muted)', flexShrink: 0 }} />
-                    <span className="text-[9px]" style={{ color: 'var(--color-muted)' }}>{selectedMemo.location.label}</span>
+                    <span className="text-[calc(9px*var(--fs))]" style={{ color: 'var(--color-muted)' }}>{selectedMemo.location.label}</span>
                   </div>
                 )}
 
@@ -285,32 +285,32 @@ export default function MemoPage() {
                       value={aiDraft}
                       onChange={e => setAiDraft(e.target.value)}
                       rows={6}
-                      className="text-[10px] leading-relaxed outline-none resize-none rounded-lg border p-2 bg-transparent"
+                      className="text-[calc(10px*var(--fs))] leading-relaxed outline-none resize-none rounded-lg border p-2 bg-transparent"
                       style={{ borderColor: 'var(--color-border)', color: 'var(--color-text)' }}
                     />
                     <button
                       onClick={saveAiSummary}
                       disabled={aiDraft === (selectedMemo.aiSummary ?? '')}
-                      className="self-end text-[10px] py-1 px-3 rounded-lg text-white disabled:opacity-40"
+                      className="self-end text-[calc(10px*var(--fs))] py-1 px-3 rounded-lg text-white disabled:opacity-40"
                       style={{ background: 'var(--color-primary)' }}
                     >
                       {t('common.save')}
                     </button>
                   </div>
                 ) : (
-                  <p className="text-[10px] leading-relaxed whitespace-pre-wrap" style={{ color: 'var(--color-muted)' }}>
+                  <p className="text-[calc(10px*var(--fs))] leading-relaxed whitespace-pre-wrap" style={{ color: 'var(--color-muted)' }}>
                     {selectedMemo.body}
                   </p>
                 )}
 
                 <div className="flex gap-1 mt-1">
-                  <button onClick={startEdit} className="flex-1 text-[10px] py-1 rounded-lg border" style={btnBorder}>
+                  <button onClick={startEdit} className="flex-1 text-[calc(10px*var(--fs))] py-1 rounded-lg border" style={btnBorder}>
                     {t('common.edit')}
                   </button>
                   {selectedMemo.history && (
                     <button
                       onClick={() => handleUndo(selectedMemo.memoId)}
-                      className="flex items-center justify-center gap-1 text-[10px] py-1 px-2 rounded-lg border"
+                      className="flex items-center justify-center gap-1 text-[calc(10px*var(--fs))] py-1 px-2 rounded-lg border"
                       style={btnBorder}
                     >
                       <IconArrowBackUp size={12} />
@@ -320,7 +320,7 @@ export default function MemoPage() {
                 </div>
               </div>
             ) : (
-              <p className="text-[10px]" style={{ color: 'var(--color-muted)' }}>{t('memo.selectPrompt')}</p>
+              <p className="text-[calc(10px*var(--fs))]" style={{ color: 'var(--color-muted)' }}>{t('memo.selectPrompt')}</p>
             )}
           </div>
         </ResizableRightPanel>

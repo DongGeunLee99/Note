@@ -80,7 +80,7 @@ export default function MiniCalendar({ year, month, selected, today, eventDates,
       <div className="w-1/3 flex-shrink-0">
         <div className="grid grid-cols-7 mb-0.5">
           {MINI_WEEKDAYS[lang].map((d, i) => (
-            <div key={i} className="text-center text-[8px] font-semibold py-0.5" style={{ color: 'var(--color-muted)' }}>{d}</div>
+            <div key={i} className="text-center text-[calc(8px*var(--fs))] font-semibold py-0.5" style={{ color: 'var(--color-muted)' }}>{d}</div>
           ))}
         </div>
         <div className="grid grid-cols-7 gap-y-0.5">
@@ -92,7 +92,7 @@ export default function MiniCalendar({ year, month, selected, today, eventDates,
             const hasEvt  = eventDates.has(toDateKey(date))
             return (
               <button key={i} onClick={() => onSelect(date)} className="flex flex-col items-center py-0.5">
-                <span className="text-[9px] w-5 h-5 flex items-center justify-center rounded-full transition-colors"
+                <span className="text-[calc(9px*var(--fs))] w-5 h-5 flex items-center justify-center rounded-full transition-colors"
                   style={{
                     background: isSel ? 'var(--color-primary)' : undefined,
                     color:      isSel ? '#fff' : isToday ? 'var(--color-primary)' : 'var(--color-text)',
@@ -124,10 +124,10 @@ export default function MiniCalendar({ year, month, selected, today, eventDates,
     >
       <div className="flex items-center justify-between mb-2">
         <button onClick={() => onNavigate(new Date(year, month - 1, 1))}
-          className="text-[11px] px-1 rounded hover:opacity-60" style={{ color: 'var(--color-muted)' }}>‹</button>
-        <p className="text-[10px] font-semibold">{monthTitle[lang]}</p>
+          className="text-[calc(11px*var(--fs))] px-1 rounded hover:opacity-60" style={{ color: 'var(--color-muted)' }}>‹</button>
+        <p className="text-[calc(10px*var(--fs))] font-semibold">{monthTitle[lang]}</p>
         <button onClick={() => onNavigate(new Date(year, month + 1, 1))}
-          className="text-[11px] px-1 rounded hover:opacity-60" style={{ color: 'var(--color-muted)' }}>›</button>
+          className="text-[calc(11px*var(--fs))] px-1 rounded hover:opacity-60" style={{ color: 'var(--color-muted)' }}>›</button>
       </div>
 
       <div className="flex" style={{ width: '300%', transform, transition }} onTransitionEnd={onTransitionEnd}>

@@ -44,7 +44,7 @@ export default function AlarmGroupModal({ isOpen, onClose, onSave, onDelete, ini
           {initial && !initial.isDefault && onDelete && (
             <button
               onClick={onDelete}
-              className="text-[10px] px-3 py-1.5 rounded-lg border mr-auto"
+              className="text-[calc(10px*var(--fs))] px-3 py-1.5 rounded-lg border mr-auto"
               style={{ borderColor: 'var(--color-danger-border)', color: 'var(--color-danger)' }}
             >
               {t('common.delete')}
@@ -52,7 +52,7 @@ export default function AlarmGroupModal({ isOpen, onClose, onSave, onDelete, ini
           )}
           <button
             onClick={onClose}
-            className="text-[10px] px-3 py-1.5 rounded-lg border"
+            className="text-[calc(10px*var(--fs))] px-3 py-1.5 rounded-lg border"
             style={{ borderColor: 'var(--color-border-2)', color: 'var(--color-muted)' }}
           >
             {t('common.cancel')}
@@ -60,7 +60,7 @@ export default function AlarmGroupModal({ isOpen, onClose, onSave, onDelete, ini
           <button
             onClick={handleSave}
             disabled={!name.trim()}
-            className="text-[10px] px-3 py-1.5 rounded-lg text-white disabled:opacity-40"
+            className="text-[calc(10px*var(--fs))] px-3 py-1.5 rounded-lg text-white disabled:opacity-40"
             style={{ background: 'var(--color-primary)' }}
           >
             {t('common.save')}
@@ -70,7 +70,7 @@ export default function AlarmGroupModal({ isOpen, onClose, onSave, onDelete, ini
     >
       <div className="flex flex-col gap-3">
         <div
-          className="flex items-center justify-between py-1.5 border-b text-[11px]"
+          className="flex items-center justify-between py-1.5 border-b text-[calc(11px*var(--fs))]"
           style={{ borderColor: 'var(--color-border)' }}
         >
           <span style={{ color: 'var(--color-muted)' }}>{t('alarm.fieldGroupName')}</span>
@@ -80,13 +80,13 @@ export default function AlarmGroupModal({ isOpen, onClose, onSave, onDelete, ini
             onChange={e => setName(e.target.value)}
             placeholder={t('alarm.groupNamePlaceholder')}
             maxLength={20}
-            className="text-right text-[11px] outline-none bg-transparent w-32"
+            className="text-right text-[calc(11px*var(--fs))] outline-none bg-transparent w-32"
             onKeyDown={e => e.key === 'Enter' && handleSave()}
           />
         </div>
 
         <div>
-          <p className="text-[9px] uppercase tracking-wide mb-2" style={{ color: 'var(--color-muted)' }}>{t('alarm.fieldColor')}</p>
+          <p className="text-[calc(9px*var(--fs))] uppercase tracking-wide mb-2" style={{ color: 'var(--color-muted)' }}>{t('alarm.fieldColor')}</p>
           <div className="flex gap-2">
             <button
               onClick={() => setColor(GROUP_THEME_COLOR)}
@@ -112,7 +112,7 @@ export default function AlarmGroupModal({ isOpen, onClose, onSave, onDelete, ini
             ))}
           </div>
           {color === GROUP_THEME_COLOR && (
-            <div className="flex items-center gap-1.5 mt-2 px-2 py-1.5 rounded-lg text-[9px]"
+            <div className="flex items-center gap-1.5 mt-2 px-2 py-1.5 rounded-lg text-[calc(9px*var(--fs))]"
               style={{ background: 'var(--color-primary-subtle)', color: 'var(--color-primary)' }}>
               <IconSparkles size={11} style={{ flexShrink: 0 }} />
               <span>{t('common.themeColorHint')}</span>
@@ -121,7 +121,7 @@ export default function AlarmGroupModal({ isOpen, onClose, onSave, onDelete, ini
         </div>
 
         <div>
-          <p className="text-[9px] uppercase tracking-wide mb-2" style={{ color: 'var(--color-muted)' }}>{t('alarm.fieldIcon')}</p>
+          <p className="text-[calc(9px*var(--fs))] uppercase tracking-wide mb-2" style={{ color: 'var(--color-muted)' }}>{t('alarm.fieldIcon')}</p>
           <div className="flex flex-wrap gap-1.5">
             {GROUP_EMOJIS.map(e => (
               <button

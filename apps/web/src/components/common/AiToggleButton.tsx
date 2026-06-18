@@ -14,7 +14,7 @@ export default function AiToggleButton({ mode, aiReady, onModeChange, loading = 
   const { t } = useTranslation()
   return (
     <div
-      className="inline-flex rounded-lg p-0.5 text-[10px]"
+      className="inline-flex rounded-lg p-0.5 text-[calc(10px*var(--fs))]"
       style={{ background: 'var(--color-surface-2)' }}
     >
       <button

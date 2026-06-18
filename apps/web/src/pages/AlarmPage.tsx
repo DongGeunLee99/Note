@@ -120,14 +120,14 @@ export default function AlarmPage() {
       <PageHeader title={t('alarm.pageTitle')}>
         <button
           onClick={() => setGroupModal({ isOpen: true, target: null })}
-          className="text-[10px] px-2.5 py-1.5 rounded-lg border"
+          className="text-[calc(10px*var(--fs))] px-2.5 py-1.5 rounded-lg border"
           style={{ color: 'var(--color-primary)', borderColor: 'var(--color-primary)' }}
         >
           + {t('alarm.addGroup')}
         </button>
         <button
           onClick={() => setAlarmModal({ isOpen: true, target: null })}
-          className="text-[10px] px-2.5 py-1.5 rounded-lg text-white"
+          className="text-[calc(10px*var(--fs))] px-2.5 py-1.5 rounded-lg text-white"
           style={{ background: 'var(--color-primary)' }}
         >
           + {t('alarm.addAlarm')}

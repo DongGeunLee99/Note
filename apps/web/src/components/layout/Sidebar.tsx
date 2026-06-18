@@ -53,13 +53,13 @@ export default function Sidebar() {
     >
       <NavLink
         to="/home"
-        className="px-3 py-2.5 text-[12px] font-medium border-b hover:opacity-75 transition-opacity"
+        className="px-3 py-2.5 text-[calc(12px*var(--fs))] font-medium border-b hover:opacity-75 transition-opacity"
         style={{ borderColor: 'var(--color-border)' }}
       >
         <span style={{ color: 'var(--color-primary)' }}>Smart</span>Note
       </NavLink>
 
-      <p className="px-3 pt-2 pb-0.5 text-[9px] uppercase tracking-wide" style={{ color: 'var(--color-muted)' }}>
+      <p className="px-3 pt-2 pb-0.5 text-[calc(9px*var(--fs))] uppercase tracking-wide" style={{ color: 'var(--color-muted)' }}>
         {t('sidebar.menu')}
       </p>
 
@@ -72,7 +72,7 @@ export default function Sidebar() {
             to={to}
             end={to === '/home'}
             className={({ isActive }) =>
-              `flex items-center gap-1.5 px-3 py-[6px] text-[11px] border-r-2 transition-colors ${
+              `flex items-center gap-1.5 px-3 py-[6px] text-[calc(11px*var(--fs))] border-r-2 transition-colors ${
                 isActive
                   ? 'font-medium border-[var(--color-primary)] bg-[var(--color-surface)]'
                   : 'border-transparent hover-tint'
@@ -86,7 +86,7 @@ export default function Sidebar() {
             <span className="flex-1">{t(`sidebar.${labelKey}`)}</span>
             {count > 0 && (
               <span
-                className="text-[9px] px-1.5 py-px rounded-full"
+                className="text-[calc(9px*var(--fs))] px-1.5 py-px rounded-full"
                 style={{ background: 'var(--color-primary-subtle)', color: 'var(--color-primary-emphasis)' }}
               >
                 {count}
@@ -97,7 +97,7 @@ export default function Sidebar() {
         })}
 
         <div className="mt-auto border-t" style={{ borderColor: 'var(--color-border)' }}>
-          <p className="px-3 pt-2 pb-0.5 text-[9px] uppercase tracking-wide" style={{ color: 'var(--color-muted)' }}>
+          <p className="px-3 pt-2 pb-0.5 text-[calc(9px*var(--fs))] uppercase tracking-wide" style={{ color: 'var(--color-muted)' }}>
             {t('sidebar.account')}
           </p>
 
@@ -111,13 +111,13 @@ export default function Sidebar() {
               />
             ) : (
               <div
-                className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-medium text-white"
+                className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-[calc(10px*var(--fs))] font-medium text-white"
                 style={{ background: 'var(--color-primary)' }}
               >
                 {initial}
               </div>
             )}
-            <span className="flex-1 text-[11px] font-medium truncate">{name}</span>
+            <span className="flex-1 text-[calc(11px*var(--fs))] font-medium truncate">{name}</span>
             <button
               onClick={handleLogout}
               className="p-1 rounded hover-tint transition-colors flex-shrink-0"
@@ -130,7 +130,7 @@ export default function Sidebar() {
           <NavLink
             to="/settings"
             className={({ isActive }) =>
-              `flex items-center gap-1.5 px-3 py-[6px] text-[11px] border-r-2 transition-colors ${
+              `flex items-center gap-1.5 px-3 py-[6px] text-[calc(11px*var(--fs))] border-r-2 transition-colors ${
                 isActive
                   ? 'font-medium border-[var(--color-primary)] bg-[var(--color-surface)]'
                   : 'border-transparent hover-tint'

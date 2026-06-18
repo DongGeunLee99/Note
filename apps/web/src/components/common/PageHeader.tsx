@@ -9,7 +9,7 @@ export default function PageHeader({ title, children }: PageHeaderProps) {
       className="flex items-center gap-2 px-4 py-2.5 border-b flex-shrink-0"
       style={{ borderColor: 'var(--color-border)' }}
     >
-      <span className="text-[13px] font-medium flex-1">{title}</span>
+      <span className="text-[calc(13px*var(--fs))] font-medium flex-1">{title}</span>
       {children}
     </div>
   )

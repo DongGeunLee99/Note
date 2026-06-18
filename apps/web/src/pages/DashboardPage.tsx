@@ -45,8 +45,8 @@ function StatCard({ value, label, color }: { value: number; label: string; color
       className="flex-1 rounded-xl border p-3"
       style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}
     >
-      <p className="text-[22px] font-semibold leading-none mb-1" style={{ color }}>{value}</p>
-      <p className="text-[10px]" style={{ color: '#69696a' }}>{label}</p>
+      <p className="text-[calc(22px*var(--fs))] font-semibold leading-none mb-1" style={{ color }}>{value}</p>
+      <p className="text-[calc(10px*var(--fs))]" style={{ color: '#69696a' }}>{label}</p>
     </div>
   )
 }
@@ -57,8 +57,8 @@ function ChartCard({ title, subtitle, children }: { title: string; subtitle: str
       className="rounded-xl border p-4 flex flex-col"
       style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}
     >
-      <p className="text-[12px] font-medium mb-0.5">{title}</p>
-      <p className="text-[10px] mb-3" style={{ color: '#69696a' }}>{subtitle}</p>
+      <p className="text-[calc(12px*var(--fs))] font-medium mb-0.5">{title}</p>
+      <p className="text-[calc(10px*var(--fs))] mb-3" style={{ color: '#69696a' }}>{subtitle}</p>
       {children}
     </div>
   )
@@ -72,7 +72,7 @@ function ChartTooltip({ active, payload, label }: {
   if (!active || !payload?.length) return null
   return (
     <div
-      className="rounded-lg border px-2.5 py-1.5 text-[10px] shadow-sm"
+      className="rounded-lg border px-2.5 py-1.5 text-[calc(10px*var(--fs))] shadow-sm"
       style={{ background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}
     >
       {label && <p className="font-medium mb-0.5" style={{ color: '#1a1a18' }}>{label}</p>}
@@ -93,7 +93,7 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-col h-full overflow-auto">
       <PageHeader title="대시보드">
-        <span className="text-[10px]" style={{ color: 'var(--color-muted)' }}>{dateLabel}</span>
+        <span className="text-[calc(10px*var(--fs))]" style={{ color: 'var(--color-muted)' }}>{dateLabel}</span>
       </PageHeader>
 
       <div className="flex-1 p-4 flex flex-col gap-4">
@@ -149,13 +149,13 @@ export default function DashboardPage() {
                   </PieChart>
                 </ResponsiveContainer>
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                  <span className="text-[18px] font-semibold" style={{ color: '#1a1a18' }}>{CATEGORY_TOTAL}</span>
-                  <span className="text-[8px]" style={{ color: '#69696a' }}>총 기록</span>
+                  <span className="text-[calc(18px*var(--fs))] font-semibold" style={{ color: '#1a1a18' }}>{CATEGORY_TOTAL}</span>
+                  <span className="text-[calc(8px*var(--fs))]" style={{ color: '#69696a' }}>총 기록</span>
                 </div>
               </div>
               <div className="flex flex-col gap-1.5 flex-1">
                 {CATEGORY_DATA.map(d => (
-                  <div key={d.name} className="flex items-center gap-1.5 text-[10px]">
+                  <div key={d.name} className="flex items-center gap-1.5 text-[calc(10px*var(--fs))]">
                     <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: d.color }} />
                     <span className="flex-1" style={{ color: '#69696a' }}>{d.name}</span>
                     <span className="font-medium" style={{ color: '#1a1a18' }}>{d.value}</span>

@@ -37,7 +37,7 @@ export default function DateTimePicker({ value, onChange }: Props) {
   const dy = value.getDate(), h = value.getHours(), mi = value.getMinutes()
   const maxDay = getDaysInMonth(y, mo)
   const now = new Date()
-  const sel = 'text-[11px] border rounded px-1 py-0.5 outline-none'
+  const sel = 'text-[calc(11px*var(--fs))] border rounded px-1 py-0.5 outline-none'
 
   return (
     <div className="flex items-center gap-1 flex-wrap justify-end">
@@ -47,10 +47,10 @@ export default function DateTimePicker({ value, onChange }: Props) {
         options={MONTH_SHORT.map((_, i) => ({ value: i, label: MONTH_LABEL[lang](i) }))} />
       <Select value={dy} onChange={v => upd('day', v)} className={sel}
         options={Array.from({ length: maxDay }, (_, i) => i + 1).map(n => ({ value: n, label: DAY_LABEL[lang](n) }))} />
-      <span className="text-[10px]" style={{ color: 'var(--color-muted)' }}>{t('calendar.at')}</span>
+      <span className="text-[calc(10px*var(--fs))]" style={{ color: 'var(--color-muted)' }}>{t('calendar.at')}</span>
       <Select value={h} onChange={v => upd('hour', v)} className={sel}
         options={HOURS.map(n => ({ value: n, label: String(n).padStart(2, '0') }))} />
-      <span className="text-[11px]">:</span>
+      <span className="text-[calc(11px*var(--fs))]">:</span>
       <Select value={mi} onChange={v => upd('minute', v)} className={sel}
         options={MINUTES.map(n => ({ value: n, label: String(n).padStart(2, '0') }))} />
     </div>

@@ -1,4 +1,4 @@
-import { useSettingsStore, type TimeFormat, type ThemeMode, type AppLanguage } from '@/stores/useSettingsStore'
+import { useSettingsStore, FONT_SCALE_OPTIONS, type TimeFormat, type ThemeMode, type AppLanguage } from '@/stores/useSettingsStore'
 import { useTranslation } from 'react-i18next'
 
 const THEME_SWATCHES: { value: ThemeMode; swatch: string | null }[] = [
@@ -17,8 +17,8 @@ function SettingRow({ label, description, children }: {
   return (
     <div className="flex items-center justify-between py-3 border-b" style={{ borderColor: 'var(--color-border)' }}>
       <div>
-        <p className="text-[12px] font-medium">{label}</p>
-        {description && <p className="text-[10px] mt-0.5" style={{ color: 'var(--color-muted)' }}>{description}</p>}
+        <p className="text-[calc(12px*var(--fs))] font-medium">{label}</p>
+        {description && <p className="text-[calc(10px*var(--fs))] mt-0.5" style={{ color: 'var(--color-muted)' }}>{description}</p>}
       </div>
       {children}
     </div>
@@ -27,15 +27,17 @@ function SettingRow({ label, description, children }: {
 
 function SectionHeader({ title }: { title: string }) {
   return (
-    <p className="text-[9px] uppercase tracking-widest font-semibold pt-4 pb-1" style={{ color: 'var(--color-muted)' }}>
+    <p className="text-[calc(9px*var(--fs))] uppercase tracking-widest font-semibold pt-4 pb-1" style={{ color: 'var(--color-muted)' }}>
       {title}
     </p>
   )
 }
 
 export default function SettingsPage() {
-  const { timeFormat, setTimeFormat, theme, setTheme, language, setLanguage } = useSettingsStore()
+  const { timeFormat, setTimeFormat, theme, setTheme, language, setLanguage, fontScale, setFontScale } = useSettingsStore()
   const { t } = useTranslation()
+
+  const fontSizeOptions = FONT_SCALE_OPTIONS.map(o => ({ value: o.value, label: t(`settings.${o.key}`) }))
 
   const themeLabels: Record<ThemeMode, string> = {
     system: t('settings.themeSystem'),
@@ -62,10 +64,10 @@ export default function SettingsPage() {
         className="flex items-center gap-2 px-4 py-2.5 border-b flex-shrink-0"
         style={{ borderColor: 'var(--color-border)' }}
       >
-        <span className="text-[13px] font-medium flex-1">{t('settings.title')}</span>
+        <span className="text-[calc(13px*var(--fs))] font-medium flex-1">{t('settings.title')}</span>
       </div>
 
-      <div className="flex-1 overflow-auto px-4 pb-8 max-w-xl">
+      <div className="flex-1 overflow-auto px-4 pb-8 max-w-3xl">
         <SectionHeader title={t('settings.display')} />
 
         <SettingRow
@@ -77,7 +79,7 @@ export default function SettingsPage() {
               <button
                 key={opt.value}
                 onClick={() => setLanguage(opt.value)}
-                className="px-3 py-1.5 text-[10px] font-medium transition-colors"
+                className="px-3 py-1.5 text-[calc(10px*var(--fs))] font-medium transition-colors"
                 style={
                   language === opt.value
                     ? { background: 'var(--color-primary)', color: '#fff' }
@@ -99,7 +101,7 @@ export default function SettingsPage() {
               <button
                 key={opt.value}
                 onClick={() => setTheme(opt.value)}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-medium transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-[calc(10px*var(--fs))] font-medium transition-colors"
                 style={
                   theme === opt.value
                     ? { background: 'var(--color-primary)', color: '#fff' }
@@ -127,7 +129,7 @@ export default function SettingsPage() {
               <button
                 key={opt.value}
                 onClick={() => setTimeFormat(opt.value)}
-                className="flex flex-col items-center px-3 py-1.5 text-[10px] transition-colors"
+                className="flex flex-col items-center px-3 py-1.5 text-[calc(10px*var(--fs))] transition-colors"
                 style={
                   timeFormat === opt.value
                     ? { background: 'var(--color-primary)', color: '#fff' }
@@ -135,7 +137,29 @@ export default function SettingsPage() {
                 }
               >
                 <span className="font-medium">{opt.label}</span>
-                <span className="text-[9px] mt-0.5 opacity-75">{opt.example}</span>
+                <span className="text-[calc(9px*var(--fs))] mt-0.5 opacity-75">{opt.example}</span>
+              </button>
+            ))}
+          </div>
+        </SettingRow>
+
+        <SettingRow
+          label={t('settings.fontSize')}
+          description={t('settings.fontSizeDesc')}
+        >
+          <div className="flex rounded-lg overflow-hidden border" style={{ borderColor: 'var(--color-border-2)' }}>
+            {fontSizeOptions.map(opt => (
+              <button
+                key={opt.value}
+                onClick={() => setFontScale(opt.value)}
+                className="px-3 py-1.5 text-[calc(10px*var(--fs))] font-medium transition-colors"
+                style={
+                  fontScale === opt.value
+                    ? { background: 'var(--color-primary)', color: '#fff' }
+                    : { color: 'var(--color-muted)' }
+                }
+              >
+                {opt.label}
               </button>
             ))}
           </div>

@@ -37,7 +37,7 @@ export function eventTintBg(color: string): string {
 
 export function getEventProps(event: RbcEvent) {
   const c = resolveEventColor(event.color)
-  return { style: { backgroundColor: c, borderColor: c, fontSize: '9px' } }
+  return { style: { backgroundColor: c, borderColor: c, fontSize: 'calc(9px*var(--fs))' } }
 }
 
 export const DAY_SHORT   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']

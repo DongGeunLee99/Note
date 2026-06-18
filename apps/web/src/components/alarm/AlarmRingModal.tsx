@@ -29,19 +29,19 @@ export default function AlarmRingModal({ alarm, onDismiss }: AlarmRingModalProps
           <IconBell size={28} style={{ color: 'var(--color-primary)' }} />
         </div>
 
-        <p className="text-[11px] font-semibold" style={{ color: 'var(--color-muted)' }}>
+        <p className="text-[calc(11px*var(--fs))] font-semibold" style={{ color: 'var(--color-muted)' }}>
           {t('alarm.ringTitle')}
         </p>
-        <p className="text-[28px] font-bold leading-none" style={{ color: 'var(--color-text)' }}>
+        <p className="text-[calc(28px*var(--fs))] font-bold leading-none" style={{ color: 'var(--color-text)' }}>
           {formatClock(alarm.hour, alarm.minute, timeFormat)}
         </p>
         {alarm.label && (
-          <p className="text-[13px] text-center" style={{ color: 'var(--color-text)' }}>{alarm.label}</p>
+          <p className="text-[calc(13px*var(--fs))] text-center" style={{ color: 'var(--color-text)' }}>{alarm.label}</p>
         )}
 
         <button
           onClick={onDismiss}
-          className="mt-2 w-full py-2.5 rounded-xl text-white text-[13px] font-medium"
+          className="mt-2 w-full py-2.5 rounded-xl text-white text-[calc(13px*var(--fs))] font-medium"
           style={{ background: 'var(--color-primary)' }}
         >
           {t('alarm.ringDismiss')}

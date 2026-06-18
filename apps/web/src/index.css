@@ -22,6 +22,8 @@
 :root {
   /* 네이티브 폼 컨트롤(select 드롭다운 등)을 밝게 렌더 (기본/보라/파랑 테마) */
   color-scheme: light;
+  /* 글자 크기 스케일 배율 — 설정에서 변경. text-[calc(Npx*var(--fs))]에서 참조 */
+  --fs: 1;
   --color-hover: rgba(0, 0, 0, 0.04);
   --tone-blue-bg: #E6F1FB;   --tone-blue-fg: #185FA5;   --tone-blue-text: #0C447C;
   --tone-amber-bg: #FAEEDA;  --tone-amber-fg: #854F0B;  --tone-amber-text: #633806;

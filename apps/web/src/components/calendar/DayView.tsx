@@ -37,7 +37,7 @@ interface HalfDayColumnProps {
 export function HalfDayColumn({ label, startHour, events, nowLine, timeFormat, sel, onHourContextMenu, onSelectEvent, onEventContextMenu }: HalfDayColumnProps) {
   return (
     <div className="flex-1 min-w-0 flex flex-col">
-      <div className="text-center text-[9px] font-bold uppercase tracking-widest py-1.5 border-b sticky top-0 z-10 flex-shrink-0"
+      <div className="text-center text-[calc(9px*var(--fs))] font-bold uppercase tracking-widest py-1.5 border-b sticky top-0 z-10 flex-shrink-0"
         style={{ color: 'var(--color-muted)', background: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
         {label}
       </div>
@@ -48,7 +48,7 @@ export function HalfDayColumn({ label, startHour, events, nowLine, timeFormat, s
             style={{ top: (hour - startHour) * HOUR_H, height: HOUR_H, borderColor: 'var(--color-border)' }}
             onContextMenu={e => onHourContextMenu(e, hour)}
           >
-            <span className="text-[8px] px-1.5 pt-1 flex-shrink-0 w-11 text-right" style={{ color: 'var(--color-muted)' }}>
+            <span className="text-[calc(8px*var(--fs))] px-1.5 pt-1 flex-shrink-0 w-11 text-right" style={{ color: 'var(--color-muted)' }}>
               {fmtHour(hour, timeFormat)}
             </span>
           </div>
@@ -81,10 +81,10 @@ export function HalfDayColumn({ label, startHour, events, nowLine, timeFormat, s
               onContextMenu={e => { e.preventDefault(); e.stopPropagation(); onEventContextMenu(e, event.id) }}
               style={{ top: top + 1, left: 46, right: 4, height: height - 2, background: resolveEventColor(event.color) }}>
               <div className="flex items-center gap-1">
-                <p className="text-[9px] font-semibold text-white truncate leading-tight flex-1">{event.title}</p>
+                <p className="text-[calc(9px*var(--fs))] font-semibold text-white truncate leading-tight flex-1">{event.title}</p>
                 {event.hasAlarm && <IconBell size={8} style={{ color: '#fff', opacity: .8, flexShrink: 0 }} />}
               </div>
-              <p className="text-[8px] text-white" style={{ opacity: .85 }}>{fmtTime(event.start, timeFormat)}</p>
+              <p className="text-[calc(8px*var(--fs))] text-white" style={{ opacity: .85 }}>{fmtTime(event.start, timeFormat)}</p>
             </div>
           )
         })}

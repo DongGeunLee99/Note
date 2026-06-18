@@ -31,8 +31,8 @@ export default function MemoList({
     return (
       <div className="flex flex-col items-center justify-center flex-1 gap-2 py-12">
         <span className="text-3xl">📝</span>
-        <p className="text-[12px] font-medium">{t('memo.emptyTitle')}</p>
-        <p className="text-[10px]" style={{ color: 'var(--color-muted)' }}>
+        <p className="text-[calc(12px*var(--fs))] font-medium">{t('memo.emptyTitle')}</p>
+        <p className="text-[calc(10px*var(--fs))]" style={{ color: 'var(--color-muted)' }}>
           {t('memo.emptyDesc')}
         </p>
       </div>

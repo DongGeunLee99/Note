@@ -12,12 +12,12 @@ function formatClock(hour: number, minute: number): string {
 function NowLine({ label, nowText }: { label: string; nowText: string }) {
   return (
     <div className="flex items-center gap-2.5 py-1.5">
-      <span className="w-10 text-right text-[9px] font-semibold flex-shrink-0" style={{ color: 'var(--color-primary)' }}>
+      <span className="w-10 text-right text-[calc(9px*var(--fs))] font-semibold flex-shrink-0" style={{ color: 'var(--color-primary)' }}>
         {label}
       </span>
       <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: 'var(--color-primary)' }} />
       <span className="h-px flex-1" style={{ background: 'var(--color-primary)' }} />
-      <span className="text-[8px] font-semibold flex-shrink-0" style={{ color: 'var(--color-primary)' }}>{nowText}</span>
+      <span className="text-[calc(8px*var(--fs))] font-semibold flex-shrink-0" style={{ color: 'var(--color-primary)' }}>{nowText}</span>
     </div>
   )
 }
@@ -42,7 +42,7 @@ export default function TodayTimeline() {
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between">
         <SectionLabel>{t('home.todaySchedule')}</SectionLabel>
-        <span className="text-[9px]" style={{ color: 'var(--color-muted)' }}>{t('home.remaining', { n: remaining })}</span>
+        <span className="text-[calc(9px*var(--fs))]" style={{ color: 'var(--color-muted)' }}>{t('home.remaining', { n: remaining })}</span>
       </div>
 
       <div className="flex flex-col">
@@ -55,7 +55,7 @@ export default function TodayTimeline() {
               {i === nowIndex && <NowLine label={nowLabel} nowText={t('home.now')} />}
               <div className="flex gap-2.5" style={{ opacity: isPast ? 0.4 : 1 }}>
                 <span
-                  className="w-10 text-right text-[10px] pt-1 flex-shrink-0"
+                  className="w-10 text-right text-[calc(10px*var(--fs))] pt-1 flex-shrink-0"
                   style={{ color: 'var(--color-muted)' }}
                 >
                   {formatClock(item.hour, item.minute)}
@@ -70,9 +70,9 @@ export default function TodayTimeline() {
                   {item.kind === '알람'
                     ? <IconBell size={12} style={{ color: tone.fg, flexShrink: 0 }} />
                     : <IconCalendarEvent size={12} style={{ color: tone.fg, flexShrink: 0 }} />}
-                  <span className="text-[11px] font-medium truncate">{item.title}</span>
+                  <span className="text-[calc(11px*var(--fs))] font-medium truncate">{item.title}</span>
                   {item.group && (
-                    <span className="text-[9px] flex-shrink-0" style={{ color: 'var(--color-muted)' }}>· {item.group}</span>
+                    <span className="text-[calc(9px*var(--fs))] flex-shrink-0" style={{ color: 'var(--color-muted)' }}>· {item.group}</span>
                   )}
                 </div>
               </div>

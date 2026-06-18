@@ -34,21 +34,21 @@ export default function MemoCard({
       }}
     >
       <div className="flex items-start justify-between gap-2 mb-1">
-        <span className="text-[11px] font-medium flex-1 truncate flex items-center gap-1">
+        <span className="text-[calc(11px*var(--fs))] font-medium flex-1 truncate flex items-center gap-1">
           {memo.pinnedAt && <IconPin size={11} style={{ color: 'var(--color-primary)', flexShrink: 0 }} />}
           {memo.title || memo.body.split('\n')[0].slice(0, 30)}
         </span>
-        <span className="text-[9px] flex-shrink-0" style={{ color: 'var(--color-muted)' }}>{formatRelTime(memo.createdAt.toDate(), lang)}</span>
+        <span className="text-[calc(9px*var(--fs))] flex-shrink-0" style={{ color: 'var(--color-muted)' }}>{formatRelTime(memo.createdAt.toDate(), lang)}</span>
       </div>
 
-      <p className="text-[10px] leading-relaxed mb-1.5" style={{ color: 'var(--color-muted)' }}>
+      <p className="text-[calc(10px*var(--fs))] leading-relaxed mb-1.5" style={{ color: 'var(--color-muted)' }}>
         {preview}
       </p>
 
       {memo.location.label && (
         <div className="flex items-center gap-1 mb-1.5">
           <IconMapPin size={10} style={{ color: 'var(--color-muted)' }} />
-          <span className="text-[9px]" style={{ color: 'var(--color-muted)' }}>{memo.location.label}</span>
+          <span className="text-[calc(9px*var(--fs))]" style={{ color: 'var(--color-muted)' }}>{memo.location.label}</span>
         </div>
       )}
 
@@ -57,7 +57,7 @@ export default function MemoCard({
           {memo.aiLoading && (
             <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
               <Spinner size="sm" />
-              <span className="text-[9px]" style={{ color: 'var(--color-primary)' }}>{t('memo.aiProcessing')}</span>
+              <span className="text-[calc(9px*var(--fs))]" style={{ color: 'var(--color-primary)' }}>{t('memo.aiProcessing')}</span>
             </div>
           )}
 
@@ -68,23 +68,23 @@ export default function MemoCard({
               style={{ background: 'var(--tone-amber-bg)' }}
             >
               <IconBell size={11} style={{ color: 'var(--tone-amber-fg)', flexShrink: 0 }} />
-              <span className="text-[10px] flex-1 truncate" style={{ color: 'var(--tone-amber-text)' }}>
+              <span className="text-[calc(10px*var(--fs))] flex-1 truncate" style={{ color: 'var(--tone-amber-text)' }}>
                 {t('memo.alarmSuggest', { time: formatSuggestionTime(memo.alarmSuggestion.datetime, lang) })}
               </span>
               <button
                 onClick={onAlarmConfirm}
-                className="text-[9px] px-1.5 py-px rounded-full text-white flex-shrink-0"
+                className="text-[calc(9px*var(--fs))] px-1.5 py-px rounded-full text-white flex-shrink-0"
                 style={{ background: 'var(--color-primary)' }}
               >
                 {t('common.add')}
               </button>
-              <button onClick={onAlarmDismiss} className="text-[9px] flex-shrink-0" style={{ color: 'var(--tone-amber-text)' }}>
+              <button onClick={onAlarmDismiss} className="text-[calc(9px*var(--fs))] flex-shrink-0" style={{ color: 'var(--tone-amber-text)' }}>
                 {t('common.cancel')}
               </button>
             </div>
           )}
           {memo.alarmSuggestion && memo.alarmConfirmed && (
-            <span className="text-[9px]" style={{ color: 'var(--color-muted)' }}>{t('memo.alarmAdded')}</span>
+            <span className="text-[calc(9px*var(--fs))]" style={{ color: 'var(--color-muted)' }}>{t('memo.alarmAdded')}</span>
           )}
         </div>
       )}

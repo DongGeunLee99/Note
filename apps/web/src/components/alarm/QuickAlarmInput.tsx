@@ -76,14 +76,14 @@ export default function QuickAlarmInput({ groups, onAdd }: QuickAlarmInputProps)
           onChange={e => { setText(e.target.value); setParsed(null); setError(false) }}
           onKeyDown={e => e.key === 'Enter' && handleParse()}
           placeholder={t('alarm.quickPlaceholder')}
-          className="flex-1 text-[11px] outline-none bg-transparent"
+          className="flex-1 text-[calc(11px*var(--fs))] outline-none bg-transparent"
           style={{ color: parsed ? 'var(--color-text)' : 'var(--color-muted)' }}
         />
         {loading && <Spinner size="sm" />}
       </div>
 
       {error && (
-        <p className="text-[10px] px-1" style={{ color: 'var(--color-danger)' }}>
+        <p className="text-[calc(10px*var(--fs))] px-1" style={{ color: 'var(--color-danger)' }}>
           {t('alarm.quickParseError')}
         </p>
       )}
@@ -94,31 +94,31 @@ export default function QuickAlarmInput({ groups, onAdd }: QuickAlarmInputProps)
           style={{ background: 'var(--color-primary-subtle)', borderColor: 'var(--color-border-2)' }}
         >
           <div>
-            <p className="text-[9px] mb-0.5" style={{ color: 'var(--color-primary)' }}>{t('alarm.quickRecognized')}</p>
-            <p className="text-[12px] font-medium" style={{ color: 'var(--color-primary-emphasis)' }}>
+            <p className="text-[calc(9px*var(--fs))] mb-0.5" style={{ color: 'var(--color-primary)' }}>{t('alarm.quickRecognized')}</p>
+            <p className="text-[calc(12px*var(--fs))] font-medium" style={{ color: 'var(--color-primary-emphasis)' }}>
               {formatTime(parsed.hour, parsed.minute, timeFormat)}
             </p>
-            <p className="text-[10px]" style={{ color: 'var(--color-primary)' }}>{parsed.label}</p>
+            <p className="text-[calc(10px*var(--fs))]" style={{ color: 'var(--color-primary)' }}>{parsed.label}</p>
           </div>
 
           <Select
             value={selectedGroupId}
             onChange={setSelectedGroupId}
-            className="text-[10px] border rounded px-1.5 py-1 outline-none w-full"
+            className="text-[calc(10px*var(--fs))] border rounded px-1.5 py-1 outline-none w-full"
             options={groups.map(g => ({ value: g.groupId, label: `${displayGroupIcon(g.icon)} ${g.name}` }))}
           />
 
           <div className="flex gap-1.5">
             <button
               onClick={handleConfirm}
-              className="flex-1 flex items-center justify-center gap-1 text-[10px] py-1.5 rounded-lg text-white"
+              className="flex-1 flex items-center justify-center gap-1 text-[calc(10px*var(--fs))] py-1.5 rounded-lg text-white"
               style={{ background: 'var(--color-primary)' }}
             >
               <IconCheck size={12} /> {t('common.add')}
             </button>
             <button
               onClick={handleCancel}
-              className="flex items-center justify-center px-2 py-1.5 rounded-lg border text-[10px]"
+              className="flex items-center justify-center px-2 py-1.5 rounded-lg border text-[calc(10px*var(--fs))]"
               style={{ borderColor: 'var(--color-border-2)', color: 'var(--color-muted)' }}
             >
               <IconX size={12} />
@@ -131,7 +131,7 @@ export default function QuickAlarmInput({ groups, onAdd }: QuickAlarmInputProps)
         <button
           onClick={handleParse}
           disabled={!text.trim()}
-          className="text-[10px] py-1.5 rounded-lg border disabled:opacity-40 transition-opacity"
+          className="text-[calc(10px*var(--fs))] py-1.5 rounded-lg border disabled:opacity-40 transition-opacity"
           style={{ borderColor: 'var(--color-primary)', color: 'var(--color-primary)' }}
         >
           {t('alarm.quickParseBtn')}

@@ -45,7 +45,7 @@ export default function LaterPage() {
       <PageHeader title={t('later.pageTitle')}>
         <button
           onClick={() => setModalOpen(true)}
-          className="text-[10px] px-2.5 py-1.5 rounded-lg text-white"
+          className="text-[calc(10px*var(--fs))] px-2.5 py-1.5 rounded-lg text-white"
           style={{ background: 'var(--color-primary)' }}
         >
           {t('later.add')}
@@ -77,8 +77,8 @@ export default function LaterPage() {
                     : <IconBell size={13} style={{ color: TONES.violet.fg }} />}
                 </button>
                 <div className="flex-1 min-w-0">
-                  <p className={`text-[11px] ${item.isCompleted ? 'line-through' : 'font-medium'}`}>{item.text}</p>
-                  <p className="text-[9px]" style={{ color: 'var(--color-muted)' }}>{item.notifyAt}</p>
+                  <p className={`text-[calc(11px*var(--fs))] ${item.isCompleted ? 'line-through' : 'font-medium'}`}>{item.text}</p>
+                  <p className="text-[calc(9px*var(--fs))]" style={{ color: 'var(--color-muted)' }}>{item.notifyAt}</p>
                 </div>
                 <Badge variant={item.isCompleted ? 'green' : 'violet'}>
                   {item.isCompleted ? t('later.done') : t('later.waiting')}
@@ -123,10 +123,10 @@ export default function LaterPage() {
       >
         <div className="flex flex-col gap-0">
           {[
-            { label: t('later.fieldContent'), content: <input type="text" value={text} onChange={e => setText(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleAdd()} placeholder={t('later.contentPlaceholder')} autoFocus maxLength={50} className="text-right text-[11px] outline-none bg-transparent w-40" /> },
-            { label: t('later.fieldNotifyAt'), content: <input type="text" value={notifyAt} onChange={e => setNotifyAt(e.target.value)} placeholder={t('later.notifyAtPlaceholder')} className="text-right text-[11px] outline-none bg-transparent w-40" style={{ color: 'var(--color-muted)' }} /> },
+            { label: t('later.fieldContent'), content: <input type="text" value={text} onChange={e => setText(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleAdd()} placeholder={t('later.contentPlaceholder')} autoFocus maxLength={50} className="text-right text-[calc(11px*var(--fs))] outline-none bg-transparent w-40" /> },
+            { label: t('later.fieldNotifyAt'), content: <input type="text" value={notifyAt} onChange={e => setNotifyAt(e.target.value)} placeholder={t('later.notifyAtPlaceholder')} className="text-right text-[calc(11px*var(--fs))] outline-none bg-transparent w-40" style={{ color: 'var(--color-muted)' }} /> },
           ].map(row => (
-            <div key={row.label} className="flex items-center justify-between py-2 border-b text-[11px]" style={{ borderColor: 'var(--color-border)' }}>
+            <div key={row.label} className="flex items-center justify-between py-2 border-b text-[calc(11px*var(--fs))]" style={{ borderColor: 'var(--color-border)' }}>
               <span style={{ color: 'var(--color-muted)' }}>{row.label}</span>
               {row.content}
             </div>

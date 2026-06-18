@@ -111,7 +111,7 @@ export default function Select<T extends string | number>({
                 key={String(o.value)}
                 type="button"
                 onClick={() => { onChange(o.value); setOpen(false) }}
-                className="block w-full text-left px-2.5 py-1 text-[11px] hover-tint"
+                className="block w-full text-left px-2.5 py-1 text-[calc(11px*var(--fs))] hover-tint"
                 style={{
                   color: isSel ? 'var(--color-primary)' : 'var(--color-text)',
                   background: isSel ? 'var(--color-primary-subtle)' : undefined,

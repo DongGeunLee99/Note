@@ -29,15 +29,15 @@ export default function AlarmCard({ alarm, groupEnabled, onToggle, onEdit, onCon
     >
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5">
-          <span className="text-[13px] font-medium tabular-nums">
+          <span className="text-[calc(13px*var(--fs))] font-medium tabular-nums">
             {formatTime(alarm.hour, alarm.minute, timeFormat)}
           </span>
-          <span className="text-[11px] truncate">{alarm.label}</span>
+          <span className="text-[calc(11px*var(--fs))] truncate">{alarm.label}</span>
           {alarm.sourceMemoId && (
             <IconNote size={11} style={{ color: 'var(--color-primary)', flexShrink: 0 }} title={t('alarm.memoLinked')} />
           )}
         </div>
-        <p className="text-[9px] mt-0.5" style={{ color: 'var(--color-muted)' }}>
+        <p className="text-[calc(9px*var(--fs))] mt-0.5" style={{ color: 'var(--color-muted)' }}>
           {formatRepeat(alarm.repeatDays, lang)}
         </p>
       </div>

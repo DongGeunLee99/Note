@@ -43,6 +43,7 @@ function RootRedirect() {
 /** theme 설정을 <html data-theme>에 반영. 'system'이면 OS 다크모드 변경을 실시간 추종 */
 function ThemeManager() {
   const theme = useSettingsStore(s => s.theme)
+  const fontScale = useSettingsStore(s => s.fontScale)
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-color-scheme: dark)')
@@ -54,6 +55,11 @@ function ThemeManager() {
     mq.addEventListener('change', apply)
     return () => mq.removeEventListener('change', apply)
   }, [theme])
+
+  // 글자 크기 = --fs 변수로 폰트만 스케일(레이아웃 px는 유지). text-[calc(Npx*var(--fs))]이 참조
+  useEffect(() => {
+    document.documentElement.style.setProperty('--fs', String(fontScale))
+  }, [fontScale])
 
   return null
 }

@@ -30,7 +30,7 @@ export default function UpcomingDeadlines() {
             >
               <IconClock size={13} style={{ color: tone.fg }} />
             </div>
-            <span className="text-[11px] font-medium flex-1 min-w-0 truncate">{item.text}</span>
+            <span className="text-[calc(11px*var(--fs))] font-medium flex-1 min-w-0 truncate">{item.text}</span>
             <Badge variant={isToday ? 'red' : 'violet'}>{item.notifyAt}</Badge>
           </div>
         )

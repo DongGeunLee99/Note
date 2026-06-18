@@ -29,7 +29,7 @@ export default function Modal({ isOpen, onClose, title, children, footer, widthC
           className="flex items-center justify-between px-4 py-3 border-b"
           style={{ borderColor: 'var(--color-border)' }}
         >
-          <span className="text-[12px] font-medium">{title}</span>
+          <span className="text-[calc(12px*var(--fs))] font-medium">{title}</span>
           <button onClick={onClose} className="p-0.5 rounded hover-tint transition-colors">
             <IconX size={14} style={{ color: 'var(--color-muted)' }} />
           </button>

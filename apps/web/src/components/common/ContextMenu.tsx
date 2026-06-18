@@ -49,7 +49,7 @@ export default function ContextMenu({ x, y, items, onClose }: ContextMenuProps) 
         <button
           key={i}
           onClick={() => { item.onClick(); onClose() }}
-          className="w-full flex items-center gap-2 px-3 py-2 text-[11px] text-left hover-tint transition-colors"
+          className="w-full flex items-center gap-2 px-3 py-2 text-[calc(11px*var(--fs))] text-left hover-tint transition-colors"
           style={{ color: item.danger ? 'var(--color-danger)' : 'var(--color-text)' }}
         >
           {item.icon && <span className="flex-shrink-0">{item.icon}</span>}

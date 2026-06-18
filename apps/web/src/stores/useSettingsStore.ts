@@ -9,6 +9,14 @@ export type ThemeMode = 'system' | 'light' | 'dark' | 'purple' | 'blue'
 /** 앱 언어 = i18n의 Language 단일 출처 (언어 추가 시 i18n에서만 정의) */
 export type AppLanguage = Language
 
+/** 글자 크기(전역 UI 스케일) 단계 — value는 루트 zoom 배율 */
+export const FONT_SCALE_OPTIONS: { key: 'fontSm' | 'fontMd' | 'fontLg' | 'fontXl'; value: number }[] = [
+  { key: 'fontSm', value: 0.9 },
+  { key: 'fontMd', value: 1 },
+  { key: 'fontLg', value: 1.15 },
+  { key: 'fontXl', value: 1.3 },
+]
+
 interface SettingsState {
   timeFormat: TimeFormat
   setTimeFormat: (fmt: TimeFormat) => void
@@ -16,6 +24,9 @@ interface SettingsState {
   setTheme: (theme: ThemeMode) => void
   language: AppLanguage
   setLanguage: (language: AppLanguage) => void
+  /** 전역 UI 스케일 배율(루트 zoom). 1 = 기본 */
+  fontScale: number
+  setFontScale: (scale: number) => void
 }
 
 export const useSettingsStore = create<SettingsState>()(
@@ -30,6 +41,8 @@ export const useSettingsStore = create<SettingsState>()(
         i18n.changeLanguage(language)
         set({ language })
       },
+      fontScale: 1,
+      setFontScale: (scale) => set({ fontScale: scale }),
     }),
     {
       name: 'smartnote_settings',

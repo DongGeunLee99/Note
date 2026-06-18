@@ -71,7 +71,7 @@ export default function AlarmModal({ isOpen, onClose, onSave, onDelete, groups, 
           {initial && onDelete && (
             <button
               onClick={onDelete}
-              className="text-[10px] px-3 py-1.5 rounded-lg border mr-auto"
+              className="text-[calc(10px*var(--fs))] px-3 py-1.5 rounded-lg border mr-auto"
               style={{ borderColor: 'var(--color-danger-border)', color: 'var(--color-danger)' }}
             >
               {t('common.delete')}
@@ -79,7 +79,7 @@ export default function AlarmModal({ isOpen, onClose, onSave, onDelete, groups, 
           )}
           <button
             onClick={onClose}
-            className="text-[10px] px-3 py-1.5 rounded-lg border"
+            className="text-[calc(10px*var(--fs))] px-3 py-1.5 rounded-lg border"
             style={{ borderColor: 'var(--color-border-2)', color: 'var(--color-muted)' }}
           >
             {t('common.cancel')}
@@ -87,7 +87,7 @@ export default function AlarmModal({ isOpen, onClose, onSave, onDelete, groups, 
           <button
             onClick={handleSave}
             disabled={!label.trim()}
-            className="text-[10px] px-3 py-1.5 rounded-lg text-white disabled:opacity-40"
+            className="text-[calc(10px*var(--fs))] px-3 py-1.5 rounded-lg text-white disabled:opacity-40"
             style={{ background: 'var(--color-primary)' }}
           >
             {t('common.save')}
@@ -106,7 +106,7 @@ export default function AlarmModal({ isOpen, onClose, onSave, onDelete, groups, 
                 onChange={e => setLabel(e.target.value)}
                 placeholder={t('alarm.namePlaceholder')}
                 maxLength={30}
-                className="text-right text-[11px] outline-none bg-transparent w-36"
+                className="text-right text-[calc(11px*var(--fs))] outline-none bg-transparent w-36"
                 onKeyDown={e => e.key === 'Enter' && handleSave()}
               />
             ),
@@ -118,14 +118,14 @@ export default function AlarmModal({ isOpen, onClose, onSave, onDelete, groups, 
                 <Select
                   value={hour}
                   onChange={setHour}
-                  className="text-[11px] border rounded px-1 py-0.5 outline-none"
+                  className="text-[calc(11px*var(--fs))] border rounded px-1 py-0.5 outline-none"
                   options={HOURS.map(h => ({ value: h, label: String(h).padStart(2, '0') }))}
                 />
-                <span className="text-[11px]">:</span>
+                <span className="text-[calc(11px*var(--fs))]">:</span>
                 <Select
                   value={minute}
                   onChange={setMinute}
-                  className="text-[11px] border rounded px-1 py-0.5 outline-none"
+                  className="text-[calc(11px*var(--fs))] border rounded px-1 py-0.5 outline-none"
                   options={MINUTES.map(m => ({ value: m, label: String(m).padStart(2, '0') }))}
                 />
               </div>
@@ -137,7 +137,7 @@ export default function AlarmModal({ isOpen, onClose, onSave, onDelete, groups, 
               <Select
                 value={groupId}
                 onChange={setGroupId}
-                className="text-[11px] border rounded px-1 py-0.5 outline-none"
+                className="text-[calc(11px*var(--fs))] border rounded px-1 py-0.5 outline-none"
                 options={groups.map(g => ({ value: g.groupId, label: `${displayGroupIcon(g.icon)} ${g.name}` }))}
               />
             ),
@@ -145,7 +145,7 @@ export default function AlarmModal({ isOpen, onClose, onSave, onDelete, groups, 
         ].map(row => (
           <div
             key={row.label}
-            className="flex items-center justify-between py-2 border-b text-[11px]"
+            className="flex items-center justify-between py-2 border-b text-[calc(11px*var(--fs))]"
             style={{ borderColor: 'var(--color-border)' }}
           >
             <span style={{ color: 'var(--color-muted)' }}>{row.label}</span>
@@ -154,7 +154,7 @@ export default function AlarmModal({ isOpen, onClose, onSave, onDelete, groups, 
         ))}
 
         <div className="pt-2">
-          <p className="text-[10px] mb-2" style={{ color: 'var(--color-muted)' }}>{t('alarm.fieldRepeat')}</p>
+          <p className="text-[calc(10px*var(--fs))] mb-2" style={{ color: 'var(--color-muted)' }}>{t('alarm.fieldRepeat')}</p>
           <div className="flex gap-1.5 mb-2">
             {REPEAT_PRESETS.map(p => {
               const active = sameDays(repeatDays, p.days)
@@ -162,7 +162,7 @@ export default function AlarmModal({ isOpen, onClose, onSave, onDelete, groups, 
                 <button
                   key={p.key}
                   onClick={() => setRepeatDays(p.days)}
-                  className="text-[9px] px-2 py-1 rounded-full border transition-colors"
+                  className="text-[calc(9px*var(--fs))] px-2 py-1 rounded-full border transition-colors"
                   style={{
                     background: active ? 'var(--color-primary)' : 'transparent',
                     color: active ? '#fff' : 'var(--color-muted)',
@@ -179,7 +179,7 @@ export default function AlarmModal({ isOpen, onClose, onSave, onDelete, groups, 
               <button
                 key={i}
                 onClick={() => toggleDay(i)}
-                className="text-[9px] px-2 py-1 rounded-full border transition-colors"
+                className="text-[calc(9px*var(--fs))] px-2 py-1 rounded-full border transition-colors"
                 style={{
                   background: repeatDays.includes(i) ? 'var(--color-primary)' : 'transparent',
                   color: repeatDays.includes(i) ? '#fff' : 'var(--color-muted)',
