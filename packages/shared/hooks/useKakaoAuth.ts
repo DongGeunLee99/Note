@@ -1,3 +1,4 @@
+/// <reference path="../types/kakao.d.ts" />
 import { signInWithCustomToken, signOut } from 'firebase/auth'
 import { httpsCallable } from 'firebase/functions'
 import { auth, functions } from '../firebase/config'

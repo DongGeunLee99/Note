@@ -26,6 +26,9 @@ importers:
       date-fns:
         specifier: ^4.4.0
         version: 4.4.0
+      firebase:
+        specifier: ^12.14.0
+        version: 12.14.0
       i18next:
         specifier: ^26.3.1
         version: 26.3.1(typescript@6.0.3)
@@ -105,6 +108,10 @@ importers:
       react:
         specifier: ^19.0.0
         version: 19.2.6
+    devDependencies:
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.15
 
 packages:
 
