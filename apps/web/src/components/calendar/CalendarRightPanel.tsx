@@ -10,7 +10,7 @@ import { useCalendarStore, useAllEvents } from '@/stores/useCalendarStore'
 import { useSettingsStore } from '@/stores/useSettingsStore'
 import { useTranslation } from 'react-i18next'
 import { useLang } from '@/i18n'
-import { formatSectionDate, toDateKey, fmtTime, resolveEventColor } from './calendarUtils'
+import { formatSectionDate, toDateKey, fmtTime, resolveEventColor, monthEdgeDate } from './calendarUtils'
 
 export default function CalendarRightPanel() {
   const {
@@ -78,6 +78,14 @@ export default function CalendarRightPanel() {
 
   function handleSelectDate(d: Date) { setSelectedDate(d); setCurrentDate(d) }
 
+  // 월 이동 시 활성 날짜 보정: 타깃 월 < 현재 월이면 과거(마지막 날), 미래면 첫째 날
+  function handleNavigateMonth(target: Date) {
+    setCurrentDate(target)
+    const targetIdx  = target.getFullYear() * 12 + target.getMonth()
+    const currentIdx = currentDate.getFullYear() * 12 + currentDate.getMonth()
+    setSelectedDate(monthEdgeDate(target, targetIdx < currentIdx ? 'prev' : 'next'))
+  }
+
   return (
     <ResizableRightPanel>
       <div className="flex flex-col h-full overflow-hidden">
@@ -87,7 +95,7 @@ export default function CalendarRightPanel() {
           <MiniCalendar
             year={currentDate.getFullYear()} month={currentDate.getMonth()}
             selected={selectedDate} today={today} eventDates={eventDateSet}
-            onSelect={handleSelectDate} onNavigate={setCurrentDate}
+            onSelect={handleSelectDate} onNavigate={handleNavigateMonth}
           />
         </div>
 

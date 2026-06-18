@@ -5,6 +5,7 @@ import { useShallow } from 'zustand/react/shallow'
 import { useCalendarStore, useAllEvents } from '@/stores/useCalendarStore'
 import { useWeekDragSelect } from '@/hooks/useWeekDragSelect'
 import CalendarToolbar from './CalendarToolbar'
+import CalendarEventChip from './CalendarEventChip'
 import { rbcLocalizer, getRbcMessages, getEventProps } from './calendarUtils'
 import { useLang } from '@/i18n'
 import type { RbcEvent, CalView } from './types'
@@ -103,7 +104,7 @@ export default function WeekView() {
         eventPropGetter={eventPropGetter}
         slotPropGetter={slotPropGetter}
         drilldownView={null}
-        components={{ toolbar: CalendarToolbar }}
+        components={{ toolbar: CalendarToolbar, event: CalendarEventChip }}
         style={{ height: '100%', minHeight: 320 }}
       />
     </div>

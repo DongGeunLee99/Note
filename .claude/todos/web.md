@@ -23,6 +23,12 @@
 - [x] 적용 위치: **일간(Day) 달력 + 우측 패널**(상세/아젠다). hover 쓰레기통 버튼 제거(우클릭으로 대체)
 - [ ] **Phase 2**: 월/주 달력 일정 우클릭 — rbc 커스텀 event 컴포넌트(`components={{ event }}`) 필요. 현재 월/주는 빈 곳 우클릭(일정추가)만 동작
 
+**월 이동 시 활성 날짜 보정 (완료)**
+- [x] 달을 넘기면 활성(선택) 날짜를 이동 방향 가장자리로 보정: 이전 달→마지막 날 / 다음 달→첫째 날
+  - `calendarUtils.monthEdgeDate(target, 'prev'|'next')` 헬퍼 신설
+  - 본 캘린더(MonthView `onNavigate` PREV/NEXT) + 미니 캘린더(CalendarRightPanel `handleNavigateMonth`, 타깃 월 vs 현재 월 비교로 방향 판단) 둘 다 적용
+  - '오늘' 버튼은 오늘 유지(기존 동작), Week/Day 뷰는 월 이동 아니므로 미적용
+
 **#5 우측 미니 캘린더 스와이프**
 - [ ] MiniCalendar에서 좌우 스와이프/드래그로 월 이동 (제스처: 직접 구현 vs 라이브러리 착수 시 검토)
 

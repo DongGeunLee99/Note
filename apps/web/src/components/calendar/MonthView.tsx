@@ -4,7 +4,8 @@ import { isSameDay } from 'date-fns'
 import { useShallow } from 'zustand/react/shallow'
 import { useCalendarStore, useAllEvents } from '@/stores/useCalendarStore'
 import CalendarToolbar from './CalendarToolbar'
-import { rbcLocalizer, getRbcMessages, getEventProps } from './calendarUtils'
+import CalendarEventChip from './CalendarEventChip'
+import { rbcLocalizer, getRbcMessages, getEventProps, monthEdgeDate } from './calendarUtils'
 import { useLang } from '@/i18n'
 import type { RbcEvent, CalView } from './types'
 
@@ -76,6 +77,8 @@ export default function MonthView() {
           setCurrentDate(date)
           setSelectedSlot(null)
           if (action === 'TODAY') setSelectedDate(today)
+          else if (action === 'PREV') setSelectedDate(monthEdgeDate(date, 'prev'))
+          else if (action === 'NEXT') setSelectedDate(monthEdgeDate(date, 'next'))
         }}
         onSelectSlot={handleSelectSlot}
         onSelectEvent={handleSelectEvent}
@@ -84,7 +87,7 @@ export default function MonthView() {
         eventPropGetter={eventPropGetter}
         dayPropGetter={dayPropGetter}
         drilldownView={null}
-        components={{ toolbar: CalendarToolbar }}
+        components={{ toolbar: CalendarToolbar, event: CalendarEventChip }}
         style={{ height: '100%', minHeight: 320 }}
       />
     </div>

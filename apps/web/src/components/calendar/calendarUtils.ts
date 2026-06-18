@@ -101,3 +101,10 @@ export function toDateKey(date: Date) {
 export function getDaysInMonth(y: number, m: number) {
   return new Date(y, m + 1, 0).getDate()
 }
+
+/** 월 이동 시 활성 날짜 보정용 가장자리 날짜: 과거(prev)→그 달 마지막 날, 미래(next)→첫째 날 */
+export function monthEdgeDate(target: Date, direction: 'prev' | 'next'): Date {
+  return direction === 'prev'
+    ? new Date(target.getFullYear(), target.getMonth() + 1, 0)
+    : new Date(target.getFullYear(), target.getMonth(), 1)
+}
