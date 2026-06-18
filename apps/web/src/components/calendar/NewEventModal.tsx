@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import Modal from '@/components/common/Modal'
 import ToggleSwitch from '@/components/common/ToggleSwitch'
+import Select from '@/components/common/Select'
 import DateTimePicker from './DateTimePicker'
 import type { CalendarEventData } from './types'
 import { IconSparkles } from '@tabler/icons-react'
@@ -145,11 +146,9 @@ export default function NewEventModal({ isOpen, initialStart, initialEnd, multiD
         {hasAlarm && (
           <div className="flex items-center justify-between py-2 text-[11px]">
             <span style={{ color: 'var(--color-muted)' }}>{t('calendar.fieldNotify')}</span>
-            <select value={alarmMinutes} onChange={e => setAlarmMinutes(+e.target.value)}
+            <Select value={alarmMinutes} onChange={setAlarmMinutes}
               className="text-[11px] border rounded px-2 py-0.5 outline-none"
-              style={{ borderColor: 'var(--color-border-2)' }}>
-              {ALARM_BEFORE.map(o => <option key={o.value} value={o.value}>{t(`calendar.alarmBefore.${o.value}`)}</option>)}
-            </select>
+              options={ALARM_BEFORE.map(o => ({ value: o.value, label: t(`calendar.alarmBefore.${o.value}`) }))} />
           </div>
         )}
       </div>

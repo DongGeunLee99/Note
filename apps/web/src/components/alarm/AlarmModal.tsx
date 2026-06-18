@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import Modal from '@/components/common/Modal'
+import Select from '@/components/common/Select'
 import { useTranslation } from 'react-i18next'
 import type { Alarm, AlarmGroup } from '@smartnote/shared/types'
 import type { AlarmFormInput } from '@smartnote/shared/services/alarmService'
@@ -16,7 +17,7 @@ interface AlarmModalProps {
 }
 
 const HOURS = Array.from({ length: 24 }, (_, i) => i)
-const MINUTES = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
+const MINUTES = Array.from({ length: 60 }, (_, i) => i)
 
 const REPEAT_PRESETS: { key: string; days: number[] }[] = [
   { key: 'alarm.repeatWeekday',  days: [1, 2, 3, 4, 5] },
@@ -38,9 +39,10 @@ export default function AlarmModal({ isOpen, onClose, onSave, onDelete, groups, 
 
   useEffect(() => {
     if (isOpen) {
+      const now = new Date()
       setLabel(initial?.label ?? '')
-      setHour(initial?.hour ?? 7)
-      setMinute(initial?.minute ?? 0)
+      setHour(initial?.hour ?? now.getHours())
+      setMinute(initial?.minute ?? now.getMinutes())
       setRepeatDays(initial?.repeatDays ?? [1, 2, 3, 4, 5])
       setGroupId(initial?.groupId ?? defaultGroupId ?? groups[0]?.groupId ?? '')
       setIsEnabled(initial?.isEnabled ?? true)
@@ -113,43 +115,31 @@ export default function AlarmModal({ isOpen, onClose, onSave, onDelete, groups, 
             label: t('alarm.fieldTime'),
             content: (
               <div className="flex items-center gap-1">
-                <select
+                <Select
                   value={hour}
-                  onChange={e => setHour(Number(e.target.value))}
+                  onChange={setHour}
                   className="text-[11px] border rounded px-1 py-0.5 outline-none"
-                  style={{ borderColor: 'var(--color-border-2)' }}
-                >
-                  {HOURS.map(h => (
-                    <option key={h} value={h}>{String(h).padStart(2, '0')}</option>
-                  ))}
-                </select>
+                  options={HOURS.map(h => ({ value: h, label: String(h).padStart(2, '0') }))}
+                />
                 <span className="text-[11px]">:</span>
-                <select
+                <Select
                   value={minute}
-                  onChange={e => setMinute(Number(e.target.value))}
+                  onChange={setMinute}
                   className="text-[11px] border rounded px-1 py-0.5 outline-none"
-                  style={{ borderColor: 'var(--color-border-2)' }}
-                >
-                  {MINUTES.map(m => (
-                    <option key={m} value={m}>{String(m).padStart(2, '0')}</option>
-                  ))}
-                </select>
+                  options={MINUTES.map(m => ({ value: m, label: String(m).padStart(2, '0') }))}
+                />
               </div>
             ),
           },
           {
             label: t('alarm.fieldGroup'),
             content: (
-              <select
+              <Select
                 value={groupId}
-                onChange={e => setGroupId(e.target.value)}
+                onChange={setGroupId}
                 className="text-[11px] border rounded px-1 py-0.5 outline-none"
-                style={{ borderColor: 'var(--color-border-2)' }}
-              >
-                {groups.map(g => (
-                  <option key={g.groupId} value={g.groupId}>{displayGroupIcon(g.icon)} {g.name}</option>
-                ))}
-              </select>
+                options={groups.map(g => ({ value: g.groupId, label: `${displayGroupIcon(g.icon)} ${g.name}` }))}
+              />
             ),
           },
         ].map(row => (

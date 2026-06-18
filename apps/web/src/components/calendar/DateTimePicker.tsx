@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { useLang, type Language } from '@/i18n'
+import Select from '@/components/common/Select'
 import { MONTH_SHORT, HOURS, MINUTES, getDaysInMonth } from './calendarUtils'
 
 const MONTH_LABEL: Record<Language, (i: number) => string> = {
@@ -37,27 +38,21 @@ export default function DateTimePicker({ value, onChange }: Props) {
   const maxDay = getDaysInMonth(y, mo)
   const now = new Date()
   const sel = 'text-[11px] border rounded px-1 py-0.5 outline-none'
-  const bdr = { borderColor: 'var(--color-border-2)' }
 
   return (
     <div className="flex items-center gap-1 flex-wrap justify-end">
-      <select value={y} onChange={e => upd('year', +e.target.value)} className={sel} style={bdr}>
-        {[0, 1, 2].map(i => { const yr = now.getFullYear() + i; return <option key={yr} value={yr}>{yr}</option> })}
-      </select>
-      <select value={mo} onChange={e => upd('month', +e.target.value)} className={sel} style={bdr}>
-        {MONTH_SHORT.map((_, i) => <option key={i} value={i}>{MONTH_LABEL[lang](i)}</option>)}
-      </select>
-      <select value={dy} onChange={e => upd('day', +e.target.value)} className={sel} style={bdr}>
-        {Array.from({ length: maxDay }, (_, i) => i + 1).map(n => <option key={n} value={n}>{DAY_LABEL[lang](n)}</option>)}
-      </select>
+      <Select value={y} onChange={v => upd('year', v)} className={sel}
+        options={[0, 1, 2].map(i => { const yr = now.getFullYear() + i; return { value: yr, label: yr } })} />
+      <Select value={mo} onChange={v => upd('month', v)} className={sel}
+        options={MONTH_SHORT.map((_, i) => ({ value: i, label: MONTH_LABEL[lang](i) }))} />
+      <Select value={dy} onChange={v => upd('day', v)} className={sel}
+        options={Array.from({ length: maxDay }, (_, i) => i + 1).map(n => ({ value: n, label: DAY_LABEL[lang](n) }))} />
       <span className="text-[10px]" style={{ color: 'var(--color-muted)' }}>{t('calendar.at')}</span>
-      <select value={h} onChange={e => upd('hour', +e.target.value)} className={sel} style={bdr}>
-        {HOURS.map(n => <option key={n} value={n}>{String(n).padStart(2, '0')}</option>)}
-      </select>
+      <Select value={h} onChange={v => upd('hour', v)} className={sel}
+        options={HOURS.map(n => ({ value: n, label: String(n).padStart(2, '0') }))} />
       <span className="text-[11px]">:</span>
-      <select value={mi} onChange={e => upd('minute', +e.target.value)} className={sel} style={bdr}>
-        {MINUTES.map(n => <option key={n} value={n}>{String(n).padStart(2, '0')}</option>)}
-      </select>
+      <Select value={mi} onChange={v => upd('minute', v)} className={sel}
+        options={MINUTES.map(n => ({ value: n, label: String(n).padStart(2, '0') }))} />
     </div>
   )
 }

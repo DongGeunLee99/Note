@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { formatTime, displayGroupIcon } from '@/types/localAlarm'
 import { IconBolt, IconX, IconCheck } from '@tabler/icons-react'
 import Spinner from '@/components/common/Spinner'
+import Select from '@/components/common/Select'
 import type { AlarmGroup } from '@smartnote/shared/types'
 
 interface ParsedResult {
@@ -100,16 +101,12 @@ export default function QuickAlarmInput({ groups, onAdd }: QuickAlarmInputProps)
             <p className="text-[10px]" style={{ color: 'var(--color-primary)' }}>{parsed.label}</p>
           </div>
 
-          <select
+          <Select
             value={selectedGroupId}
-            onChange={e => setSelectedGroupId(e.target.value)}
+            onChange={setSelectedGroupId}
             className="text-[10px] border rounded px-1.5 py-1 outline-none w-full"
-            style={{ borderColor: 'var(--color-border-2)', background: 'white' }}
-          >
-            {groups.map(g => (
-              <option key={g.groupId} value={g.groupId}>{displayGroupIcon(g.icon)} {g.name}</option>
-            ))}
-          </select>
+            options={groups.map(g => ({ value: g.groupId, label: `${displayGroupIcon(g.icon)} ${g.name}` }))}
+          />
 
           <div className="flex gap-1.5">
             <button

@@ -56,7 +56,7 @@ export const ALARM_BEFORE = [
 ]
 
 export const HOURS   = Array.from({ length: 24 }, (_, i) => i)
-export const MINUTES = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]
+export const MINUTES = Array.from({ length: 60 }, (_, i) => i)
 
 export function fmtTime(date: Date, fmt: TimeFormat) { return formatClockFromDate(date, fmt) }
 export function fmtHour(h: number, fmt: TimeFormat)  { return formatHourLabel(h, fmt) }
