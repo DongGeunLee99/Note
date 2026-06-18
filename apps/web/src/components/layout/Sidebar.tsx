@@ -8,9 +8,6 @@ import { useAuthContext } from '@/contexts/AuthContext'
 
 type NavItem = { to: string; icon: React.ComponentType<{ size?: number; style?: React.CSSProperties }>; labelKey: 'home' | 'memo' | 'calendar' | 'alarm' | 'later' | 'someday' | 'dashboard' | 'trash'; count?: number }
 
-// 실제 배포 시 useAuthContext()에서 가져옴
-const MOCK_USER = { name: '홍길동', initial: '홍' }
-
 const NAV_ITEMS: NavItem[] = [
   { to: '/home', icon: IconHome, labelKey: 'home' },
   { to: '/memo', icon: IconNote, labelKey: 'memo' },
@@ -25,7 +22,10 @@ const NAV_ITEMS: NavItem[] = [
 export default function Sidebar() {
   const navigate = useNavigate()
   const { t } = useTranslation()
-  const { logout } = useAuthContext()
+  const { logout, profile } = useAuthContext()
+
+  const name = profile?.nickname ?? ''
+  const initial = name.charAt(0) || '·'
 
   async function handleLogout() {
     await logout()
@@ -86,13 +86,21 @@ export default function Sidebar() {
 
           {/* 프로필 행 */}
           <div className="flex items-center gap-2 px-3 py-2">
-            <div
-              className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-medium text-white"
-              style={{ background: 'var(--color-primary)' }}
-            >
-              {MOCK_USER.initial}
-            </div>
-            <span className="flex-1 text-[11px] font-medium truncate">{MOCK_USER.name}</span>
+            {profile?.profileImage ? (
+              <img
+                src={profile.profileImage}
+                alt=""
+                className="w-6 h-6 rounded-full object-cover flex-shrink-0"
+              />
+            ) : (
+              <div
+                className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-medium text-white"
+                style={{ background: 'var(--color-primary)' }}
+              >
+                {initial}
+              </div>
+            )}
+            <span className="flex-1 text-[11px] font-medium truncate">{name}</span>
             <button
               onClick={handleLogout}
               className="p-1 rounded hover-tint transition-colors flex-shrink-0"

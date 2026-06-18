@@ -47,10 +47,10 @@ export const kakaoLogin = onCall<KakaoLoginRequest>({ cors: true }, async (reque
   const userRef = db.doc(`users/${uid}`)
   const userDoc = await userRef.get()
 
+  const now = Timestamp.now()
   let isNewUser = false
   if (!userDoc.exists) {
     isNewUser = true
-    const now = Timestamp.now()
     await userRef.set({
       uid,
       kakaoId: String(kakaoUser.id),
@@ -71,6 +71,9 @@ export const kakaoLogin = onCall<KakaoLoginRequest>({ cors: true }, async (reque
       deletedAt: null,
       createdAt: now,
     })
+  } else {
+    // 기존 사용자: 매 로그인마다 카카오 프로필(이름·이미지) 최신화
+    await userRef.set({ nickname, profileImage, updatedAt: now }, { merge: true })
   }
 
   return { firebaseToken, isNewUser }
