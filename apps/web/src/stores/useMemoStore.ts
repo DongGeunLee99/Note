@@ -3,7 +3,7 @@ import type { Memo, MemoLocation } from '@smartnote/shared/types'
 import {
   subscribeMemos, createMemo, updateMemo, softDeleteMemo,
 } from '@smartnote/shared/services/memoService'
-import { detectAlarmSuggestion, generateAiSummary } from '@/services/llamaService'
+import { detectAlarmSuggestion, generateAiSummary, requestAiSummary } from '@/services/llamaService'
 import type { AlarmSuggestion } from '@/services/llamaService'
 
 export type PinResult = 'pinned' | 'unpinned' | 'limit' | 'none'
@@ -54,20 +54,23 @@ export const useMemoStore = create<MemoState>()((set, get) => {
   const patchMemo = (id: string, patch: Partial<MemoView>) =>
     set(s => ({ memos: s.memos.map(m => (m.memoId === id ? { ...m, ...patch } : m)) }))
 
-  // AI 정리 시뮬레이션 — Phase 2에서 Cloud Function로 대체. 결과는 Firestore에 기록
-  const runAiSim = (id: string, body: string) => {
-    setTimeout(() => {
-      patchMemo(id, { aiLoading: true })
-      setTimeout(() => {
-        const uid = get().uid
-        const memo = get().memos.find(m => m.memoId === id)
-        // 사용자가 직접 수정한 경우 자동 생성으로 덮어쓰지 않음
-        if (uid && memo && !memo.aiSummaryEdited) {
-          updateMemo(uid, id, { aiSummary: generateAiSummary(body), aiProcessed: true, aiSummaryEdited: false })
-        }
-        patchMemo(id, { aiLoading: false })
-      }, 2500)
-    }, 1500)
+  // AI 정리 — Gemini Cloud Function(aiSummarize) 호출. 실패 시 로컬 폴백. 결과는 Firestore에 기록
+  const runAi = async (id: string, body: string) => {
+    if (!body.trim()) return
+    patchMemo(id, { aiLoading: true })
+    let summary: string
+    try {
+      summary = await requestAiSummary(body)
+    } catch {
+      summary = generateAiSummary(body) // 폴백
+    }
+    const uid = get().uid
+    const memo = get().memos.find(m => m.memoId === id)
+    // 사용자가 직접 수정한 경우 자동 생성으로 덮어쓰지 않음
+    if (uid && memo && !memo.aiSummaryEdited) {
+      updateMemo(uid, id, { aiSummary: summary, aiProcessed: true, aiSummaryEdited: false })
+    }
+    patchMemo(id, { aiLoading: false })
   }
 
   return {
@@ -105,11 +108,11 @@ export const useMemoStore = create<MemoState>()((set, get) => {
           })
         }
         updateMemo(uid, editingId, { title, body, location })
-        runAiSim(editingId, body)
+        void runAi(editingId, body)
         return undefined
       }
       const id = createMemo(uid, { title, body, location })
-      runAiSim(id, body)
+      void runAi(id, body)
       return id
     },
 

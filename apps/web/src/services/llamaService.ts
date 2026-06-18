@@ -1,7 +1,9 @@
-// AI 처리 목업 서비스 — Phase 2에서 실제 Llama 호출로 교체하는 지점.
-// 호출부는 이 모듈의 시그니처만 의존하므로 내부 구현만 바꾸면 된다.
+// AI 처리 서비스. classifyText/detectAlarmSuggestion은 아직 로컬 규칙(Phase 2 후속).
+// AI 정리(요약)는 Gemini Cloud Function(aiSummarize)으로 연동됨.
 
 import { parse } from 'chrono-node'
+import { httpsCallable } from 'firebase/functions'
+import { functions } from '@smartnote/shared/firebase'
 
 export type ClassifiedCategory = '일정' | '알람' | '할일' | '메모' | '나중에' | '언젠가'
 
@@ -28,9 +30,17 @@ export function detectAlarmSuggestion(body: string): AlarmSuggestion | null {
   return { datetime: date, label }
 }
 
+/** 로컬 폴백 요약 (Gemini 호출 실패 시 사용) */
 export function generateAiSummary(body: string): string {
   const sentences = body.split(/[.!?。\n]/).map(s => s.trim()).filter(s => s.length > 4)
   if (sentences.length === 0) return body.slice(0, 100)
   const key = sentences.slice(0, 2).join('. ')
   return key + (key.endsWith('.') ? '' : '.') + (sentences.length > 2 ? ` (외 ${sentences.length - 2}개 항목)` : '')
+}
+
+/** Gemini Cloud Function(aiSummarize) 호출 — 메모 본문 요약 반환 */
+export async function requestAiSummary(text: string): Promise<string> {
+  const fn = httpsCallable<{ text: string }, { summary: string }>(functions, 'aiSummarize')
+  const { data } = await fn({ text })
+  return data.summary
 }

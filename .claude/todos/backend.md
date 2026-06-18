@@ -15,8 +15,10 @@
 - [ ] 캘린더 후속: 일정 수정(edit), 삭제 일정의 휴지통 합류 여부(알람과 동일 TBD)
 
 ### Phase 2 — AI + Cloud Tasks + 라우팅
-- [ ] ~~Llama 호스팅 방식 확정~~ → **결정: Gemini Flash 무료(2026-06-18)**. `llamaService` 구현 + `memoAI` Cloud Function (Cloud Functions에서 호출, 키 서버보관, 사용자별 제한, 규칙 선거름)
-  - [ ] **데이터 처리 가이드/고지 문서** 작성 (위치·내용 협의 필요) — 무료등급 학습 사용 고지용
+- [~] ~~Llama 호스팅 방식 확정~~ → **결정: Gemini Flash 무료(2026-06-18)**
+  - [x] **메모 AI 정리** = `aiSummarize` callable(`functions/src/aiSummarize.ts` + `gemini.ts` + `prompts.ts`). 키=Secret `GEMINI_API_KEY`(에뮬: `.secret.local`). `@google/genai` 도입, tsconfig `skipLibCheck`
+  - [ ] 홈 분류·시간추출 LLM화 (후속), 사용자별 강한 rate-limit(현재 인증+길이 가드만)
+  - [x] AI 데이터 처리 가이드(개발자용) = `.claude/docs/SmartNote_AI데이터처리_v0.1.md`. 사용자용 처리방침은 배포 전
 - [ ] 홈 자연어 입력 AI 분류 백엔드
 - [ ] `onAlarmWrite` + `triggerAlarm` (Cloud Tasks)
 - [ ] `onLaterWrite` + `triggerLater` (Cloud Tasks)

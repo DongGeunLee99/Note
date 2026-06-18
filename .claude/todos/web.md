@@ -91,7 +91,8 @@
 
 ### Phase 2 — AI / 기능 백엔드 연동 (프론트 와이어링)
 - [ ] 홈 자연어 입력 → AI 분류 결과 연결
-- [ ] 메모 AI 정리 / 알람 제안 실제 연결
+- [x] 메모 **AI 정리** 실제 연결 — Gemini Flash(`aiSummarize` callable). `useMemoStore.runAi`가 호출, 실패 시 로컬 폴백, `aiSummaryEdited` 보존
+- [ ] 메모 **알람 제안** 실제 연결 (현재 chrono 로컬, 한국어/AM·PM은 후속 LLM)
 - [ ] 나중에 / 언젠가 페이지 백엔드 연동 — **MVP 이후로 보류(2026-06-18 결정)**
 - [ ] 기기 활성 상태(isActive) 보고
 - [ ] 메모 풀 버전 히스토리 — Firestore `versions` 서브컬렉션 (1-스텝 되돌리기의 확장)
