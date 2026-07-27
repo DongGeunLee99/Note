@@ -45,6 +45,8 @@ interface MemoState {
   updateAiSummary: (memoId: string, text: string) => void
   /** 직전 상태로 1-스텝 되돌리기 */
   undoMemo: (memoId: string) => void
+  /** AI 분석 수동 실행 (버튼 트리거) */
+  runAi: (memoId: string, body: string) => Promise<void>
 }
 
 let unsubMemos: (() => void) | null = null
@@ -66,9 +68,8 @@ export const useMemoStore = create<MemoState>()((set, get) => {
     }
     const uid = get().uid
     const memo = get().memos.find(m => m.memoId === id)
-    // 사용자가 직접 수정한 경우 자동 생성으로 덮어쓰지 않음
-    if (uid && memo && !memo.aiSummaryEdited) {
-      updateMemo(uid, id, { aiSummary: summary, aiProcessed: true, aiSummaryEdited: false })
+    if (uid && memo) {
+      updateMemo(uid, id, { aiSummary: summary, aiProcessed: true, aiSummaryEdited: false, aiSummaryBody: body })
     }
     patchMemo(id, { aiLoading: false })
   }
@@ -108,11 +109,9 @@ export const useMemoStore = create<MemoState>()((set, get) => {
           })
         }
         updateMemo(uid, editingId, { title, body, location })
-        void runAi(editingId, body)
         return undefined
       }
       const id = createMemo(uid, { title, body, location })
-      void runAi(id, body)
       return id
     },
 
@@ -155,5 +154,7 @@ export const useMemoStore = create<MemoState>()((set, get) => {
       updateMemo(uid, memoId, { title: h.title, body: h.body, aiSummary: h.aiSummary, aiSummaryEdited: false })
       patchMemo(memoId, { history: null })
     },
+
+    runAi,
   }
 })

@@ -27,6 +27,7 @@ export function createMemo(uid: string, input: CreateMemoInput): string {
     aiSummary: null,
     aiProcessed: false,
     aiProcessedAt: null,
+    aiSummaryBody: null,
     aiSummaryEdited: false,
     detectedAlarms: [],
     pinnedAt: null,
@@ -42,7 +43,7 @@ export function createMemo(uid: string, input: CreateMemoInput): string {
 export function updateMemo(
   uid: string,
   memoId: string,
-  patch: Partial<Pick<Memo, 'title' | 'body' | 'location' | 'aiSummary' | 'aiProcessed' | 'aiSummaryEdited' | 'pinnedAt'>>,
+  patch: Partial<Pick<Memo, 'title' | 'body' | 'location' | 'aiSummary' | 'aiProcessed' | 'aiSummaryBody' | 'aiSummaryEdited' | 'pinnedAt'>>,
 ) {
   const data: Record<string, unknown> = { ...patch, updatedAt: Timestamp.now() }
   if (patch.aiProcessed === true) data.aiProcessedAt = Timestamp.now()

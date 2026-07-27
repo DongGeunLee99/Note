@@ -5,12 +5,11 @@ type AiMode = 'original' | 'ai'
 
 interface AiToggleButtonProps {
   mode: AiMode
-  aiReady: boolean
   onModeChange: (mode: AiMode) => void
   loading?: boolean
 }
 
-export default function AiToggleButton({ mode, aiReady, onModeChange, loading = false }: AiToggleButtonProps) {
+export default function AiToggleButton({ mode, onModeChange, loading = false }: AiToggleButtonProps) {
   const { t } = useTranslation()
   return (
     <div
@@ -29,14 +28,11 @@ export default function AiToggleButton({ mode, aiReady, onModeChange, loading = 
         {t('memo.aiOriginal')}
       </button>
       <button
-        onClick={() => aiReady && onModeChange('ai')}
-        disabled={!aiReady && !loading}
+        onClick={() => onModeChange('ai')}
         className={`flex items-center gap-1 px-2.5 py-1 rounded-md transition-colors ${
           mode === 'ai'
             ? 'bg-[var(--color-surface)] font-medium shadow-sm'
-            : aiReady
-            ? 'hover-tint'
-            : 'opacity-40 cursor-not-allowed'
+            : 'hover-tint'
         }`}
         style={{ color: mode === 'ai' ? 'var(--color-primary)' : 'var(--color-muted)' }}
       >
