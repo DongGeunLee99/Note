@@ -35,14 +35,14 @@ export default function TodayTimeline() {
     [],
   )
 
-  const remaining = items.filter(i => i.hour * 60 + i.minute >= nowMin).length
+  // const remaining = items.filter(i => i.hour * 60 + i.minute >= nowMin).length
   const nowIndex = items.findIndex(i => i.hour * 60 + i.minute >= nowMin)
 
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between">
         <SectionLabel>{t('home.todaySchedule')}</SectionLabel>
-        <span className="text-[calc(9px*var(--fs))]" style={{ color: 'var(--color-muted)' }}>{t('home.remaining', { n: remaining })}</span>
+        {/* <span className="text-[calc(9px*var(--fs))]" style={{ color: 'var(--color-muted)' }}>{t('home.remaining', { n: remaining })}</span> */}
       </div>
 
       <div className="flex flex-col">

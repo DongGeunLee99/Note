@@ -9,9 +9,13 @@ interface ModalProps {
   footer?: React.ReactNode
   /** 본문 폭 Tailwind 클래스. 기본 w-72(288px) */
   widthClass?: string
+  /** X 버튼 왼쪽에 넣을 커스텀 요소 (예: 되돌리기/다시하기 버튼) */
+  headerExtra?: React.ReactNode
+  /** title 텍스트 대신 헤더 자리에 넣을 커스텀 요소 (예: 편집 가능한 제목 입력창) */
+  titleContent?: React.ReactNode
 }
 
-export default function Modal({ isOpen, onClose, title, children, footer, widthClass = 'w-72' }: ModalProps) {
+export default function Modal({ isOpen, onClose, title, children, footer, widthClass = 'w-72', headerExtra, titleContent }: ModalProps) {
   if (!isOpen) return null
 
   return createPortal(
@@ -29,10 +33,13 @@ export default function Modal({ isOpen, onClose, title, children, footer, widthC
           className="flex items-center justify-between px-4 py-3 border-b"
           style={{ borderColor: 'var(--color-border)' }}
         >
-          <span className="text-[calc(12px*var(--fs))] font-medium">{title}</span>
-          <button onClick={onClose} className="p-0.5 rounded hover-tint transition-colors">
-            <IconX size={14} style={{ color: 'var(--color-muted)' }} />
-          </button>
+          {titleContent ?? <span className="text-[calc(12px*var(--fs))] font-medium">{title}</span>}
+          <div className="flex items-center gap-1">
+            {headerExtra}
+            <button onClick={onClose} className="p-0.5 rounded hover-tint transition-colors">
+              <IconX size={14} style={{ color: 'var(--color-muted)' }} />
+            </button>
+          </div>
         </div>
 
         <div className="px-4 py-3.5">{children}</div>

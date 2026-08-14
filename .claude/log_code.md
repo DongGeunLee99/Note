@@ -5,6 +5,171 @@
 
 ---
 
+## 2026-08-14 (5)
+
+### · 캘린더 토글 버튼 색 침범 수정
+
+---
+
+#### `apps/web/src/styles/calendar.css`
+
+```css
+/* before */
+.rbc-toolbar button.rbc-active {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
+  box-shadow: none;
+}
+
+/* after — 활성 버튼을 이웃 버튼의 겹친 테두리 위로 그려지게 */
+.rbc-toolbar button.rbc-active {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary);
+  box-shadow: none;
+  position: relative;
+  z-index: 1;
+}
+```
+
+---
+
+## 2026-08-14 (4)
+
+### · 메모 상세 모달 재설계
+
+---
+
+#### `apps/web/src/stores/useMemoStore.ts`
+
+```ts
+// before — history 하나만, 스냅샷 범위도 title/body/aiSummary뿐
+history: { title: string; body: string; aiSummary: string | null } | null
+
+undoMemo: (memoId) => {
+  const h = m.history
+  updateMemo(uid, memoId, { title: h.title, body: h.body, aiSummary: h.aiSummary, aiSummaryEdited: false })
+  patchMemo(memoId, { history: null })
+},
+
+// after — location/aiProcessed/aiSummaryBody까지 포함한 스냅샷 + future(redo) 추가
+interface MemoSnapshot {
+  title: string
+  body: string
+  location: MemoLocation
+  aiSummary: string | null
+  aiProcessed: boolean
+  aiSummaryBody: string | null
+}
+history: MemoSnapshot | null
+future: MemoSnapshot | null   // 되돌리기 직전 상태 (다시하기용)
+
+undoMemo: (memoId) => {
+  const h = m.history
+  updateMemo(uid, memoId, {
+    title: h.title, body: h.body, location: h.location,
+    aiSummary: h.aiSummary, aiProcessed: h.aiProcessed, aiSummaryBody: h.aiSummaryBody,
+    aiSummaryEdited: false,
+  })
+  patchMemo(memoId, { history: null, future: snapshotOf(m) })
+},
+
+redoMemo: (memoId) => {
+  const f = m.future
+  updateMemo(uid, memoId, {
+    title: f.title, body: f.body, location: f.location,
+    aiSummary: f.aiSummary, aiProcessed: f.aiProcessed, aiSummaryBody: f.aiSummaryBody,
+    aiSummaryEdited: false,
+  })
+  patchMemo(memoId, { future: null, history: snapshotOf(m) })
+},
+```
+
+`runAi`도 실행 직전에 동일한 `snapshotOf` + `future: null`을 남기도록 변경 — AI 분석/재분석도 되돌리기 대상에 포함.
+
+---
+
+#### `apps/web/src/components/common/AiToggleButton.tsx`
+
+```tsx
+// before — 단순 원문/AI 뷰 토글
+<button onClick={() => onModeChange('ai')}>
+  {loading ? <Spinner size="sm" /> : null}
+  {t('memo.aiSummary')}
+</button>
+
+// after — 탭 전환 + 분석 트리거 통합
+function handleAiClick() {
+  if (mode !== 'ai') {
+    onModeChange('ai')
+    if (!aiProcessed) onTrigger()
+  } else if (aiProcessed) {
+    onTrigger()
+  }
+}
+...
+<button onClick={handleAiClick} disabled={loading}>
+  {loading ? <Spinner size="sm" /> : null}
+  {aiProcessed ? t('memo.aiReanalyze') : t('memo.aiSummary')}
+</button>
+```
+
+---
+
+#### `apps/web/src/components/common/Modal.tsx`
+
+```tsx
+// after — 헤더에 커스텀 요소를 꽂을 수 있는 두 자리 추가 (기존 사용처엔 영향 없음)
+interface ModalProps {
+  ...
+  headerExtra?: React.ReactNode   // X 왼쪽 (되돌리기/다시하기 버튼)
+  titleContent?: React.ReactNode  // title 텍스트 대신 넣을 커스텀 엘리먼트 (제목 입력창)
+}
+
+{titleContent ?? <span className="...">{title}</span>}
+<div className="flex items-center gap-1">
+  {headerExtra}
+  <button onClick={onClose}>...</button>
+</div>
+```
+
+---
+
+## 2026-08-14 (3)
+
+### · PageHeader 테두리 제거 + title prop 미사용
+
+---
+
+#### `apps/web/src/components/common/PageHeader.tsx`
+
+```tsx
+// before
+export default function PageHeader({ title, children }: PageHeaderProps) {
+  return (
+    <div className="flex items-center gap-2 px-4 py-2.5 border-b flex-shrink-0" style={{ borderColor: 'var(--color-border)' }}>
+      <span className="text-[calc(13px*var(--fs))] font-medium flex-1">{title}</span>
+      {children}
+    </div>
+  )
+}
+
+// after
+export default function PageHeader({ children }: PageHeaderProps) {
+  return (
+    <div className="flex items-center gap-2 px-4 py-2.5 flex-shrink-0">
+      <div className="flex-1" />
+      {children}
+    </div>
+  )
+}
+```
+
+`title` prop은 인터페이스에 남겨뒀지만(호출부 전체 수정 방지) 더 이상 렌더링하지 않음 — 우측 패널 없는 페이지(메모/알람/대시보드)는 아예 `PageHeader` 사용을 그만두고 버튼을 콘텐츠 컨테이너 안으로 옮김.
+
+---
+
 ## 2026-06-12 (3)
 
 ### · Path Alias `@/` 도입 + 상대경로 일괄 변환

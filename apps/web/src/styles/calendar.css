@@ -37,6 +37,8 @@
   color: #fff;
   border-color: var(--color-primary);
   box-shadow: none;
+  position: relative;
+  z-index: 1;
 }
 .rbc-btn-group {
   display: flex;

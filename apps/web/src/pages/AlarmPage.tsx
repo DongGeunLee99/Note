@@ -3,11 +3,8 @@ import AlarmGroupList from '@/components/alarm/AlarmGroupList'
 import AlarmGroupModal from '@/components/alarm/AlarmGroupModal'
 import AlarmModal from '@/components/alarm/AlarmModal'
 import QuickAlarmInput from '@/components/alarm/QuickAlarmInput'
-import PageHeader from '@/components/common/PageHeader'
 import SectionLabel from '@/components/common/SectionLabel'
-import Divider from '@/components/common/Divider'
-import StatCards from '@/components/common/StatCards'
-import ResizableRightPanel from '@/components/common/ResizableRightPanel'
+// import StatCards from '@/components/common/StatCards' // 활성 그룹/활성 알람 수 — 우측 패널 제거로 주석 처리
 import Spinner from '@/components/common/Spinner'
 import ContextMenu, { useContextMenu } from '@/components/common/ContextMenu'
 import type { ContextMenuItem } from '@/components/common/ContextMenu'
@@ -102,10 +99,11 @@ export default function AlarmPage() {
     ]
   }
 
-  const totalActive = alarms.filter(a => {
-    const group = groups.find(g => g.groupId === a.groupId)
-    return a.isEnabled && group?.isEnabled
-  }).length
+  // 활성 그룹/활성 알람 수 StatCards — 우측 패널 제거로 주석 처리
+  // const totalActive = alarms.filter(a => {
+  //   const group = groups.find(g => g.groupId === a.groupId)
+  //   return a.isEnabled && group?.isEnabled
+  // }).length
 
   if (isLoading) {
     return (
@@ -117,29 +115,33 @@ export default function AlarmPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <PageHeader title={t('alarm.pageTitle')}>
-        <button
-          onClick={() => setGroupModal({ isOpen: true, target: null })}
-          className="text-[calc(10px*var(--fs))] px-2.5 py-1.5 rounded-lg border"
-          style={{ color: 'var(--color-primary)', borderColor: 'var(--color-primary)' }}
-        >
-          + {t('alarm.addGroup')}
-        </button>
-        <button
-          onClick={() => setAlarmModal({ isOpen: true, target: null })}
-          className="text-[calc(10px*var(--fs))] px-2.5 py-1.5 rounded-lg text-white"
-          style={{ background: 'var(--color-primary)' }}
-        >
-          + {t('alarm.addAlarm')}
-        </button>
-      </PageHeader>
-
       <div className="flex flex-1 overflow-hidden">
         <div
-          className="flex-1 p-3 overflow-auto border-r"
-          style={{ borderColor: 'var(--color-border)' }}
+          className="flex-1 flex flex-col gap-3 px-6 py-4 overflow-auto max-w-5xl mx-auto w-full"
           onContextMenu={e => { setMenuTarget({ kind: 'empty' }); openMenu(e) }}
         >
+          <div className="flex justify-end gap-2">
+            <button
+              onClick={() => setGroupModal({ isOpen: true, target: null })}
+              className="text-[calc(10px*var(--fs))] px-2.5 py-1.5 rounded-lg border"
+              style={{ color: 'var(--color-primary)', borderColor: 'var(--color-primary)' }}
+            >
+              + {t('alarm.addGroup')}
+            </button>
+            <button
+              onClick={() => setAlarmModal({ isOpen: true, target: null })}
+              className="text-[calc(10px*var(--fs))] px-2.5 py-1.5 rounded-lg text-white"
+              style={{ background: 'var(--color-primary)' }}
+            >
+              + {t('alarm.addAlarm')}
+            </button>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <SectionLabel>{t('alarm.quickAlarm')}</SectionLabel>
+            <QuickAlarmInput groups={groups} onAdd={handleQuickAdd} />
+          </div>
+
           <AlarmGroupList
             groups={groups}
             alarms={alarms}
@@ -151,24 +153,18 @@ export default function AlarmPage() {
             onContextMenuGroup={openCtxGroup}
             onContextMenuAlarm={openCtxAlarm}
           />
+
+          {/* 활성 그룹/활성 알람 수 StatCards — 우측 패널 제거로 주석 처리
+          <Divider />
+          <SectionLabel>{t('common.status')}</SectionLabel>
+          <StatCards
+            items={[
+              { value: groups.filter(g => g.isEnabled).length, label: t('alarm.activeGroups') },
+              { value: totalActive, label: t('alarm.activeAlarms') },
+            ]}
+          />
+          */}
         </div>
-
-        <ResizableRightPanel>
-          <div className="p-3 flex flex-col gap-3 h-full">
-            <SectionLabel>{t('alarm.quickAlarm')}</SectionLabel>
-            <QuickAlarmInput groups={groups} onAdd={handleQuickAdd} />
-
-            <Divider />
-
-            <SectionLabel>{t('common.status')}</SectionLabel>
-            <StatCards
-              items={[
-                { value: groups.filter(g => g.isEnabled).length, label: t('alarm.activeGroups') },
-                { value: totalActive, label: t('alarm.activeAlarms') },
-              ]}
-            />
-          </div>
-        </ResizableRightPanel>
       </div>
 
       <AlarmGroupModal

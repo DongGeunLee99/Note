@@ -85,7 +85,7 @@ export default function CalendarPage() {
       </PageHeader>
 
       <div className="flex flex-1 overflow-hidden">
-        <div className="flex-1 p-3 overflow-hidden border-r" style={{ borderColor: 'var(--color-border)' }}>
+        <div className="flex-1 px-6 py-4 overflow-hidden border-r max-w-5xl mx-auto w-full" style={{ borderColor: 'var(--color-border)' }}>
           {view === 'day'  && <CustomDayView />}
           {view === 'week' && <WeekView />}
           {view === 'month' && <MonthView />}

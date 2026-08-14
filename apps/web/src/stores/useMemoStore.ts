@@ -9,12 +9,24 @@ import type { AlarmSuggestion } from '@/services/llamaService'
 export type PinResult = 'pinned' | 'unpinned' | 'limit' | 'none'
 export const MAX_PINNED = 3
 
+interface MemoSnapshot {
+  title: string
+  body: string
+  location: MemoLocation
+  aiSummary: string | null
+  aiProcessed: boolean
+  aiSummaryBody: string | null
+}
+
 /** 영속 Memo + 화면 전용 임시 상태(Firestore에 저장 안 함) */
 export interface MemoView extends Memo {
   aiLoading: boolean
   alarmSuggestion: AlarmSuggestion | null
   alarmConfirmed: boolean
-  history: { title: string; body: string; aiSummary: string | null } | null
+  /** 직전 상태 스냅샷 (되돌리기용) */
+  history: MemoSnapshot | null
+  /** 되돌리기 직전 상태 스냅샷 (다시하기용) */
+  future: MemoSnapshot | null
 }
 
 /** Firestore 문서 → 뷰. 기존 뷰가 있으면 임시 상태 보존, 없으면(신규) 본문에서 알람 추출 */
@@ -25,6 +37,7 @@ function toView(doc: Memo, existing?: MemoView): MemoView {
     alarmSuggestion: existing ? existing.alarmSuggestion : detectAlarmSuggestion(doc.body),
     alarmConfirmed: existing?.alarmConfirmed ?? false,
     history: existing?.history ?? null,
+    future: existing?.future ?? null,
   }
 }
 
@@ -45,6 +58,8 @@ interface MemoState {
   updateAiSummary: (memoId: string, text: string) => void
   /** 직전 상태로 1-스텝 되돌리기 */
   undoMemo: (memoId: string) => void
+  /** 되돌리기를 취소하고 원래 상태로 복귀 */
+  redoMemo: (memoId: string) => void
   /** AI 분석 수동 실행 (버튼 트리거) */
   runAi: (memoId: string, body: string) => Promise<void>
 }
@@ -56,9 +71,23 @@ export const useMemoStore = create<MemoState>()((set, get) => {
   const patchMemo = (id: string, patch: Partial<MemoView>) =>
     set(s => ({ memos: s.memos.map(m => (m.memoId === id ? { ...m, ...patch } : m)) }))
 
+  const snapshotOf = (m: MemoView): MemoSnapshot => ({
+    title: m.title,
+    body: m.body,
+    location: m.location,
+    aiSummary: m.aiSummary,
+    aiProcessed: m.aiProcessed,
+    aiSummaryBody: m.aiSummaryBody,
+  })
+
   // AI 정리 — Gemini Cloud Function(aiSummarize) 호출. 실패 시 로컬 폴백. 결과는 Firestore에 기록
   const runAi = async (id: string, body: string) => {
     if (!body.trim()) return
+    const uid = get().uid
+    const memo = get().memos.find(m => m.memoId === id)
+    if (uid && memo) {
+      patchMemo(id, { history: snapshotOf(memo), future: null })
+    }
     patchMemo(id, { aiLoading: true })
     let summary: string
     try {
@@ -66,8 +95,6 @@ export const useMemoStore = create<MemoState>()((set, get) => {
     } catch {
       summary = generateAiSummary(body) // 폴백
     }
-    const uid = get().uid
-    const memo = get().memos.find(m => m.memoId === id)
     if (uid && memo) {
       updateMemo(uid, id, { aiSummary: summary, aiProcessed: true, aiSummaryEdited: false, aiSummaryBody: body })
     }
@@ -103,7 +130,8 @@ export const useMemoStore = create<MemoState>()((set, get) => {
         const prev = get().memos.find(m => m.memoId === editingId)
         if (prev) {
           patchMemo(editingId, {
-            history: { title: prev.title, body: prev.body, aiSummary: prev.aiSummary },
+            history: snapshotOf(prev),
+            future: null,
             alarmSuggestion: detectAlarmSuggestion(body),
             alarmConfirmed: false,
           })
@@ -142,7 +170,7 @@ export const useMemoStore = create<MemoState>()((set, get) => {
       const uid = get().uid
       const m = get().memos.find(x => x.memoId === memoId)
       if (!uid || !m) return
-      patchMemo(memoId, { history: { title: m.title, body: m.body, aiSummary: m.aiSummary } })
+      patchMemo(memoId, { history: snapshotOf(m), future: null })
       updateMemo(uid, memoId, { aiSummary: text, aiSummaryEdited: true })
     },
 
@@ -151,8 +179,25 @@ export const useMemoStore = create<MemoState>()((set, get) => {
       const m = get().memos.find(x => x.memoId === memoId)
       if (!uid || !m || !m.history) return
       const h = m.history
-      updateMemo(uid, memoId, { title: h.title, body: h.body, aiSummary: h.aiSummary, aiSummaryEdited: false })
-      patchMemo(memoId, { history: null })
+      updateMemo(uid, memoId, {
+        title: h.title, body: h.body, location: h.location,
+        aiSummary: h.aiSummary, aiProcessed: h.aiProcessed, aiSummaryBody: h.aiSummaryBody,
+        aiSummaryEdited: false,
+      })
+      patchMemo(memoId, { history: null, future: snapshotOf(m) })
+    },
+
+    redoMemo: (memoId) => {
+      const uid = get().uid
+      const m = get().memos.find(x => x.memoId === memoId)
+      if (!uid || !m || !m.future) return
+      const f = m.future
+      updateMemo(uid, memoId, {
+        title: f.title, body: f.body, location: f.location,
+        aiSummary: f.aiSummary, aiProcessed: f.aiProcessed, aiSummaryBody: f.aiSummaryBody,
+        aiSummaryEdited: false,
+      })
+      patchMemo(memoId, { future: null, history: snapshotOf(m) })
     },
 
     runAi,

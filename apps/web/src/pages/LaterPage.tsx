@@ -54,7 +54,7 @@ export default function LaterPage() {
 
       <div className="flex flex-1 overflow-hidden">
         <div
-          className="flex-1 flex flex-col p-3 overflow-auto border-r"
+          className="flex-1 flex flex-col px-6 py-4 overflow-auto border-r max-w-5xl mx-auto w-full"
           style={{ borderColor: 'var(--color-border)' }}
           onContextMenu={openMenu}
         >

@@ -6,11 +6,25 @@ type AiMode = 'original' | 'ai'
 interface AiToggleButtonProps {
   mode: AiMode
   onModeChange: (mode: AiMode) => void
+  /** AI 정리가 이미 생성된 상태인지 — 라벨을 "AI 정리"/"다시 분석하기"로 전환하는 데 사용 */
+  aiProcessed: boolean
+  /** AI 탭이 아직 비어있는 상태에서 처음 열리거나, 이미 AI 탭인 상태에서 다시 클릭했을 때 호출 */
+  onTrigger: () => void
   loading?: boolean
 }
 
-export default function AiToggleButton({ mode, onModeChange, loading = false }: AiToggleButtonProps) {
+export default function AiToggleButton({ mode, onModeChange, aiProcessed, onTrigger, loading = false }: AiToggleButtonProps) {
   const { t } = useTranslation()
+
+  function handleAiClick() {
+    if (mode !== 'ai') {
+      onModeChange('ai')
+      if (!aiProcessed) onTrigger()
+    } else if (aiProcessed) {
+      onTrigger()
+    }
+  }
+
   return (
     <div
       className="inline-flex rounded-lg p-0.5 text-[calc(10px*var(--fs))]"
@@ -28,8 +42,9 @@ export default function AiToggleButton({ mode, onModeChange, loading = false }: 
         {t('memo.aiOriginal')}
       </button>
       <button
-        onClick={() => onModeChange('ai')}
-        className={`flex items-center gap-1 px-2.5 py-1 rounded-md transition-colors ${
+        onClick={handleAiClick}
+        disabled={loading}
+        className={`flex items-center gap-1 px-2.5 py-1 rounded-md transition-colors disabled:opacity-60 ${
           mode === 'ai'
             ? 'bg-[var(--color-surface)] font-medium shadow-sm'
             : 'hover-tint'
@@ -37,7 +52,7 @@ export default function AiToggleButton({ mode, onModeChange, loading = false }: 
         style={{ color: mode === 'ai' ? 'var(--color-primary)' : 'var(--color-muted)' }}
       >
         {loading ? <Spinner size="sm" /> : null}
-        {t('memo.aiSummary')}
+        {aiProcessed ? t('memo.aiReanalyze') : t('memo.aiSummary')}
       </button>
     </div>
   )

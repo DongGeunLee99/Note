@@ -2,7 +2,6 @@ import {
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts'
-import PageHeader from '@/components/common/PageHeader'
 
 // ── 목업 데이터 ──────────────────────────────────────────
 const WEEKLY_DATA = [
@@ -92,11 +91,11 @@ export default function DashboardPage() {
 
   return (
     <div className="flex flex-col h-full overflow-auto">
-      <PageHeader title="대시보드">
-        <span className="text-[calc(10px*var(--fs))]" style={{ color: 'var(--color-muted)' }}>{dateLabel}</span>
-      </PageHeader>
+      <div className="flex-1 px-6 py-4 flex flex-col gap-4 max-w-5xl mx-auto w-full">
 
-      <div className="flex-1 p-4 flex flex-col gap-4">
+        <div className="flex justify-end">
+          <span className="text-[calc(10px*var(--fs))]" style={{ color: 'var(--color-muted)' }}>{dateLabel}</span>
+        </div>
 
         {/* 요약 스탯 */}
         <div className="flex gap-3">

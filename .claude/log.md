@@ -4,6 +4,71 @@
 
 ---
 
+## 2026-08-14 (5)
+
+### · 캘린더 월/주/일 토글 색 침범 버그 수정 + 휴지통 우측 패널 제거
+
+> 사용자가 스크린샷으로 지적한 두 가지 마무리 수정.
+
+- `apps/web/src/styles/calendar.css` — `.rbc-toolbar button.rbc-active`에 `position: relative; z-index: 1` 추가
+  - 원인: `.rbc-btn-group button:not(:first-child) { margin-left: -1px }`로 버튼 테두리를 겹쳐 seamless하게 붙이는 방식인데, DOM 순서상 뒤 버튼이 앞 버튼 위에 그려져서 활성(파란) 버튼 옆에 비활성 버튼의 회색 테두리가 침범해 보이던 문제
+- `apps/web/src/pages/TrashPage.tsx` — `ResizableRightPanel`(통계 카드 + 만료임박 경고) 제거, 필터 pill + 개수·전체삭제 버튼을 한 줄로 합쳐 콘텐츠 상단으로 이동, `max-w-5xl mx-auto`로 중앙 정렬
+  - `expiringSoon` 계산과 `SectionLabel`/`Divider`/`ResizableRightPanel`/`PageHeader` import 정리
+
+## 2026-08-14 (4)
+
+### · 메모 상세 모달 재설계
+
+> "노션처럼 가운데 모달" 요청에서 출발해 여러 차례 방향 조정(우측 드로어 → 중앙 모달) 끝에 확정: 제목 상시 편집 + 위치 자동조회(실패 시 직접입력) + AI 버튼을 탭과 트리거로 통합 + 1-스텝 되돌리기를 되돌리기/다시하기 쌍으로 확장.
+
+- `apps/web/src/stores/useMemoStore.ts`
+  - `history` 스냅샷에 `location`·`aiProcessed`·`aiSummaryBody` 추가(기존엔 title/body/aiSummary만 보관)
+  - `future`(다시하기용) 필드 신설 — `undoMemo`가 되돌리기 직전 상태를 `future`에 저장, 신규 `redoMemo` 추가
+  - `saveMemo`/`updateAiSummary`/`runAi` 세 저장 경로 모두 스냅샷 시 `future: null`로 초기화(새 편집이 들어오면 다시하기 무효화)
+  - `runAi`도 이제 스냅샷을 남김 — AI (재)분석도 되돌리기 대상에 포함되면서, 기존 "재분석 확인" `ConfirmModal`은 되돌리기가 안전장치 역할을 대신하므로 제거
+- `apps/web/src/components/common/Modal.tsx` — `headerExtra`(X 버튼 왼쪽 커스텀 요소), `titleContent`(title 텍스트 대신 커스텀 엘리먼트) prop 추가. 기존 3개 사용처(AlarmModal 등)는 영향 없음
+- `apps/web/src/components/common/AiToggleButton.tsx` — `aiProcessed`/`onTrigger` prop 추가해 탭+트리거 통합
+  - 탭이 비활성 상태에서 클릭 → 전환 + (미분석이면) 즉시 분석 트리거
+  - 이미 AI 탭인 상태에서 클릭 → 재분석 트리거
+  - 라벨: 미분석 "AI 정리" / 분석 완료 "다시 분석하기"
+- `apps/web/src/pages/MemoPage.tsx` — 저장/취소 버튼 제거하고 제목·본문·위치 입력창 `blur` 시 자동저장으로 전환. 신규 작성도 blur로 최초 생성(본문 필수). 위치는 모달이 열릴 때(신규 작성 또는 위치 없는 메모 선택) 자동 geolocation 시도, 실패 시 플레이스홀더 + 직접입력
+  - 헤더(X·`<`·`>` 버튼과 같은 행)에 제목 입력창 배치(`titleContent`로 전달)
+  - 원문/AI 탭은 위치+날짜 박스 우측 하단에 절대위치로 배치(사용자 제공 와이어프레임 반영)
+- i18n(ko/en/ja) `memo.*` 키 정리 — `editorNew`/`detail`/`selectPrompt`/`locationTag`/`locationDenied`/`aiAnalyze*` 제거, `aiReanalyze`/`locationUnavailable`/`redo`/`toastRedone` 추가
+- 검증: 브라우저로 신규작성 자동생성, blur 자동저장, 위치 자동조회, AI 최초분석/재분석/로딩스피너, 되돌리기↔다시하기 토글, 다른 Modal 사용처(알람 모달) 영향 없음 확인
+
+## 2026-08-14 (3)
+
+### · 헤더 테두리 제거 + 버튼 정렬 통일 + 홈 우측 패널 제거
+
+> 피그마 목업과 비교해 발견한 차이(헤더 구분선, 버튼이 중앙정렬된 콘텐츠 경계와 안 맞음) 수정.
+
+- `apps/web/src/components/common/PageHeader.tsx` — `border-b` 제거, title 텍스트 렌더링 제거(children만 렌더)
+- 우측 패널이 없는 페이지(메모/알람/대시보드)는 `PageHeader` 사용을 그만두고 버튼을 콘텐츠의 `max-w-5xl mx-auto` 컨테이너 안쪽 상단으로 이동 — 별도 헤더 바가 전체 폭으로 뻗어있어서 생기던 "버튼-콘텐츠 우측 정렬 불일치" 해결
+  - 우측 패널이 남아있는 페이지(캘린더/나중에/언젠가)는 패널이 원래 폭 끝까지 닿아 있어 정렬 문제가 없어서 그대로 둠
+- `apps/web/src/pages/HomePage.tsx` — `ResizableRightPanel`/`HomeRightPanel` 제거, 단일 컬럼으로 정리
+- `apps/web/src/components/home/RecentEntryList.tsx` — 삭제된 우측 패널에 있던 "알림 테스트" 버튼 + "?" 팁 팝오버를 "최근 기록" 목록 가장 아래로 이식
+- `apps/web/src/components/home/HomeRightPanel.tsx` 파일 삭제 (전량 미사용)
+
+## 2026-08-14 (2)
+
+### · 알람 우측 패널 제거 + 빠른 알람 위치 이동
+
+- `apps/web/src/pages/AlarmPage.tsx` — `ResizableRightPanel` 제거, `QuickAlarmInput`을 그룹 리스트 최상단으로 이동
+  - "활성 그룹/활성 알람 수" `StatCards`는 삭제 대신 주석 처리(추후 재사용 가능성 고려, 사용자 명시적 요청)
+
+## 2026-08-14 (1)
+
+### · 메인 콘텐츠 좌우 여백 적용 (8개 페이지)
+
+> 피그마 목업 대비 "요즘 웹사이트처럼 좌우 여백을 준" 느낌이 없다는 지적에서 시작.
+
+- 1차: `p-3` → `px-6 py-4`로 패딩만 확대했으나, 실제 2560px 폭 모니터에서는 거의 안 보이는 수준이라 보완 필요
+- 2차: `max-w-5xl mx-auto w-full` 추가해 콘텐츠 폭 자체를 제한하고 중앙 정렬 — 홈/메모/알람/캘린더/나중에/언젠가/휴지통/대시보드 8개 페이지 적용
+- 이 시점엔 메모 상세가 아직 우측 리사이즈 패널(원문/AI 인라인 편집) 구조 — 이후 (4)에서 모달로 전면 개편됨
+
+---
+
 ## 2026-06-12 (4)
 
 ### · Path Alias `@/` 도입 + apps/web 상대경로 일괄 변환

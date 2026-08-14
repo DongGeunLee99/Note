@@ -2,12 +2,8 @@ import { useState, useMemo } from 'react'
 import { IconNote, IconBell, IconClock, IconRefresh, IconTrash } from '@tabler/icons-react'
 import Badge from '@/components/common/Badge'
 import ConfirmModal from '@/components/common/ConfirmModal'
-import PageHeader from '@/components/common/PageHeader'
-import SectionLabel from '@/components/common/SectionLabel'
-import Divider from '@/components/common/Divider'
 import PillButton from '@/components/common/PillButton'
 import EmptyState from '@/components/common/EmptyState'
-import ResizableRightPanel from '@/components/common/ResizableRightPanel'
 import Spinner from '@/components/common/Spinner'
 import { useToast } from '@/contexts/ToastContext'
 import { useTranslation } from 'react-i18next'
@@ -38,8 +34,6 @@ export default function TrashPage() {
     return filtered.slice().sort((a, b) => daysLeft(a.deletedAt) - daysLeft(b.deletedAt))
   }, [items, filter])
 
-  const expiringSoon = items.filter(i => daysLeft(i.deletedAt) <= 7).length
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-full">
@@ -68,27 +62,9 @@ export default function TrashPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <PageHeader title={t('trash.pageTitle')}>
-        <span className="text-[calc(10px*var(--fs))]" style={{ color: 'var(--color-muted)' }}>
-          {t('trash.headerInfo', { n: items.length })}
-        </span>
-        {items.length > 0 && (
-          <button
-            onClick={() => setConfirmEmpty(true)}
-            className="text-[calc(10px*var(--fs))] px-2.5 py-1.5 rounded-lg border"
-            style={{ borderColor: 'var(--color-danger-subtle)', color: 'var(--color-danger)', background: 'var(--color-danger-subtle)' }}
-          >
-            {t('trash.emptyAll')}
-          </button>
-        )}
-      </PageHeader>
-
-      <div className="flex flex-1 overflow-hidden">
-        <div className="flex-1 flex flex-col overflow-hidden">
-          <div
-            className="flex items-center gap-1.5 px-3 py-2 border-b flex-shrink-0"
-            style={{ borderColor: 'var(--color-border)' }}
-          >
+      <div className="flex-1 flex flex-col overflow-hidden max-w-5xl mx-auto w-full">
+        <div className="flex items-center justify-between gap-2 px-6 pt-4">
+          <div className="flex items-center gap-1.5">
             {/* 현재 휴지통 대상은 메모만. 알람은 설계상 제외, 나중에/언젠가는 Firestore 연결 시 복원 */}
             {(['all', 'memo'] as const).map(f => (
               <PillButton key={f} active={filter === f} onClick={() => setFilter(f)}>
@@ -96,9 +72,24 @@ export default function TrashPage() {
               </PillButton>
             ))}
           </div>
+          <div className="flex items-center gap-2">
+            <span className="text-[calc(10px*var(--fs))]" style={{ color: 'var(--color-muted)' }}>
+              {t('trash.headerInfo', { n: items.length })}
+            </span>
+            {items.length > 0 && (
+              <button
+                onClick={() => setConfirmEmpty(true)}
+                className="text-[calc(10px*var(--fs))] px-2.5 py-1.5 rounded-lg border"
+                style={{ borderColor: 'var(--color-danger-subtle)', color: 'var(--color-danger)', background: 'var(--color-danger-subtle)' }}
+              >
+                {t('trash.emptyAll')}
+              </button>
+            )}
+          </div>
+        </div>
 
-          <div className="flex-1 p-3 overflow-auto">
-            {displayed.length === 0 ? (
+        <div className="flex-1 px-6 py-4 overflow-auto">
+          {displayed.length === 0 ? (
               <EmptyState emoji="🗑️" title={t('trash.emptyTitle')} description={t('trash.emptyDesc')} />
             ) : (
               <div className="flex flex-col gap-2">
@@ -152,32 +143,6 @@ export default function TrashPage() {
             )}
           </div>
         </div>
-
-        <ResizableRightPanel>
-          <div className="p-3 flex flex-col gap-3 h-full overflow-auto">
-            <SectionLabel>{t('common.status')}</SectionLabel>
-            {(['memo'] as TrashType[]).map(type => {
-              const count = items.filter(i => i.type === type).length
-              return (
-                <div key={type} className="flex items-center justify-between text-[calc(10px*var(--fs))]">
-                  <span style={{ color: 'var(--color-muted)' }}>{typeLabels[type]}</span>
-                  <Badge variant="gray">{t('common.count', { n: count })}</Badge>
-                </div>
-              )
-            })}
-            <Divider />
-            {expiringSoon > 0 && (
-              <div
-                className="p-2 rounded-lg text-[calc(10px*var(--fs))]"
-                style={{ background: 'var(--color-danger-subtle)', color: 'var(--color-danger)' }}
-              >
-                {t('trash.expiringSoon', { n: expiringSoon })}
-              </div>
-            )}
-          </div>
-        </ResizableRightPanel>
-      </div>
-
       <ConfirmModal
         isOpen={confirmEmpty}
         onClose={() => setConfirmEmpty(false)}
