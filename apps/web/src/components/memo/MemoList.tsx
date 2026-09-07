@@ -5,6 +5,7 @@ import type { MemoView } from '@/stores/useMemoStore'
 interface MemoListProps {
   memos: MemoView[]
   selectedId: string | null
+  searchQuery?: string
   onSelect: (id: string) => void
   onAlarmConfirm: (id: string) => void
   onAlarmDismiss: (id: string) => void
@@ -12,7 +13,7 @@ interface MemoListProps {
 }
 
 export default function MemoList({
-  memos, selectedId,
+  memos, selectedId, searchQuery = '',
   onSelect, onAlarmConfirm, onAlarmDismiss, onContextMenu,
 }: MemoListProps) {
   const { t } = useTranslation()
@@ -28,6 +29,14 @@ export default function MemoList({
   })
 
   if (memos.length === 0) {
+    if (searchQuery.trim()) {
+      return (
+        <div className="flex flex-col items-center justify-center flex-1 gap-2 py-12">
+          <span className="text-3xl">🔍</span>
+          <p className="text-[calc(12px*var(--fs))] font-medium">{t('memo.searchEmptyTitle')}</p>
+        </div>
+      )
+    }
     return (
       <div className="flex flex-col items-center justify-center flex-1 gap-2 py-12">
         <span className="text-3xl">📝</span>
@@ -46,6 +55,7 @@ export default function MemoList({
           key={memo.memoId}
           memo={memo}
           isSelected={memo.memoId === selectedId}
+          searchQuery={searchQuery}
           onSelect={() => onSelect(memo.memoId)}
           onAlarmConfirm={() => onAlarmConfirm(memo.memoId)}
           onAlarmDismiss={() => onAlarmDismiss(memo.memoId)}

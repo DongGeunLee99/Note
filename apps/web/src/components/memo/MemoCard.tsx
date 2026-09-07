@@ -3,11 +3,13 @@ import Spinner from '@/components/common/Spinner'
 import { useTranslation } from 'react-i18next'
 import { useLang } from '@/i18n'
 import { formatRelTime, formatSuggestionTime } from '@/utils/formatDate'
+import { highlightMatch } from '@/utils/highlightMatch'
 import type { MemoView } from '@/stores/useMemoStore'
 
 interface MemoCardProps {
   memo: MemoView
   isSelected: boolean
+  searchQuery?: string
   onSelect: () => void
   onAlarmConfirm: () => void
   onAlarmDismiss: () => void
@@ -15,11 +17,12 @@ interface MemoCardProps {
 }
 
 export default function MemoCard({
-  memo, isSelected, onSelect, onAlarmConfirm, onAlarmDismiss, onContextMenu,
+  memo, isSelected, searchQuery = '', onSelect, onAlarmConfirm, onAlarmDismiss, onContextMenu,
 }: MemoCardProps) {
   const { t } = useTranslation()
   const lang = useLang()
   const preview = memo.body.length > 80 ? memo.body.slice(0, 80) + '…' : memo.body
+  const title = memo.title || memo.body.split('\n')[0].slice(0, 30)
 
   const showFooter = memo.aiLoading || !!memo.alarmSuggestion
 
@@ -36,13 +39,13 @@ export default function MemoCard({
       <div className="flex items-start justify-between gap-2 mb-1">
         <span className="text-[calc(11px*var(--fs))] font-medium flex-1 truncate flex items-center gap-1">
           {memo.pinnedAt && <IconPin size={11} style={{ color: 'var(--color-primary)', flexShrink: 0 }} />}
-          {memo.title || memo.body.split('\n')[0].slice(0, 30)}
+          {highlightMatch(title, searchQuery)}
         </span>
         <span className="text-[calc(9px*var(--fs))] flex-shrink-0" style={{ color: 'var(--color-muted)' }}>{formatRelTime(memo.createdAt.toDate(), lang)}</span>
       </div>
 
       <p className="text-[calc(10px*var(--fs))] leading-relaxed mb-1.5" style={{ color: 'var(--color-muted)' }}>
-        {preview}
+        {highlightMatch(preview, searchQuery)}
       </p>
 
       {memo.location.label && (

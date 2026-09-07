@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next'
 import { useAuthContext } from '@/contexts/AuthContext'
 import { useAlarmStore } from '@/stores/useAlarmStore'
 import { useTrashStore } from '@/stores/useTrashStore'
+import Tooltip from '@/components/common/Tooltip'
 
 type NavItem = { to: string; icon: React.ComponentType<{ size?: number; style?: React.CSSProperties }>; labelKey: 'home' | 'memo' | 'calendar' | 'alarm' | 'later' | 'someday' | 'dashboard' | 'trash' }
 
@@ -21,6 +22,13 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/dashboard', icon: IconLayoutDashboard, labelKey: 'dashboard' },
   { to: '/trash', icon: IconTrash, labelKey: 'trash' },
 ]
+
+function navLinkStyle({ isActive }: { isActive: boolean }) {
+  return {
+    background: isActive ? 'var(--color-primary-subtle)' : 'transparent',
+    color: isActive ? 'var(--color-primary)' : 'var(--color-muted)',
+  }
+}
 
 export default function Sidebar() {
   const navigate = useNavigate()
@@ -48,101 +56,68 @@ export default function Sidebar() {
 
   return (
     <aside
-      className="w-40 flex-shrink-0 flex flex-col border-r"
+      className="w-12 flex-shrink-0 flex flex-col items-center py-2 gap-1 border-r"
       style={{ background: 'var(--color-surface-2)', borderColor: 'var(--color-border)' }}
     >
-      <NavLink
-        to="/home"
-        className="px-3 py-2.5 text-[calc(12px*var(--fs))] font-medium border-b hover:opacity-75 transition-opacity"
-        style={{ borderColor: 'var(--color-border)' }}
-      >
-        <span style={{ color: 'var(--color-primary)' }}>Smart</span>Note
-      </NavLink>
-
-      <p className="px-3 pt-2 pb-0.5 text-[calc(9px*var(--fs))] uppercase tracking-wide" style={{ color: 'var(--color-muted)' }}>
-        {t('sidebar.menu')}
-      </p>
-
-      <nav className="flex flex-col flex-1">
+      <nav className="flex flex-col items-center gap-1 flex-1">
         {NAV_ITEMS.map(({ to, icon: Icon, labelKey }) => {
           const count = countByPath[to]
           return (
-          <NavLink
-            key={to}
-            to={to}
-            end={to === '/home'}
-            className={({ isActive }) =>
-              `flex items-center gap-1.5 px-3 py-[6px] text-[calc(11px*var(--fs))] border-r-2 transition-colors ${
-                isActive
-                  ? 'font-medium border-[var(--color-primary)] bg-[var(--color-surface)]'
-                  : 'border-transparent hover-tint'
-              }`
-            }
-            style={({ isActive }) => ({
-              color: isActive ? 'var(--color-primary)' : 'var(--color-muted)',
-            })}
-          >
-            <Icon size={15} />
-            <span className="flex-1">{t(`sidebar.${labelKey}`)}</span>
-            {count > 0 && (
-              <span
-                className="text-[calc(9px*var(--fs))] px-1.5 py-px rounded-full"
-                style={{ background: 'var(--color-primary-subtle)', color: 'var(--color-primary-emphasis)' }}
+            <Tooltip key={to} label={t(`sidebar.${labelKey}`)}>
+              <NavLink
+                to={to}
+                end={to === '/home'}
+                className={({ isActive }) => `relative w-9 h-9 flex items-center justify-center rounded-lg transition-colors ${isActive ? '' : 'hover-tint'}`}
+                style={navLinkStyle}
               >
-                {count}
-              </span>
-            )}
-          </NavLink>
+                <Icon size={18} />
+                {count > 0 && (
+                  <span
+                    className="absolute -top-0.5 -right-0.5 min-w-[14px] h-[14px] px-[3px] rounded-full flex items-center justify-center text-[calc(8px*var(--fs))] font-semibold"
+                    style={{ background: 'var(--color-primary)', color: '#fff' }}
+                  >
+                    {count}
+                  </span>
+                )}
+              </NavLink>
+            </Tooltip>
           )
         })}
+      </nav>
 
-        <div className="mt-auto border-t" style={{ borderColor: 'var(--color-border)' }}>
-          <p className="px-3 pt-2 pb-0.5 text-[calc(9px*var(--fs))] uppercase tracking-wide" style={{ color: 'var(--color-muted)' }}>
-            {t('sidebar.account')}
-          </p>
-
-          {/* 프로필 행 */}
-          <div className="flex items-center gap-2 px-3 py-2">
-            {profile?.profileImage ? (
-              <img
-                src={profile.profileImage}
-                alt=""
-                className="w-6 h-6 rounded-full object-cover flex-shrink-0"
-              />
-            ) : (
-              <div
-                className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 text-[calc(10px*var(--fs))] font-medium text-white"
-                style={{ background: 'var(--color-primary)' }}
-              >
-                {initial}
-              </div>
-            )}
-            <span className="flex-1 text-[calc(11px*var(--fs))] font-medium truncate">{name}</span>
-            <button
-              onClick={handleLogout}
-              className="p-1 rounded hover-tint transition-colors flex-shrink-0"
-              title={t('sidebar.logout')}
-            >
-              <IconLogout size={13} style={{ color: 'var(--color-muted)' }} />
-            </button>
-          </div>
-
+      <div className="flex flex-col items-center gap-1">
+        <Tooltip label={t('sidebar.settings')}>
           <NavLink
             to="/settings"
-            className={({ isActive }) =>
-              `flex items-center gap-1.5 px-3 py-[6px] text-[calc(11px*var(--fs))] border-r-2 transition-colors ${
-                isActive
-                  ? 'font-medium border-[var(--color-primary)] bg-[var(--color-surface)]'
-                  : 'border-transparent hover-tint'
-              }`
-            }
-            style={{ color: 'var(--color-muted)' }}
+            className={({ isActive }) => `w-9 h-9 flex items-center justify-center rounded-lg transition-colors ${isActive ? '' : 'hover-tint'}`}
+            style={navLinkStyle}
           >
-            <IconSettings size={15} />
-            <span>{t('sidebar.settings')}</span>
+            <IconSettings size={17} />
           </NavLink>
-        </div>
-      </nav>
+        </Tooltip>
+
+        <Tooltip label={name}>
+          {profile?.profileImage ? (
+            <img src={profile.profileImage} alt="" className="w-7 h-7 rounded-full object-cover" />
+          ) : (
+            <div
+              className="w-7 h-7 rounded-full flex items-center justify-center text-[calc(10px*var(--fs))] font-medium text-white"
+              style={{ background: 'var(--color-primary)' }}
+            >
+              {initial}
+            </div>
+          )}
+        </Tooltip>
+
+        <Tooltip label={t('sidebar.logout')}>
+          <button
+            onClick={handleLogout}
+            className="w-9 h-9 flex items-center justify-center rounded-lg hover-tint transition-colors"
+          >
+            <IconLogout size={16} style={{ color: 'var(--color-muted)' }} />
+          </button>
+        </Tooltip>
+      </div>
     </aside>
   )
 }

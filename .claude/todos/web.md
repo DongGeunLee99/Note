@@ -6,6 +6,41 @@
 
 ## 미완료
 
+### 가짜 데이터 제거 — 나중에/언젠가 Firestore 연동 + 홈 오늘일정 실데이터 (진행 중)
+
+> 2026-09-07 적재·승인. 원래 A안(chrono-node)으로 승인했다가, 테스트 중 **chrono-node가 한국어를 전혀 지원 안 함**(공식 로케일 목록에 `ko` 없음, "내일 오후 3시" 등 100% 매치 0건)을 발견 → **D안(LLM 파싱)으로 변경**: 기존 `aiSummarize`와 동일 패턴의 Gemini Cloud Function(`parseDateTime`) 신설. 홈 "최근 기록"/QuickInput 실연동은 이번 배치에서 제외 — 별도 후속.
+
+- [x] `packages/shared/services/laterService.ts` 신설
+- [x] `packages/shared/services/somedayService.ts` 신설
+- [x] `functions/src/parseDateTime.ts` 신설 — Gemini로 자연어→ISO 날짜시간 (D안, `aiSummarize` 패턴)
+- [x] `functions/src/prompts.ts` — `DATE_PARSE_SYSTEM` 프롬프트 추가
+- [x] `functions/src/index.ts` — `parseDateTime` export 추가
+- [x] `llamaService.ts` — `requestParsedDateTime(text, reference)` 클라이언트 호출 추가
+- [x] `useLaterStore.ts` — Firestore subscribe 패턴 + `addItem` 비동기(LLM 파싱)로 재작성
+- [x] `useSomedayStore.ts` — Firestore subscribe 패턴으로 재작성 — **에뮬레이터에서 추가/삭제/새로고침 유지 확인 완료**
+- [x] `AppLayout.tsx` — later/someday subscribe·unsubscribe 추가
+- [x] `LaterPage.tsx` — 필드명(`text`→`title`) + Timestamp 표시 + 비동기 저장(saving 상태) 반영
+- [x] `SomedayPage.tsx` — 비동기 CRUD 반영
+- [x] `UpcomingDeadlines.tsx` — 새 Later 타입/포맷 반영
+- [x] `TodayTimeline.tsx` — `useAlarmStore` + `useCalendarStore` 합산 실데이터로 교체 — **빈 상태("오늘은 일정이 없어요") 확인 완료**
+- [x] `mocks/mockData.ts` — Later/Someday/TodaySchedule 목업 제거
+- [x] `types/localItems.ts` — 관련 타입 제거, `@smartnote/shared/types` 사용
+- [x] Firestore 보안 규칙 확인 — `users/{uid}/{document=**}` 와일드카드라 later/someday 별도 규칙 불필요
+- [x] `tsc -b`(web) / `tsc --noEmit`(functions) 통과
+- [ ] **차단됨(사용자 액션 필요): Gemini API 선불 크레딧 소진** — 에뮬레이터에서 `parseDateTime` 호출 시 429 `RESOURCE_EXHAUSTED`("prepayment credits are depleted"). 코드/로직은 정상 동작 확인(함수 호출→Gemini 요청까지 도달), AI Studio(https://ai.studio/projects)에서 결제 처리해야 나중에 추가 전체 플로우 검증 가능. **같은 키를 쓰는 메모 AI 정리(`aiSummarize`)도 현재 동일하게 막혀있을 가능성 높음**
+- [ ] 최종 검증: 크레딧 충전 후 나중에 추가 → 알림시간 파싱 성공 → 새로고침 유지 확인
+
+### 메모 검색 (웹 완료, 2026-09-07)
+
+> 2026-09-03 적재. VSCode Ctrl+Shift+F 느낌의 메모 제목/본문 검색. 모바일이 최우선 설계였으나 `apps/mobile`이 아직 착수 전(Phase 4)이라 이번엔 웹만 구현 — 모바일 풀스크린 검색 뷰는 모바일 착수 시 후속.
+
+- [x] 클라이언트 사이드 필터 — `MemoPage`에서 `useMemoStore`의 memos를 제목/본문 대소문자 무시 매치로 필터(`filteredMemos`)
+- [x] 진입 UI: 헤더에 검색 아이콘 → 상단 검색바 인라인 확장(웹, 공간 여유 활용), X/Escape로 닫기
+- [x] 결과 리스트: `highlightMatch` 유틸로 제목/본문 매치 구간 `<mark>` 하이라이트
+- [x] 검색 종료 시 원래 메모 리스트로 복귀 — 확인 완료(닫기 클릭 시 필터 해제, 전체 목록 복귀)
+- [x] 검색 결과 0건일 때 별도 빈 상태("검색 결과가 없습니다") — 메모 자체가 없을 때와 구분
+- [ ] 모바일 풀스크린 검색 뷰 — `apps/mobile` 착수 시 후속
+
 ### 캘린더 후속 (큐 — "작업하자" 신호 시 일괄 실행)
 
 > 2026-06-17 적재. 기본 일정 Firestore 연동(반복 없음)은 완료된 상태에서의 후속.
@@ -93,7 +128,7 @@
 - [ ] 홈 자연어 입력 → AI 분류 결과 연결
 - [x] 메모 **AI 정리** 실제 연결 — Gemini Flash(`aiSummarize` callable). `useMemoStore.runAi`가 호출, 실패 시 로컬 폴백, `aiSummaryEdited` 보존
 - [ ] 메모 **알람 제안** 실제 연결 (현재 chrono 로컬, 한국어/AM·PM은 후속 LLM)
-- [ ] 나중에 / 언젠가 페이지 백엔드 연동 — **MVP 이후로 보류(2026-06-18 결정)**
+- [ ] 나중에 / 언젠가 페이지 백엔드 연동 — 2026-09-07 착수 결정(보류 해제). 아래 "가짜 데이터 제거" 큐 참고
 - [ ] 기기 활성 상태(isActive) 보고
 - [ ] 메모 풀 버전 히스토리 — Firestore `versions` 서브컬렉션 (1-스텝 되돌리기의 확장)
 
@@ -104,6 +139,13 @@
 ---
 
 ## 완료
+
+### UI 재설계 — 메모 좌우 분할 레이아웃 + 사이드바 아이콘 전용 레일 (2026-09-07)
+- [x] `MemoPage.tsx` — VSCode/Obsidian 스타일로 전면 재구성: 좌측 목록(300px 고정) + 우측 상세 패널, `Modal` 제거(팝업 없이 인라인 편집). 선택 없을 때 빈 상태 문구
+- [x] `Sidebar.tsx` — 라벨형 `w-40` → 아이콘 전용 `w-12` 레일. 뱃지는 아이콘 모서리 숫자로, 하단 프로필은 아바타만(이름은 툴팁)
+- [x] `Tooltip.tsx` 신규 — hover 150ms 지연 커스텀 툴팁(사이드바 아이콘용)
+- [x] 브라우저로 직접 검증: 메모 목록 클릭→우측 즉시 갱신, 신규 작성→저장→목록 반영, 다른 페이지(홈/캘린더) 레이아웃 정상, 툴팁 표시 확인
+- [x] 사용하지 않게 된 i18n 키(`sidebar.menu`/`sidebar.account`) 정리, `memo.selectPrompt` 키 추가(ko/en/ja)
 
 ### UI 정리 — 피그마 목업 대조 + 메모 상세 모달 재설계 (2026-08-14)
 - [x] 메인 콘텐츠 좌우 여백 + 중앙 정렬(`max-w-5xl mx-auto`) — 홈/메모/알람/캘린더/나중에/언젠가/휴지통/대시보드 8개 페이지
