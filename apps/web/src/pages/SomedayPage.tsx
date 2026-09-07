@@ -12,7 +12,7 @@ import ResizableRightPanel from '@/components/common/ResizableRightPanel'
 import { useToast } from '@/contexts/ToastContext'
 import { useTranslation } from 'react-i18next'
 import { useSomedayStore } from '@/stores/useSomedayStore'
-import type { SomedayCategory } from '@/types/localItems'
+import type { SomedayCategory } from '@smartnote/shared/types'
 import { TONES, type Tone } from '@/theme/tones'
 
 const CATEGORY_TONES: Record<SomedayCategory, Tone> = {
@@ -81,7 +81,7 @@ export default function SomedayPage() {
               const tone = TONES[CATEGORY_TONES[item.category]]
               return (
                 <div
-                  key={item.id}
+                  key={item.somedayId}
                   className="flex items-center gap-2 border rounded-lg px-3 py-2 group"
                   style={{ borderColor: 'var(--color-border)' }}
                 >
@@ -89,11 +89,11 @@ export default function SomedayPage() {
                     {CATEGORY_ICONS[item.category]}
                   </div>
                   <span className="flex-1 text-[calc(11px*var(--fs))] font-medium">{item.title}</span>
-                  <button onClick={() => toggleFavorite(item.id)} className="flex-shrink-0">
+                  <button onClick={() => toggleFavorite(item.somedayId)} className="flex-shrink-0">
                     <IconStar size={13} style={{ color: FAVORITE_COLOR, fill: item.isFavorite ? FAVORITE_COLOR : 'none', flexShrink: 0 }} />
                   </button>
                   <Badge variant={CATEGORY_TONES[item.category]}>{t(`someday.categoryNames.${item.category}`)}</Badge>
-                  <button onClick={() => handleDelete(item.id)} className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded flex-shrink-0">
+                  <button onClick={() => handleDelete(item.somedayId)} className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded flex-shrink-0">
                     <IconTrash size={11} style={{ color: 'var(--color-danger)' }} />
                   </button>
                 </div>

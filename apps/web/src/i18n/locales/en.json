@@ -13,8 +13,6 @@
     "themeColorHint": "Theme color · changes with the app theme"
   },
   "sidebar": {
-    "menu": "Menu",
-    "account": "Account",
     "home": "Home",
     "memo": "Memo",
     "calendar": "Calendar",
@@ -39,6 +37,7 @@
     "quickPlaceholder": "Type anything on your mind…",
     "recent": "Recent ({{n}})",
     "todaySchedule": "Today's Schedule",
+    "todayScheduleEmpty": "Nothing scheduled today",
     "remaining": "{{n}} remaining",
     "now": "Now",
     "upcoming": "Due Soon · Later",
@@ -98,6 +97,9 @@
     "write": "+ New Memo",
     "emptyTitle": "No memos",
     "emptyDesc": "Start with the New Memo button above",
+    "searchPlaceholder": "Search title, body",
+    "searchEmptyTitle": "No results",
+    "selectPrompt": "Select a memo or write a new one",
     "titlePlaceholder": "Title (optional)",
     "bodyPlaceholder": "Write something\n\nDates and times are detected as alarm suggestions",
     "locationLoading": "Getting location…",
@@ -179,7 +181,8 @@
     "emptyTitle": "No items",
     "ctxNew": "New Item",
     "toastAdded": "Item added",
-    "toastDeleted": "Item deleted"
+    "toastDeleted": "Item deleted",
+    "notifyAtParseError": "Couldn't understand that time. Try phrasing it differently"
   },
   "someday": {
     "pageTitle": "Someday List",

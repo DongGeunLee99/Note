@@ -1,25 +1,63 @@
 import { create } from 'zustand'
-import type { LaterItem } from '@/types/localItems'
-import { INITIAL_LATER } from '@/mocks/mockData'
-import { newLocalId } from '@/utils/id'
+import type { Later } from '@smartnote/shared/types'
+import { subscribeLater, createLater, setLaterCompleted, softDeleteLater } from '@smartnote/shared/services/laterService'
+import { requestParsedDateTime } from '@/services/llamaService'
 
 interface LaterState {
-  items: LaterItem[]
-  addItem: (text: string, notifyAt: string) => void
-  toggleComplete: (id: string) => void
-  deleteItem: (id: string) => void
+  uid: string | null
+  isLoading: boolean
+  items: Later[]
+  subscribe: (uid: string) => void
+  unsubscribe: () => void
+  /** notifyAt 자연어 파싱 실패 시 false 반환(저장 안 함) */
+  addItem: (title: string, notifyAtText: string) => Promise<boolean>
+  toggleComplete: (laterId: string) => void
+  deleteItem: (laterId: string) => void
 }
 
-export const useLaterStore = create<LaterState>()((set) => ({
-  items: INITIAL_LATER,
+let unsubLater: (() => void) | null = null
 
-  addItem: (text, notifyAt) => set(s => ({
-    items: [{ id: newLocalId('l'), text, notifyAt: notifyAt || '미정', isCompleted: false }, ...s.items],
-  })),
+export const useLaterStore = create<LaterState>()((set, get) => ({
+  uid: null,
+  isLoading: true,
+  items: [],
 
-  toggleComplete: (id) => set(s => ({
-    items: s.items.map(i => i.id === id ? { ...i, isCompleted: !i.isCompleted } : i),
-  })),
+  subscribe: (uid) => {
+    get().unsubscribe()
+    set({ uid, isLoading: true })
+    unsubLater = subscribeLater(uid, items => {
+      set({
+        items: [...items].sort((a, b) => a.notifyAt.toMillis() - b.notifyAt.toMillis()),
+        isLoading: false,
+      })
+    })
+  },
 
-  deleteItem: (id) => set(s => ({ items: s.items.filter(i => i.id !== id) })),
+  unsubscribe: () => {
+    unsubLater?.()
+    unsubLater = null
+    set({ uid: null, isLoading: true, items: [] })
+  },
+
+  addItem: async (title, notifyAtText) => {
+    const uid = get().uid
+    if (!uid) return false
+    const date = await requestParsedDateTime(notifyAtText, new Date())
+    if (!date) return false
+    createLater(uid, title, date)
+    return true
+  },
+
+  toggleComplete: (laterId) => {
+    const { uid, items } = get()
+    const item = items.find(i => i.laterId === laterId)
+    if (!uid || !item) return
+    setLaterCompleted(uid, laterId, !item.isCompleted)
+  },
+
+  deleteItem: (laterId) => {
+    const uid = get().uid
+    if (!uid) return
+    softDeleteLater(uid, laterId)
+  },
 }))

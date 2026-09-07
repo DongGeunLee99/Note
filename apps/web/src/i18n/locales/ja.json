@@ -13,8 +13,6 @@
     "themeColorHint": "テーマカラー · テーマを変えるとこの色も変わります"
   },
   "sidebar": {
-    "menu": "メニュー",
-    "account": "アカウント",
     "home": "ホーム",
     "memo": "メモ",
     "calendar": "カレンダー",
@@ -39,6 +37,7 @@
     "quickPlaceholder": "頭に浮かんだことを何でも入力してみてください…",
     "recent": "最近の記録 ({{n}})",
     "todaySchedule": "今日の予定",
+    "todayScheduleEmpty": "今日の予定はありません",
     "remaining": "残りの予定 {{n}}件",
     "now": "今",
     "upcoming": "もうすぐ・あとで",
@@ -98,6 +97,9 @@
     "write": "+ メモ作成",
     "emptyTitle": "メモがありません",
     "emptyDesc": "上のメモ作成ボタンから始めましょう",
+    "searchPlaceholder": "タイトル・本文を検索",
+    "searchEmptyTitle": "検索結果がありません",
+    "selectPrompt": "メモを選択するか、新しく作成してください",
     "titlePlaceholder": "タイトル（任意）",
     "bodyPlaceholder": "内容を入力してください\n\n日時が含まれると、アラームとして自動で検出します",
     "locationLoading": "位置を取得中…",
@@ -179,7 +181,8 @@
     "emptyTitle": "項目がありません",
     "ctxNew": "項目追加",
     "toastAdded": "項目を追加しました",
-    "toastDeleted": "項目を削除しました"
+    "toastDeleted": "項目を削除しました",
+    "notifyAtParseError": "通知時間を認識できませんでした。別の表現で入力してください"
   },
   "someday": {
     "pageTitle": "いつかリスト",

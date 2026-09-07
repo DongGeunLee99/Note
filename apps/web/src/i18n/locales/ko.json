@@ -13,8 +13,6 @@
     "themeColorHint": "테마색 · 테마를 바꾸면 이 색도 같이 바뀝니다"
   },
   "sidebar": {
-    "menu": "메뉴",
-    "account": "계정",
     "home": "홈",
     "memo": "메모",
     "calendar": "캘린더",
@@ -39,6 +37,7 @@
     "quickPlaceholder": "생각나는 모든 것을 입력해 보세요…",
     "recent": "최근 기록 ({{n}})",
     "todaySchedule": "오늘 일정",
+    "todayScheduleEmpty": "오늘은 일정이 없어요",
     "remaining": "남은 일정 {{n}}개",
     "now": "지금",
     "upcoming": "곧 마감 · 나중에",
@@ -98,6 +97,9 @@
     "write": "+ 메모 작성",
     "emptyTitle": "메모가 없습니다",
     "emptyDesc": "위의 메모 작성 버튼으로 시작해보세요",
+    "searchPlaceholder": "제목, 본문 검색",
+    "searchEmptyTitle": "검색 결과가 없습니다",
+    "selectPrompt": "메모를 선택하거나 새로 작성해보세요",
     "titlePlaceholder": "제목 (선택)",
     "bodyPlaceholder": "내용을 입력하세요\n\n날짜/시간이 포함되면 알람을 자동으로 감지해요",
     "locationLoading": "위치 가져오는 중…",
@@ -179,7 +181,8 @@
     "emptyTitle": "항목이 없습니다",
     "ctxNew": "항목 추가",
     "toastAdded": "항목이 추가되었습니다",
-    "toastDeleted": "항목이 삭제되었습니다"
+    "toastDeleted": "항목이 삭제되었습니다",
+    "notifyAtParseError": "알림 시간을 이해하지 못했어요. 다르게 표현해 주세요"
   },
   "someday": {
     "pageTitle": "언젠가 리스트",

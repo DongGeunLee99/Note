@@ -1,25 +1,55 @@
 import { create } from 'zustand'
-import type { SomedayCategory, SomedayItem } from '@/types/localItems'
-import { INITIAL_SOMEDAY } from '@/mocks/mockData'
-import { newLocalId } from '@/utils/id'
+import type { Someday, SomedayCategory } from '@smartnote/shared/types'
+import { subscribeSomeday, createSomeday, setSomedayFavorite, softDeleteSomeday } from '@smartnote/shared/services/somedayService'
 
 interface SomedayState {
-  items: SomedayItem[]
+  uid: string | null
+  isLoading: boolean
+  items: Someday[]
+  subscribe: (uid: string) => void
+  unsubscribe: () => void
   addItem: (title: string, category: SomedayCategory, isFavorite: boolean) => void
-  deleteItem: (id: string) => void
-  toggleFavorite: (id: string) => void
+  deleteItem: (somedayId: string) => void
+  toggleFavorite: (somedayId: string) => void
 }
 
-export const useSomedayStore = create<SomedayState>()((set) => ({
-  items: INITIAL_SOMEDAY,
+let unsubSomeday: (() => void) | null = null
 
-  addItem: (title, category, isFavorite) => set(s => ({
-    items: [...s.items, { id: newLocalId('s'), title, category, isFavorite }],
-  })),
+export const useSomedayStore = create<SomedayState>()((set, get) => ({
+  uid: null,
+  isLoading: true,
+  items: [],
 
-  deleteItem: (id) => set(s => ({ items: s.items.filter(i => i.id !== id) })),
+  subscribe: (uid) => {
+    get().unsubscribe()
+    set({ uid, isLoading: true })
+    unsubSomeday = subscribeSomeday(uid, items => {
+      set({ items, isLoading: false })
+    })
+  },
 
-  toggleFavorite: (id) => set(s => ({
-    items: s.items.map(i => i.id === id ? { ...i, isFavorite: !i.isFavorite } : i),
-  })),
+  unsubscribe: () => {
+    unsubSomeday?.()
+    unsubSomeday = null
+    set({ uid: null, isLoading: true, items: [] })
+  },
+
+  addItem: (title, category, isFavorite) => {
+    const uid = get().uid
+    if (!uid) return
+    createSomeday(uid, title, category, isFavorite)
+  },
+
+  deleteItem: (somedayId) => {
+    const uid = get().uid
+    if (!uid) return
+    softDeleteSomeday(uid, somedayId)
+  },
+
+  toggleFavorite: (somedayId) => {
+    const { uid, items } = get()
+    const item = items.find(i => i.somedayId === somedayId)
+    if (!uid || !item) return
+    setSomedayFavorite(uid, somedayId, !item.isFavorite)
+  },
 }))

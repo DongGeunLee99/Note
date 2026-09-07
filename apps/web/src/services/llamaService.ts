@@ -44,3 +44,10 @@ export async function requestAiSummary(text: string): Promise<string> {
   const { data } = await fn({ text })
   return data.summary
 }
+
+/** Gemini Cloud Function(parseDateTime) 호출 — 자연어 문장에서 날짜/시간 추출(못 찾으면 null) */
+export async function requestParsedDateTime(text: string, reference: Date): Promise<Date | null> {
+  const fn = httpsCallable<{ text: string; referenceIso: string }, { iso: string | null }>(functions, 'parseDateTime')
+  const { data } = await fn({ text, referenceIso: reference.toISOString() })
+  return data.iso ? new Date(data.iso) : null
+}

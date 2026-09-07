@@ -7,6 +7,8 @@ import { useAlarmStore } from '@/stores/useAlarmStore'
 import { useMemoStore } from '@/stores/useMemoStore'
 import { useTrashStore } from '@/stores/useTrashStore'
 import { useCalendarStore } from '@/stores/useCalendarStore'
+import { useLaterStore } from '@/stores/useLaterStore'
+import { useSomedayStore } from '@/stores/useSomedayStore'
 
 export default function AppLayout() {
   const { user } = useAuthContext()
@@ -18,6 +20,10 @@ export default function AppLayout() {
   const unsubscribeTrash = useTrashStore(s => s.unsubscribe)
   const subscribeEvents = useCalendarStore(s => s.subscribe)
   const unsubscribeEvents = useCalendarStore(s => s.unsubscribe)
+  const subscribeLater = useLaterStore(s => s.subscribe)
+  const unsubscribeLater = useLaterStore(s => s.unsubscribe)
+  const subscribeSomeday = useSomedayStore(s => s.subscribe)
+  const unsubscribeSomeday = useSomedayStore(s => s.unsubscribe)
 
   useEffect(() => {
     if (!user) return
@@ -25,13 +31,25 @@ export default function AppLayout() {
     subscribeMemos(user.uid)
     subscribeTrash(user.uid)
     subscribeEvents(user.uid)
+    subscribeLater(user.uid)
+    subscribeSomeday(user.uid)
     return () => {
       unsubscribeAlarms()
       unsubscribeMemos()
       unsubscribeTrash()
       unsubscribeEvents()
+      unsubscribeLater()
+      unsubscribeSomeday()
     }
-  }, [user, subscribeAlarms, unsubscribeAlarms, subscribeMemos, unsubscribeMemos, subscribeTrash, unsubscribeTrash, subscribeEvents, unsubscribeEvents])
+  }, [
+    user,
+    subscribeAlarms, unsubscribeAlarms,
+    subscribeMemos, unsubscribeMemos,
+    subscribeTrash, unsubscribeTrash,
+    subscribeEvents, unsubscribeEvents,
+    subscribeLater, unsubscribeLater,
+    subscribeSomeday, unsubscribeSomeday,
+  ])
 
   return (
     <div className="flex h-screen overflow-hidden" style={{ background: 'var(--color-surface-3)' }}>

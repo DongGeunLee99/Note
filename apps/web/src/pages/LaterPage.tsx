@@ -10,22 +10,37 @@ import EmptyState from '@/components/common/EmptyState'
 import ResizableRightPanel from '@/components/common/ResizableRightPanel'
 import { useToast } from '@/contexts/ToastContext'
 import { useTranslation } from 'react-i18next'
+import { useLang } from '@/i18n'
 import { useLaterStore } from '@/stores/useLaterStore'
+import { formatSuggestionTime } from '@/utils/formatDate'
 import { TONES } from '@/theme/tones'
 
 export default function LaterPage() {
   const toast = useToast()
   const { t } = useTranslation()
+  const lang = useLang()
   const items = useLaterStore(s => s.items)
   const { addItem, toggleComplete, deleteItem } = useLaterStore.getState()
   const [modalOpen, setModalOpen] = useState(false)
   const { menu, open: openMenu, close: closeMenu } = useContextMenu()
   const [text, setText] = useState('')
   const [notifyAt, setNotifyAt] = useState('')
+  const [saving, setSaving] = useState(false)
 
-  function handleAdd() {
-    if (!text.trim()) return
-    addItem(text.trim(), notifyAt.trim())
+  async function handleAdd() {
+    if (!text.trim() || !notifyAt.trim() || saving) return
+    setSaving(true)
+    let ok: boolean
+    try {
+      ok = await addItem(text.trim(), notifyAt.trim())
+    } catch {
+      ok = false
+    }
+    setSaving(false)
+    if (!ok) {
+      toast(t('later.notifyAtParseError'), 'error')
+      return
+    }
     toast(t('later.toastAdded'), 'success')
     setText('')
     setNotifyAt('')
@@ -63,12 +78,12 @@ export default function LaterPage() {
           ) : (
             items.map(item => (
               <div
-                key={item.id}
+                key={item.laterId}
                 className={`flex items-center gap-2 py-2 border-b group ${item.isCompleted ? 'opacity-40' : ''}`}
                 style={{ borderColor: 'var(--color-border)' }}
               >
                 <button
-                  onClick={() => toggleComplete(item.id)}
+                  onClick={() => toggleComplete(item.laterId)}
                   className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors"
                   style={{ background: item.isCompleted ? TONES.green.bg : TONES.violet.bg }}
                 >
@@ -77,14 +92,14 @@ export default function LaterPage() {
                     : <IconBell size={13} style={{ color: TONES.violet.fg }} />}
                 </button>
                 <div className="flex-1 min-w-0">
-                  <p className={`text-[calc(11px*var(--fs))] ${item.isCompleted ? 'line-through' : 'font-medium'}`}>{item.text}</p>
-                  <p className="text-[calc(9px*var(--fs))]" style={{ color: 'var(--color-muted)' }}>{item.notifyAt}</p>
+                  <p className={`text-[calc(11px*var(--fs))] ${item.isCompleted ? 'line-through' : 'font-medium'}`}>{item.title}</p>
+                  <p className="text-[calc(9px*var(--fs))]" style={{ color: 'var(--color-muted)' }}>{formatSuggestionTime(item.notifyAt.toDate(), lang)}</p>
                 </div>
                 <Badge variant={item.isCompleted ? 'green' : 'violet'}>
                   {item.isCompleted ? t('later.done') : t('later.waiting')}
                 </Badge>
                 <button
-                  onClick={() => handleDelete(item.id)}
+                  onClick={() => handleDelete(item.laterId)}
                   className="opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded"
                 >
                   <IconTrash size={11} style={{ color: 'var(--color-danger)' }} />
@@ -119,7 +134,7 @@ export default function LaterPage() {
         title={t('later.modalTitle')}
         confirmLabel={t('common.add')}
         onConfirm={handleAdd}
-        confirmDisabled={!text.trim()}
+        confirmDisabled={!text.trim() || !notifyAt.trim() || saving}
       >
         <div className="flex flex-col gap-0">
           {[
