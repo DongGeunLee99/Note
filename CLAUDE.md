@@ -18,9 +18,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **SmartNote** — 알람·메모·캘린더를 하나로 통합한 개인용 앱 (타겟: 1인 사용자)
 
 핵심 차별점:
-- 메모 저장 시 Llama AI가 자동으로 날짜/시간을 감지해 알람을 제안
+- 메모 저장 시 AI가 자동으로 날짜/시간을 감지해 알람을 제안
 - 알람을 그룹으로 묶어 ON/OFF 한 번에 관리
-- 홈 화면 자연어 입력 → Llama가 일정/알람/메모/나중에/언젠가로 자동 분류
+- 홈 화면 자연어 입력 → AI가 일정/알람/메모/나중에/언젠가로 자동 분류
 
 ---
 
@@ -33,7 +33,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | 데스크탑 | Electron (웹 빌드 래핑) |
 | 백엔드/DB | Firebase Firestore + Cloud Functions |
 | 인증 | 카카오 로그인 → Firebase 커스텀 토큰 |
-| AI | Llama (호스팅 방식 미정: Groq / Together AI / Ollama 자체 서버) |
+| AI | Google Gemini (Cloud Functions: `aiSummarize` 메모요약 / `parseDateTime` 날짜파싱) |
 | 알람 (웹) | Web Audio API + Service Worker |
 | 알람 (Electron) | node-schedule + OS Notification API |
 | 알람 (모바일) | FCM (Firebase Cloud Messaging) |
@@ -41,7 +41,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | 자연어 시간 파싱 | chrono-node |
 | 캘린더 UI | react-big-calendar + date-fns |
 | 차트 | Recharts |
-| 다국어(i18n) | i18next + react-i18next (한/영) |
+| 다국어(i18n) | i18next + react-i18next (한/영/일) |
 | 테마 | `data-theme` 5종 (system/light/dark/purple/blue) |
 
 ---
@@ -50,24 +50,23 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```
 smartnote/
-├── packages/shared/          ← 3개 플랫폼 공통 (타입, 훅, 서비스, 유틸)
-│   ├── types/                ← Alarm, AlarmGroup, Memo, Device, Later, Someday
-│   ├── hooks/                ← Firestore CRUD 훅, useKakaoAuth
-│   ├── services/             ← alarmService, memoService, llamaService
-│   ├── utils/                ← parseTime (chrono-node), formatDate, constants
-│   ├── tokens/design.ts      ← 색상·간격·폰트 디자인 토큰
-│   └── firebase/config.ts    ← Firebase 초기화 (공통)
-├── apps/web/                 ← React + Vite PWA
-├── apps/electron/            ← 웹 빌드를 로드하는 최소 네이티브 코드
-├── apps/mobile/              ← React Native + Expo
+├── packages/shared/          ← 3개 플랫폼 공통 (타입, 훅, 서비스, 스토어)
+│   ├── types/                ← Alarm, AlarmGroup, Memo, Device, Later, Someday, CalendarEvent
+│   ├── hooks/                ← useAuth, useKakaoAuth
+│   ├── services/             ← alarmService, alarmGroupService, memoService, eventService,
+│   │                            laterService, somedayService, firestoreHelpers, llamaService(Gemini 호출)
+│   ├── stores/               ← useAlarmStore, useMemoStore, useLaterStore, useSomedayStore (Zustand, 데이터 공통)
+│   └── firebase/config.ts    ← Firebase 초기화 (initFirebase 주입식 — 웹=VITE_*, 모바일=EXPO_PUBLIC_*)
+├── apps/web/                 ← React + Vite PWA (웹 전용 스토어: calendar/home/settings/trash는 여기)
+├── apps/mobile/              ← React Native + Expo (Phase 4, 진행 중)
+├── apps/electron/            ← (Phase 3 예정, 아직 미생성) 웹 빌드 래핑
 └── functions/                ← Firebase Cloud Functions
-    ├── kakaoAuth.ts          ← 카카오 → Firebase 커스텀 토큰
-    ├── onAlarmWrite.ts       ← 알람 CRUD 시 Cloud Task 생성/수정/취소
-    ├── triggerAlarm.ts       ← Cloud Task 호출 시 기기 라우팅 + FCM 발송
-    ├── onLaterWrite.ts       ← 나중에 항목 CRUD 시 Cloud Task 관리
-    ├── triggerLater.ts       ← Cloud Task 호출 시 나중에 알림 발송
-    ├── memoAI.ts             ← 메모 저장 트리거 → Llama 처리
-    └── trashCleaner.ts       ← 30일 초과 휴지통 자동 삭제
+    ├── kakaoAuth.ts          ← 카카오 code→토큰 교환 + Firebase 커스텀 토큰 (kakaoLogin)
+    ├── aiSummarize.ts        ← 메모 본문 요약 (Gemini)
+    ├── parseDateTime.ts      ← 자연어 → ISO 날짜시간 파싱 (Gemini)
+    ├── gemini.ts             ← Gemini 호출 공통 헬퍼
+    ├── prompts.ts            ← 시스템 프롬프트
+    └── (Phase 2 예정)        onAlarmWrite/triggerAlarm, onLaterWrite/triggerLater, trashCleaner
 ```
 
 ### 의존성 방향 (단방향)
@@ -97,14 +96,16 @@ users/{uid}
 
 ### 공통 규칙
 - 모든 컬렉션에 `isDeleted`, `deletedAt` 필드. 조회 시 반드시 `where('isDeleted', '==', false)` 필터 적용
-- 삭제 후 30일이 지나면 `trashCleaner` Cloud Function이 자동 영구 삭제
+- 삭제 후 30일이 지나면 `trashCleaner` Cloud Function이 자동 영구 삭제 *(Phase 2 예정, 미구현)*
 - 타임스탬프는 클라이언트 로컬 시간 기준
 
 ---
 
 ## 알람 라우팅 우선순위
 
-Cloud Function `alarmScheduler`가 매분 실행하며 기기 라우팅:
+> ⚠️ **Phase 2 예정 — 아직 미구현.** 현재 웹 알람은 클라이언트 `AlarmScheduler`(포그라운드 티커)로만 동작한다.
+
+(설계) Cloud Function `alarmScheduler`가 매분 실행하며 기기 라우팅:
 1. 웹 탭 활성 (`isActive=true`) → Firestore 실시간 트리거로 웹 알람 발생
 2. 웹 비활성 + Electron 활성 → Electron FCM
 3. 모두 비활성 → 모바일 FCM
@@ -123,7 +124,7 @@ Cloud Function `alarmScheduler`가 매분 실행하며 기기 라우팅:
 | Phase | 목표 |
 |---|---|
 | Phase 1 | 웹 MVP (알람 그룹/CRUD, 메모, 캘린더, 홈 기본, 휴지통) |
-| Phase 2 | Llama AI 연동, FCM, 기기 라우팅, 나중에/언젠가 |
+| Phase 2 | Gemini AI 연동, FCM, 기기 라우팅, 나중에/언젠가 |
 | Phase 3 | Electron (OS 알람, 트레이, 패키징) |
 | Phase 4 | React Native + Expo 모바일 앱, 앱스토어 배포 |
 | MVP 이후 | 컨텍스트 인식 알람 (PC 작업 감지, 모바일 동작 감지) |
@@ -182,30 +183,18 @@ git reset --soft HEAD~1      # 마지막 커밋 취소 (변경 유지)
 
 ## 미결 사항 (TBD)
 
-- **Llama 호스팅:** Ollama 자체 서버 방향으로 검토 중. 확정 전까지 `llamaService.ts`는 인터페이스만 정의, 구현 비워둠 (Phase 2에서 확정)
+- **AI 호스팅:** 현재 **Google Gemini**(Cloud Functions `aiSummarize`/`parseDateTime`)로 구현됨. `packages/shared/services/llamaService.ts`도 Gemini 호출로 구현됨(이름은 과거 Llama 계획의 잔재). 단 `classifyText`(홈 분류)·`detectAlarmSuggestion`(메모 알람 감지)은 아직 정규식/chrono-node 로컬 규칙
 - **휴지통 적용 범위:** Phase 1은 메모만. Phase 2에서 나중에/언젠가 포함 여부 결정 (알람은 제외)
 - **앱 이름:** SmartNote 임시
 - **캘린더 상세 기능 범위:** 반복 일정, 색상 구분 등
 
 ---
 
-## 상세 문서 위치
+## 상세 문서 위치 (⛔ 사용 안함 — 보관용)
 
-`.claude/docs/` 폴더에 전체 설계 문서 보관:
-- `SmartNote_PRD_v0.2.md` — 기능 상세 정의
-- `SmartNote_아키텍처가이드_v0.2.md` — 폴더 구조, 공유 전략, 스타일 시스템
-- `SmartNote_DB스키마_v0.1.md` — Firestore 스키마 + 보안 규칙 + 인덱스
-- `SmartNote_API명세서_v0.1.md` — Cloud Functions 명세
-- `SmartNote_작업태스크_v0.2.md` — Phase별 전체 태스크 목록 (72개)
-- `SmartNote_컴포넌트명세_v0.2.md` — 컴포넌트 Props/State 명세 (웹 기준)
-- `SmartNote_사용자스토리_v0.2.md` — 사용자 스토리 + 인수 조건
-- `SmartNote_QC시나리오_v0.1.md` — Phase 1 웹 MVP 수동 검수 시나리오 (페이지별 + 회귀 체크)
-- `SmartNote_시스템흐름도_v0.1.md` — 시스템 관점 흐름 설명
-- `SmartNote_와이어프레임.html` — 웹 화면 와이어프레임 (브라우저에서 직접 열어서 확인)
+`.claude/docs/` 의 설계 문서 전체는 현재 코드와 어긋나 **더 이상 사용하지 않는다.** 파일명에 `(사용 안함)` 접두사를 붙여 보관만 한다 (PRD, 아키텍처가이드, DB스키마, API명세서, 작업태스크, 컴포넌트명세, 사용자스토리, QC시나리오, 시스템흐름도, AI데이터처리, 와이어프레임.html + `mmd/` 흐름도 2종).
 
-`.claude/docs/mmd/` 폴더에 Mermaid 흐름도 보관:
-- `SmartNote_유저플로우_v0.2.mmd` — 사용자 관점 플로우 (Flow A~I, subgraph)
-- `SmartNote_서비스흐름도_v0.2.mmd` — 시스템 관점 플로우 (Flow A~I, subgraph)
+> **현재 상태의 단일 출처는 이 CLAUDE.md + `.claude/tasks` · `.claude/todos` 운영 문서다.** 설계 문서는 참고 시 코드와 반드시 재대조할 것.
 
 ---
 
@@ -221,7 +210,7 @@ git reset --soft HEAD~1      # 마지막 커밋 취소 (변경 유지)
 - `backend.md` — functions/ + Firestore + FCM/기기 라우팅 (3플랫폼 공통)
 - `web.md` — apps/web 프론트엔드
 - `electron.md` — Phase 3 데스크탑 (착수 전)
-- `mobile.md` — Phase 4 모바일 (착수 전)
+- `mobile.md` — Phase 4 모바일 (진행 중 — Step 0/1/2a 완료, 상세는 `todos/mobile.md` 상단)
 
 `.claude/rules/` 폴더에 분리된 규칙 문서 보관:
 - `행동지침.md` — 작업 기본 원칙 1~6 (CLAUDE.md 「행동 지침」에서 `@import`)

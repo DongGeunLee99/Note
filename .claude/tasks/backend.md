@@ -19,7 +19,7 @@
 
 ## Phase 2 — AI + Cloud Tasks + 기기 라우팅
 
-- [ ] Llama AI 연동 — `memoAI` Cloud Function + `llamaService` 구현 (호스팅 방식 확정 필요)
+- [~] **Gemini** AI 연동 — `aiSummarize`(메모요약)·`parseDateTime`(날짜파싱) Cloud Function + `llamaService` 구현 완료. (원래 Llama 계획 폐기. 홈 분류/메모 알람감지는 아직 로컬 규칙)
 - [ ] 홈 자연어 입력 AI 분류 — classify 백엔드 처리
 - [ ] 알람 Cloud Tasks — `onAlarmWrite` + `triggerAlarm` (생성/수정/취소 + 발송)
 - [ ] 나중에 Cloud Tasks — `onLaterWrite` + `triggerLater`

@@ -11,7 +11,8 @@
 
 ## Phase 4 — 모바일 (착수 예정, 계획서는 [todos/mobile.md](../todos/mobile.md) 참고)
 
-- [ ] Expo 앱 세팅 (Expo Go로 우선 개발, 네이티브 모듈 필요 시점에 EAS dev client 전환)
+- [x] Expo 앱 세팅 (SDK 57, blank-typescript, NativeWind v4, Metro 모노레포) — Step 1 완료
+- [~] 네비게이션 셸 (React Navigation, 하단 4탭 + 로그인 스텁) — Step 2a 완료, 실제 인증 연결은 Step 2b
 - [ ] 모바일 카카오 로그인 — `expo-auth-session` 기반, 웹과 동일한 `kakaoLogin` Cloud Function 재사용
 - [ ] 핵심 화면 — 알람 / 메모 / 홈 / 캘린더
 - [ ] 로컬 알림(`expo-notifications`)으로 우선 알람 발생 처리 (FCM은 후속)
