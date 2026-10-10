@@ -2,7 +2,10 @@ interface KakaoStatic {
   init(appKey: string): void
   isInitialized(): boolean
   Auth: {
-    login(params: { success: () => void; fail: (err: unknown) => void }): void
+    authorize(params: {
+      redirectUri: string
+      prompt?: 'login' | 'none' | 'create' | 'select_account'
+    }): void
     logout(callback?: () => void): void
     getAccessToken(): string | null
   }

@@ -1,9 +1,18 @@
 import { getAuth } from 'firebase-admin/auth'
 import { getFirestore, Timestamp } from 'firebase-admin/firestore'
 import { onCall, HttpsError } from 'firebase-functions/v2/https'
+import { defineSecret } from 'firebase-functions/params'
+
+const kakaoRestApiKey = defineSecret('KAKAO_REST_API_KEY')
+const kakaoClientSecret = defineSecret('KAKAO_CLIENT_SECRET')
 
 interface KakaoLoginRequest {
-  accessToken: string
+  code: string
+  redirectUri: string
+}
+
+interface KakaoTokenResponse {
+  access_token: string
 }
 
 interface KakaoUser {
@@ -16,11 +25,39 @@ interface KakaoUser {
   }
 }
 
-export const kakaoLogin = onCall<KakaoLoginRequest>({ cors: true }, async (request) => {
-  const { accessToken } = request.data
+export const kakaoLogin = onCall<KakaoLoginRequest>({ cors: true, secrets: [kakaoRestApiKey, kakaoClientSecret] }, async (request) => {
+  const { code, redirectUri } = request.data
 
-  if (!accessToken) {
-    throw new HttpsError('invalid-argument', '액세스 토큰이 필요합니다.')
+  if (!code || !redirectUri) {
+    throw new HttpsError('invalid-argument', '인가 코드가 필요합니다.')
+  }
+
+  // Authorization Code → Access Token 교환 (카카오 v2 로그인은 클라이언트에서 토큰을 직접 못 받고 서버에서 교환해야 함)
+  let accessToken: string
+  try {
+    console.log('[kakaoLogin] 토큰 교환 요청', { redirectUri, clientIdLength: kakaoRestApiKey.value().length })
+    const tokenResponse = await fetch('https://kauth.kakao.com/oauth/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        grant_type: 'authorization_code',
+        client_id: kakaoRestApiKey.value(),
+        client_secret: kakaoClientSecret.value(),
+        redirect_uri: redirectUri,
+        code,
+      }),
+    })
+    const rawBody = await tokenResponse.text()
+    if (!tokenResponse.ok) {
+      console.error('[kakaoLogin] 토큰 교환 실패', tokenResponse.status, rawBody)
+      throw new HttpsError('unauthenticated', `카카오 인가 코드가 유효하지 않습니다: ${rawBody}`)
+    }
+    const tokenData = JSON.parse(rawBody) as KakaoTokenResponse
+    accessToken = tokenData.access_token
+  } catch (error) {
+    if (error instanceof HttpsError) throw error
+    console.error('[kakaoLogin] 토큰 교환 중 예외', error)
+    throw new HttpsError('internal', '카카오 토큰 교환 중 오류가 발생했습니다.')
   }
 
   let kakaoUser: KakaoUser

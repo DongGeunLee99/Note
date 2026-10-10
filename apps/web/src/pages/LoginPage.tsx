@@ -13,11 +13,14 @@ export default function LoginPage() {
   if (user) return <Navigate to="/home" replace />
 
   async function handleLogin() {
+    console.log('[Login] 버튼 클릭')
     setLoading(true)
     setError(null)
     try {
       await login()
-    } catch {
+      console.log('[Login] login() 정상 완료')
+    } catch (err) {
+      console.error('[Login] login() 실패', err)
       setError(t('login.failed'))
     } finally {
       setLoading(false)

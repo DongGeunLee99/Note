@@ -6,6 +6,7 @@ import { ToastProvider } from './contexts/ToastContext'
 import Spinner from './components/common/Spinner'
 import AppLayout from './components/layout/AppLayout'
 import LoginPage from './pages/LoginPage'
+import KakaoCallbackPage from './pages/KakaoCallbackPage'
 import HomePage from './pages/HomePage'
 import AlarmPage from './pages/AlarmPage'
 import MemoPage from './pages/MemoPage'
@@ -83,6 +84,7 @@ export default function App() {
         <ToastProvider>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/auth/kakao/callback" element={<KakaoCallbackPage />} />
             <Route path="/" element={<RootRedirect />} />
             <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
               <Route path="home" element={<HomePage />} />
