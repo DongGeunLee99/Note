@@ -8,7 +8,7 @@ import type { MemoLocation } from '@smartnote/shared/types'
 import { useToast } from '@/contexts/ToastContext'
 import { useTranslation } from 'react-i18next'
 import { useLang } from '@/i18n'
-import { useMemoStore } from '@/stores/useMemoStore'
+import { useMemoStore } from '@smartnote/shared/stores/useMemoStore'
 import { formatFullDate } from '@/utils/formatDate'
 
 const EMPTY_LOCATION: MemoLocation = { lat: null, lng: null, label: null }

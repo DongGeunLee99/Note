@@ -14,7 +14,7 @@ import type { GroupFormInput } from '@smartnote/shared/services/alarmGroupServic
 import type { AlarmFormInput } from '@smartnote/shared/services/alarmService'
 import { useToast } from '@/contexts/ToastContext'
 import { useTranslation } from 'react-i18next'
-import { useAlarmStore } from '@/stores/useAlarmStore'
+import { useAlarmStore } from '@smartnote/shared/stores/useAlarmStore'
 
 type GroupModalState = { isOpen: false } | { isOpen: true; target: AlarmGroup | null }
 type AlarmModalState = { isOpen: false } | { isOpen: true; target: Alarm | null; defaultGroupId?: string }

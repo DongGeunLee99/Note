@@ -1,7 +1,7 @@
 import { create } from 'zustand'
-import type { Later } from '@smartnote/shared/types'
-import { subscribeLater, createLater, setLaterCompleted, softDeleteLater } from '@smartnote/shared/services/laterService'
-import { requestParsedDateTime } from '@/services/llamaService'
+import type { Later } from '../types'
+import { subscribeLater, createLater, setLaterCompleted, softDeleteLater } from '../services/laterService'
+import { requestParsedDateTime } from '../services/llamaService'
 
 interface LaterState {
   uid: string | null

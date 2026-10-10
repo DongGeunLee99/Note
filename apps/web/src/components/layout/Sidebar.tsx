@@ -6,7 +6,7 @@ import {
 } from '@tabler/icons-react'
 import { useTranslation } from 'react-i18next'
 import { useAuthContext } from '@/contexts/AuthContext'
-import { useAlarmStore } from '@/stores/useAlarmStore'
+import { useAlarmStore } from '@smartnote/shared/stores/useAlarmStore'
 import { useTrashStore } from '@/stores/useTrashStore'
 import Tooltip from '@/components/common/Tooltip'
 

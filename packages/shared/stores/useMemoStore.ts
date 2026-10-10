@@ -1,10 +1,10 @@
 import { create } from 'zustand'
-import type { Memo, MemoLocation } from '@smartnote/shared/types'
+import type { Memo, MemoLocation } from '../types'
 import {
   subscribeMemos, createMemo, updateMemo, softDeleteMemo,
-} from '@smartnote/shared/services/memoService'
-import { detectAlarmSuggestion, generateAiSummary, requestAiSummary } from '@/services/llamaService'
-import type { AlarmSuggestion } from '@/services/llamaService'
+} from '../services/memoService'
+import { detectAlarmSuggestion, generateAiSummary, requestAiSummary } from '../services/llamaService'
+import type { AlarmSuggestion } from '../services/llamaService'
 
 export type PinResult = 'pinned' | 'unpinned' | 'limit' | 'none'
 export const MAX_PINNED = 3

@@ -1,6 +1,6 @@
 import { create } from 'zustand'
-import type { Someday, SomedayCategory } from '@smartnote/shared/types'
-import { subscribeSomeday, createSomeday, setSomedayFavorite, softDeleteSomeday } from '@smartnote/shared/services/somedayService'
+import type { Someday, SomedayCategory } from '../types'
+import { subscribeSomeday, createSomeday, setSomedayFavorite, softDeleteSomeday } from '../services/somedayService'
 
 interface SomedayState {
   uid: string | null

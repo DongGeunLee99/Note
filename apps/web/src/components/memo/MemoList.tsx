@@ -1,6 +1,6 @@
 import MemoCard from './MemoCard'
 import { useTranslation } from 'react-i18next'
-import type { MemoView } from '@/stores/useMemoStore'
+import type { MemoView } from '@smartnote/shared/stores/useMemoStore'
 
 interface MemoListProps {
   memos: MemoView[]

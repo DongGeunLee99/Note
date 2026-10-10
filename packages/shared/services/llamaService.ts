@@ -3,7 +3,7 @@
 
 import { parse } from 'chrono-node'
 import { httpsCallable } from 'firebase/functions'
-import { functions } from '@smartnote/shared/firebase'
+import { functions } from '../firebase/config'
 
 export type ClassifiedCategory = '일정' | '알람' | '할일' | '메모' | '나중에' | '언젠가'
 

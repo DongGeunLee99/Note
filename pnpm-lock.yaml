@@ -102,12 +102,18 @@ importers:
 
   packages/shared:
     dependencies:
+      chrono-node:
+        specifier: ^2.9.1
+        version: 2.9.1
       firebase:
         specifier: ^12.14.0
         version: 12.14.0
       react:
         specifier: ^19.0.0
         version: 19.2.6
+      zustand:
+        specifier: ^5.0.14
+        version: 5.0.14(@types/react@19.2.15)(immer@11.1.8)(react@19.2.6)(use-sync-external-store@1.6.0(react@19.2.6))
     devDependencies:
       '@types/react':
         specifier: ^19.2.14

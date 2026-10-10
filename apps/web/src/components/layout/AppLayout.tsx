@@ -3,12 +3,12 @@ import { Outlet } from 'react-router-dom'
 import Sidebar from './Sidebar'
 import AlarmScheduler from '@/components/alarm/AlarmScheduler'
 import { useAuthContext } from '@/contexts/AuthContext'
-import { useAlarmStore } from '@/stores/useAlarmStore'
-import { useMemoStore } from '@/stores/useMemoStore'
+import { useAlarmStore } from '@smartnote/shared/stores/useAlarmStore'
+import { useMemoStore } from '@smartnote/shared/stores/useMemoStore'
 import { useTrashStore } from '@/stores/useTrashStore'
 import { useCalendarStore } from '@/stores/useCalendarStore'
-import { useLaterStore } from '@/stores/useLaterStore'
-import { useSomedayStore } from '@/stores/useSomedayStore'
+import { useLaterStore } from '@smartnote/shared/stores/useLaterStore'
+import { useSomedayStore } from '@smartnote/shared/stores/useSomedayStore'
 
 export default function AppLayout() {
   const { user } = useAuthContext()

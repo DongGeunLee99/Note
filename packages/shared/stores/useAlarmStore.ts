@@ -1,13 +1,13 @@
 import { create } from 'zustand'
-import type { AlarmGroup, Alarm } from '@smartnote/shared/types'
+import type { AlarmGroup, Alarm } from '../types'
 import {
   subscribeGroups, createGroup, updateGroup, softDeleteGroup,
-} from '@smartnote/shared/services/alarmGroupService'
-import type { GroupFormInput } from '@smartnote/shared/services/alarmGroupService'
+} from '../services/alarmGroupService'
+import type { GroupFormInput } from '../services/alarmGroupService'
 import {
   subscribeAlarms, createAlarm, updateAlarm, softDeleteAlarm,
-} from '@smartnote/shared/services/alarmService'
-import type { AlarmFormInput } from '@smartnote/shared/services/alarmService'
+} from '../services/alarmService'
+import type { AlarmFormInput } from '../services/alarmService'
 
 /** 비기본 그룹 먼저(order 오름차순), 기본('기타') 그룹은 항상 마지막 */
 function sortGroups(groups: AlarmGroup[]): AlarmGroup[] {

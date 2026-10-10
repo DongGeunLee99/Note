@@ -1,4 +1,4 @@
-import type { ClassifiedCategory } from '@/services/llamaService'
+import type { ClassifiedCategory } from '@smartnote/shared/services/llamaService'
 
 // 휴지통
 export type TrashType = 'memo' | 'alarm' | 'later'

@@ -11,7 +11,7 @@ import EmptyState from '@/components/common/EmptyState'
 import ResizableRightPanel from '@/components/common/ResizableRightPanel'
 import { useToast } from '@/contexts/ToastContext'
 import { useTranslation } from 'react-i18next'
-import { useSomedayStore } from '@/stores/useSomedayStore'
+import { useSomedayStore } from '@smartnote/shared/stores/useSomedayStore'
 import type { SomedayCategory } from '@smartnote/shared/types'
 import { TONES, type Tone } from '@/theme/tones'
 

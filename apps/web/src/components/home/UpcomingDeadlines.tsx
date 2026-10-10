@@ -4,7 +4,7 @@ import Badge from '@/components/common/Badge'
 import { TONES } from '@/theme/tones'
 import { useTranslation } from 'react-i18next'
 import { useLang } from '@/i18n'
-import { useLaterStore } from '@/stores/useLaterStore'
+import { useLaterStore } from '@smartnote/shared/stores/useLaterStore'
 import { formatSuggestionTime } from '@/utils/formatDate'
 
 function isSameDay(a: Date, b: Date): boolean {

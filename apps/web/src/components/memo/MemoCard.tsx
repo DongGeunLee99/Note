@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useLang } from '@/i18n'
 import { formatRelTime, formatSuggestionTime } from '@/utils/formatDate'
 import { highlightMatch } from '@/utils/highlightMatch'
-import type { MemoView } from '@/stores/useMemoStore'
+import type { MemoView } from '@smartnote/shared/stores/useMemoStore'
 
 interface MemoCardProps {
   memo: MemoView
