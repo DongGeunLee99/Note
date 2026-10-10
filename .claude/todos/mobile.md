@@ -6,6 +6,33 @@
 
 ## 미완료
 
+### 🔖 진행 현황 & 결정 대기 (2026-10-10) ← 다음에 여기부터
+
+**완료 (커밋됨, main)**
+- **Step 0 — 공유 레이어 준비**: Firebase init 디커플링(`initFirebase` 주입식, `import.meta.env` 제거), `llamaService` + 데이터 스토어 4개(alarm/memo/later/someday) → `packages/shared`로 이동. 웹 회귀(로그인/CRUD) 검증 통과. (커밋 `d06984c`)
+- **Step 1 — Expo 셸**: `apps/mobile` Expo SDK 57 + RN 0.86 + NativeWind v4 + Metro 모노레포. pnpm+Metro 이슈(`react-native-css-interop` 직접 의존 추가)로 해결. Expo Go 실기기 렌더 확인. (커밋 `da45db0`)
+
+**커밋됨 (단, Expo Go 실기기 렌더는 미확인 — 다음에 restart+scan으로 확인 필요)**
+- **Step 2a — 네비게이션 셸**: React Navigation 7(인증 스택 + 하단 4탭) + 플레이스홀더 화면(홈/알람/메모/캘린더) + 로그인 화면(스텁). `firebase`/`@react-native-async-storage`/nav 패키지 설치됨. tsc 통과.
+  - 기기 확인: `apps/mobile`에서 `pnpm exec expo start --clear` 재시작 → Expo Go 스캔 → 로그인 화면 → 버튼 탭 → 4탭 셸
+  - 주의: 로그인 버튼은 **로컬 상태 스텁**(실제 카카오 아님). `RootNavigator.tsx`에 `TODO(Step 2b)` 표시
+
+**⛔ Step 2b 착수 전 결정 필요 — 갈림길 2개**
+
+1. **모바일 ↔ Firebase 연결** (실기기는 PC의 `127.0.0.1` 에뮬레이터 접근 불가)
+   - **A안(추천):** 에뮬레이터 LAN 개방(`firebase.json`에 host `0.0.0.0`) + 모바일 `initFirebase`에 개발 PC LAN IP(예: `172.30.1.41`). 같은 WiFi 필요, 로컬 `kakaoLogin` 함수 그대로 재사용
+   - B안: 함수를 실 Firebase에 배포 + 운영 접속 (설정/비용↑, 에뮬레이터 장점 상실)
+
+2. **Expo Go에서 카카오 OAuth 리다이렉트** (커스텀 스킴 `smartnote://` 딥링크가 **Expo Go에선 OAuth 리다이렉트로 동작 안 함** — Expo Go는 `exp://`만 처리, Kakao가 거부)
+   - **A안(추천):** 지금 **EAS dev client 전환**(FCM 때 하려던 걸 앞당김) → `smartnote://` 정상, 이후 FCM도 자연스러움. 단 클라우드 빌드 1회 대기
+   - B안: Expo Go 유지 + 카카오 보류, 개발용 로그인 우회(테스트 계정/이메일 등)로 CRUD 화면 먼저 만들고 카카오는 dev build 때
+   - C안: 웹뷰로 카카오 로그인 페이지 우회 (복잡도↑)
+   - > 카카오 콘솔에 모바일 Redirect URI(`smartnote://...`) **수동 등록** 필요(방식 확정 후 정확한 값 안내). 모바일 authorize엔 Kakao **REST API 키**(웹 JS 키와 다름, 현재 함수 시크릿에만 존재) 필요
+
+**내 추천:** 1=A, 2=A — 카카오가 이 앱의 핵심 로그인이라 제대로 동작하는 dev client 환경으로 가는 게 깔끔. (단 dev client는 Expo Go보다 초기 세팅 부담)
+
+---
+
 ### 방향 결정 (2026-09-03)
 
 > 웹을 지금 상태로 계속 다듬기보다, **모바일 버전을 먼저 만들어서 실제로 써보며 데이터를 쌓고**, 그걸 바탕으로 편의성 개선 방향을 잡기로 결정.
