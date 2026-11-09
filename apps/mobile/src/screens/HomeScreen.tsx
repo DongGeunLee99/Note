@@ -1,11 +1,35 @@
-import { Text, View } from 'react-native'
+import { ScrollView, Text, View } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import QuickInput from '../components/home/QuickInput'
+import TodayTimeline from '../components/home/TodayTimeline'
+import RecentEntryList from '../components/home/RecentEntryList'
+import { useHomeStore } from '../stores/useHomeStore'
+import { formatDayTitle } from '../utils/calendarDate'
 
-/** 홈 화면 (플레이스홀더) — 이후 자연어 입력/오늘 일정 연동 */
+/** 홈 — 빠른 입력 / 오늘 타임라인 / 최근 기록 (더미 스토어) */
 export default function HomeScreen() {
+  const entryCount = useHomeStore(s => s.entries.length)
+
   return (
-    <View className="flex-1 items-center justify-center bg-white">
-      <Text className="text-xl font-semibold text-gray-900">홈</Text>
-      <Text className="mt-1 text-gray-400">Step 2 셸 · 곧 실제 기능 연동</Text>
-    </View>
+    <SafeAreaView edges={['top']} className="flex-1 bg-white">
+      <ScrollView contentContainerClassName="gap-5 px-4 pb-10 pt-3" keyboardShouldPersistTaps="handled">
+        <View>
+          <Text className="text-sm text-gray-500">{formatDayTitle(new Date())}</Text>
+          <Text className="text-2xl font-bold text-gray-900">홈</Text>
+        </View>
+
+        <QuickInput />
+
+        <View className="gap-2">
+          <Text className="text-sm font-semibold text-gray-500">오늘</Text>
+          <TodayTimeline />
+        </View>
+
+        <View className="gap-1">
+          <Text className="text-sm font-semibold text-gray-500">최근 기록 · {entryCount}</Text>
+          <RecentEntryList />
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   )
 }

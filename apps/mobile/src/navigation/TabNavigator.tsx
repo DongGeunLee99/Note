@@ -1,26 +1,46 @@
-import { Text } from 'react-native'
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import { Ionicons } from '@expo/vector-icons'
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
+import { getFocusedRouteNameFromRoute, type RouteProp, type ParamListBase } from '@react-navigation/native'
 import HomeScreen from '../screens/HomeScreen'
 import AlarmScreen from '../screens/AlarmScreen'
-import MemoScreen from '../screens/MemoScreen'
 import CalendarScreen from '../screens/CalendarScreen'
+import MemoNavigator from './MemoNavigator'
+import MoreNavigator from './MoreNavigator'
+import BottomTabBar from './BottomTabBar'
 
-const Tab = createBottomTabNavigator()
+const Tab = createMaterialTopTabNavigator()
 
-/** 탭 아이콘(이모지 임시) — 이후 아이콘 세트로 교체 */
-const tabIcon = (emoji: string) =>
+const tabIcon = (name: keyof typeof Ionicons.glyphMap) =>
   ({ color }: { color: string }) =>
-    <Text style={{ color, fontSize: 18 }}>{emoji}</Text>
+    <Ionicons name={name} color={color} size={24} />
 
+/**
+ * 스택 탭은 첫 화면(목록/메뉴)에서만 좌우 스와이프로 탭 이동.
+ * 안쪽 화면에선 꺼서 iOS 뒤로가기 스와이프·입력 중 가로 제스처와 겹치지 않게 함
+ */
+const swipeOnlyAtRoot = (rootName: string) =>
+  ({ route }: { route: RouteProp<ParamListBase> }) => {
+    const focused = getFocusedRouteNameFromRoute(route) ?? rootName
+    return { swipeEnabled: focused === rootName }
+  }
+
+/** 하단 탭 — 좌우 스와이프로 탭 이동 (material-top-tabs를 하단 배치) */
 export default function TabNavigator() {
   return (
-    <Tab.Navigator
-      screenOptions={{ tabBarActiveTintColor: '#111827', tabBarInactiveTintColor: '#9CA3AF' }}
-    >
-      <Tab.Screen name="home" component={HomeScreen} options={{ title: '홈', tabBarIcon: tabIcon('🏠') }} />
-      <Tab.Screen name="alarm" component={AlarmScreen} options={{ title: '알람', tabBarIcon: tabIcon('⏰') }} />
-      <Tab.Screen name="memo" component={MemoScreen} options={{ title: '메모', tabBarIcon: tabIcon('📝') }} />
-      <Tab.Screen name="calendar" component={CalendarScreen} options={{ title: '캘린더', tabBarIcon: tabIcon('📅') }} />
+    <Tab.Navigator tabBarPosition="bottom" tabBar={props => <BottomTabBar {...props} />}>
+      <Tab.Screen name="home" component={HomeScreen} options={{ title: '홈', tabBarIcon: tabIcon('home-outline') }} />
+      <Tab.Screen name="alarm" component={AlarmScreen} options={{ title: '알람', tabBarIcon: tabIcon('alarm-outline') }} />
+      <Tab.Screen
+        name="memo"
+        component={MemoNavigator}
+        options={args => ({ title: '메모', tabBarIcon: tabIcon('document-text-outline'), ...swipeOnlyAtRoot('memoList')(args) })}
+      />
+      <Tab.Screen name="calendar" component={CalendarScreen} options={{ title: '캘린더', tabBarIcon: tabIcon('calendar-outline') }} />
+      <Tab.Screen
+        name="more"
+        component={MoreNavigator}
+        options={args => ({ title: '더보기', tabBarIcon: tabIcon('ellipsis-horizontal'), ...swipeOnlyAtRoot('moreMenu')(args) })}
+      />
     </Tab.Navigator>
   )
 }
